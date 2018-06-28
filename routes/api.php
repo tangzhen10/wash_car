@@ -18,7 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) { return
 Route::group(['namespace' => 'Main'], function () {
 	
 	# 账户系统
-	Route::group(['prefix' => 'User'], function () {
+	Route::group(['prefix' => 'user'], function () {
 		
 		# 注册
 		Route::post('register', ['uses' => 'UserController@register', 'as' => 'register']);

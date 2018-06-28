@@ -9,20 +9,44 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use App\Services\UserService;
 
-
+/**
+ * 用户类
+ * Class UserController
+ * @package App\Http\Controllers\Main
+ */
 class UserController extends Controller {
 	
+	private $user = null;
+	
+	public function __construct() {
+		
+		$this->user = new UserService();
+	}
+	
+	/**
+	 * 用户注册
+	 * @author 李小同
+	 * @date   2018-6-28 15:33:53
+	 */
 	public function register() {
 		
-		$post = \Request::all();
-		
-		# 检测渠道
-		
-		# 检测是否已注册
+		# 验证
+		$regInfo = $this->user->checkRegInfo();
 		
 		# 注册
+		$res = $this->user->create($regInfo);
+		if ($res) {
+			json_msg(trans('common.action_success'));
+		} else {
+			json_msg(trans('common.action_failed'), 40004);
+		}
+	}
+	
+	public function login() {
 		
+		$loginInfo = $this->user->checkLoginInfo();
 	}
 	
 }

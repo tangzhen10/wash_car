@@ -35,7 +35,7 @@ function get_http_headers() {
  * @date   2017-9-23 11:17:10
  * @return null|view
  */
-function json_msg($data, $code = 0) {
+function json_msg($data = '', $code = 0) {
 	
 	header('charset:utf-8');
 	header('X-power-by:ahulxt');
@@ -44,7 +44,11 @@ function json_msg($data, $code = 0) {
 	$result = ['code' => $code];
 	
 	if ($code > 0) {
-		$result['error'] = (string)$data;
+		if (!empty($data)) {
+			$result['error'] = (string)$data;
+		} else {
+			$result['error'] = trans('error.error_'.$code);
+		}
 	} else {
 		if (is_array($data)) {
 			$result['data'] = $data;
@@ -60,7 +64,7 @@ function json_msg($data, $code = 0) {
  * 创建盐
  * @author 李小同
  * @date   2017-9-24 00:13:43
- * @return string
+ * @return string md5加密
  */
 function create_salt() {
 	
@@ -68,7 +72,7 @@ function create_salt() {
 	$str = preg_replace('/\s/', dechex(mt_rand(1131992, 9211992)), $str);
 	$str = substr($str, 2);
 	for ($i = 0; $i < 10; ++$i) $str .= dechex(rand(10000, 99999));
-	$str = sha1($str);
+	$str = md5($str);
 	
 	return $str;
 }
@@ -86,11 +90,12 @@ function create_token() {
 
 /**
  * 获取客户端ip 摘自网络
+ * @param bool $int true 返回数字 false 返回字符串
  * @author 李小同
  * @date   2018-01-06 00:45:30
  * @return string ip地址
  */
-function getClientIp() {
+function getClientIp($int = false) {
 	
 	if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) {
 		$ip = getenv("HTTP_CLIENT_IP");
@@ -104,17 +109,18 @@ function getClientIp() {
 		$ip = "unknown";
 	}
 	
-	return ($ip);
+	return $int ? ip2long($ip) : $ip;
 }
 
 /**
- * 简单加密，单向加密
+ * 简单加密，单向加密，用于生成用户密码
  * @param string $string 明文
+ * @param string $salt   盐
  * @author 李小同
  * @date   2018-1-24 22:00:50
  * @return string 密文 32位
  */
-function easy_encrypt($string = '') {
+function easy_encrypt($string = '', $salt = '') {
 	
-	return md5(sha1($string).env('SALT_SECRET_KEY'));
+	return sha1(sha1($string).env('SALT_SECRET_KEY').$salt);
 }
