@@ -1,11 +1,11 @@
-<?php
-/**
+<?php /**
  * 全局函数
  * Created by PhpStorm.
  * Sign: Nothing is true, everything is permitted.
  * User: lxt
  * Date: 2018-01-03 0003 21:52
  */
+//use Illuminate\Support\Facades\Redis;
 
 /**
  * 获取http header
@@ -69,7 +69,7 @@ function json_msg($data = '', $code = 0) {
 function create_salt() {
 	
 	$str = microtime();
-	$str = preg_replace('/\s/', dechex(mt_rand(1131992, 9211992)), $str);
+	$str = str_replace(' ', dechex(mt_rand(1131992, 9211992)), $str);
 	$str = substr($str, 2);
 	for ($i = 0; $i < 10; ++$i) $str .= dechex(rand(10000, 99999));
 	$str = md5($str);
@@ -85,7 +85,7 @@ function create_salt() {
  */
 function create_token() {
 	
-	return md5(mt_rand(1131992, 9211992).dechex(date('YmdHis'))).uniqid();
+	return md5(mt_rand(1131992, 9211992).dechex(time())).uniqid();
 }
 
 /**
@@ -123,4 +123,30 @@ function getClientIp($int = false) {
 function easy_encrypt($string = '', $salt = '') {
 	
 	return sha1(sha1($string).env('SALT_SECRET_KEY').$salt);
+}
+
+function redisSet($key, $data = '') {
+	
+	$res = \Redis::set($key, json_encode($data));
+	
+	# 设置缓存时间
+	$keyArr = explode('@', $key);
+	if (!isset($keyArr[1]) || !is_numeric($keyArr[1])) {
+		$expire = config('cache.DEFAULT_CACHE_EXPIRE');
+	} else {
+		$expire = intval($keyArr[1]);
+	}
+	if ($expire != -1) \Redis::expire($key, $expire);
+	
+	return $res;
+}
+
+function redisGet($key) {
+	
+	$res = \Redis::get($key);
+	if ($res) {
+		return json_decode($res, 1);
+	} else {
+		return false;
+	}
 }

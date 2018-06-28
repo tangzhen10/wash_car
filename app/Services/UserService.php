@@ -9,6 +9,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Redis;
+
 class UserService {
 	
 	/**
@@ -104,11 +106,17 @@ class UserService {
 			'identity'      => $account,
 			'status'        => '1',
 		];
-		$identityInfo = \DB::table('user_auth')->where($where)->first(['credential', 'salt']);
+		$identityInfo = \DB::table('user_auth')->where($where)->first(['user_id', 'credential', 'salt']);
 		if (easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
 			
 			# 登录成功
-			echo '登录成功';
+			$userInfo          = \DB::table('user')->where('user_id', $identityInfo['user_id'])->first();
+			$userInfo['token'] = create_token();
+			$cacheKey          = sprintf(config('cache.USER_INFO'), $userInfo['token']);
+			redisSet($cacheKey, $userInfo);
+			
+			json_msg($userInfo);
+			
 		} else {
 			
 			# 用户名或密码错误
