@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
-use App\Services\UserService;
 
 /**
  * 用户类
@@ -17,13 +16,6 @@ use App\Services\UserService;
  * @package App\Http\Controllers\Main
  */
 class UserController extends Controller {
-	
-	private $user = null;
-	
-	public function __construct() {
-		
-		$this->user = new UserService();
-	}
 	
 	/**
 	 * 用户注册
@@ -44,9 +36,21 @@ class UserController extends Controller {
 		}
 	}
 	
+	/**
+	 * 登录
+	 * @author 李小同
+	 * @date   2018-6-29 10:35:21
+	 */
 	public function login() {
 		
-		$loginInfo = $this->user->checkLoginInfo();
+		$loginInfo = $this->user->handleLogin();
+		
+		json_msg($loginInfo);
+	}
+	
+	public function changePassword() {
+		
+		$this->user->updatePassword();
 	}
 	
 }

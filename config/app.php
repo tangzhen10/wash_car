@@ -181,6 +181,7 @@ return [
 		
 		# 自定义服务
 		App\Providers\UserServiceProvider::class, # 用户 李小同 2018-6-28 14:26:45
+		App\Providers\ToolServiceProvider::class, # 工具 李小同 2018-6-29 16:39:52
 	
 	],
 	
@@ -233,6 +234,7 @@ return [
 		
 		# 自定义服务
 		'UserService'  => \App\Services\UserService::class, # 用户 李小同 2018-6-28 14:28:08
+		'ToolService'  => \App\Services\ToolService::class, # 工具 李小同 2018-6-29 16:39:59
 	
 	],
 

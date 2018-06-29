@@ -1,11 +1,11 @@
-<?php /**
+<?php
+/**
  * 全局函数
  * Created by PhpStorm.
  * Sign: Nothing is true, everything is permitted.
  * User: lxt
  * Date: 2018-01-03 0003 21:52
  */
-//use Illuminate\Support\Facades\Redis;
 
 /**
  * 获取http header
@@ -125,9 +125,18 @@ function easy_encrypt($string = '', $salt = '') {
 	return sha1(sha1($string).env('SALT_SECRET_KEY').$salt);
 }
 
-function redisSet($key, $data = '') {
+/**
+ * 设置缓存
+ * @param string $key
+ * @param mixed  $data
+ * @param string $database Redis所连数据库
+ * @author 李小同
+ * @date   2018-6-29 10:16:57
+ * @return bool
+ */
+function redisSet($key, $data, $database = 'default') {
 	
-	$res = \Redis::set($key, json_encode($data));
+	$res = \Redis::connection($database)->set($key, json_encode($data));
 	
 	# 设置缓存时间
 	$keyArr = explode('@', $key);
@@ -141,9 +150,17 @@ function redisSet($key, $data = '') {
 	return $res;
 }
 
-function redisGet($key) {
+/**
+ * 获取redis的键值
+ * @param string $key
+ * @param string $database Redis所连数据库
+ * @author 李小同
+ * @date   2018-6-29 10:17:13
+ * @return bool|mixed
+ */
+function redisGet($key, $database = 'default') {
 	
-	$res = \Redis::get($key);
+	$res = \Redis::connection($database)->get($key);
 	if ($res) {
 		return json_decode($res, 1);
 	} else {
