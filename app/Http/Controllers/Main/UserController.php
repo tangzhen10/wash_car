@@ -15,7 +15,7 @@ use App\Http\Controllers\Controller;
  * Class UserController
  * @package App\Http\Controllers\Main
  */
-class UserController extends Controller {
+class UserController extends BaseController {
 	
 	/**
 	 * 用户注册

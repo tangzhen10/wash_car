@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
  * Class ToolController
  * @package App\Http\Controllers\Main
  */
-class ToolController extends Controller {
+class ToolController extends BaseController {
 	
 	public function sendSMSCode() {
 		

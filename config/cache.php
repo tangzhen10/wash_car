@@ -87,9 +87,10 @@ return [
 	
 	'prefix' => env('CACHE_PREFIX', str_slug(env('APP_NAME', 'laravel'), '_').'_cache'),
 	
-	'DEFAULT_CACHE_EXPIRE'   => 1800, # 默认缓存时间
+	'DEFAULT_CACHE_EXPIRE' => 1800, # 默认缓存时间
 	
 	# redis key [86400 = 24h, 604800 = 1 week]
-	'USER_INFO' => env('APP_NAME').':user_info:%s@604800',
+	'USER_INFO'            => env('APP_NAME').':user_info:%s@604800', # 用户登录信息
+	'ADMIN_LOG_INFO'       => env('APP_NAME').':manager_info:%s@86400', # 管理员登录信息
 
 ];

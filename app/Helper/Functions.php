@@ -145,7 +145,7 @@ function redisSet($key, $data, $database = 'default') {
 	} else {
 		$expire = intval($keyArr[1]);
 	}
-	if ($expire != -1) \Redis::expire($key, $expire);
+	if ($expire != -1) \Redis::connection($database)->expire($key, $expire);
 	
 	return $res;
 }
@@ -167,3 +167,22 @@ function redisGet($key, $database = 'default') {
 		return false;
 	}
 }
+
+/**
+ * 获取redis的键值
+ * @param string $key
+ * @param string $database Redis所连数据库
+ * @author 李小同
+ * @date   2018-6-29 10:17:13
+ * @return bool|mixed
+ */
+function redisDel($key, $database = 'default') {
+	
+	$res = \Redis::connection($database)->get($key);
+	if ($res) {
+		return \Redis::connection($database)->del($key);
+	} else {
+		return true;
+	}
+}
+
