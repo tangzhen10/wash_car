@@ -46,10 +46,11 @@ class ManagerController extends BaseController {
 	 */
 	public function login() {
 		
-		$post = \Request::all();
+		$name     = \Request::input('name');
+		$password = \Request::input('password');
 		
-		if (!empty($post['name']) && !empty($post['password'])) {
-			$managerId = $this->service->checkPwd($post);
+		if (!empty($name) && !empty($password)) {
+			$managerId = $this->service->checkPwd($name, $password);
 			if ($managerId > 0) {
 				$managerInfo = $this->service->saveLoginInfo($managerId);
 				if ($managerInfo) {

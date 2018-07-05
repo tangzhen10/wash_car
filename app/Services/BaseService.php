@@ -38,7 +38,7 @@ class BaseService {
 	 */
 	public function create() {
 		
-		$data = \Request::all();
+		$data = request_all();
 		if (method_exists(static::class, 'handleFormData')) static::handleFormData($data);
 		unset($data['id']);
 		
@@ -55,7 +55,7 @@ class BaseService {
 	 */
 	public function update() {
 		
-		$data = \Request::all();
+		$data = request_all();
 		
 		if (method_exists(static::class, 'handleFormData')) static::handleFormData($data);
 		

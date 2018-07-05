@@ -46,19 +46,21 @@ class ManagerService extends BaseService {
 	
 	/**
 	 * 验证密码
-	 * @param array $post
+	 * @param string $name
+	 * @param string $password
 	 * @author 李小同
 	 * @date   2018-1-12 00:04:34
 	 * @return string|int 验证出错返回错误提示json，验证成功返回账户id
 	 */
-	public function checkPwd(array $post) {
+	public function checkPwd($name, $password) {
 		
-		$manager = $this->getManagerInfoByManagerName($post['name']);
+		$manager = $this->getManagerInfoByManagerName($name);
+		
 		if ($manager) {
 			
 			if ($manager['status'] == 0) json_msg('该账户已被禁用', 50001);
 			
-			if (easy_encrypt($post['password'], $manager['salt']) == $manager['password']) {
+			if (easy_encrypt($password, $manager['salt']) == $manager['password']) {
 				return $manager['id'];
 			} else {
 				json_msg('密码不正确', 50001);
@@ -299,19 +301,8 @@ class ManagerService extends BaseService {
 	 */
 	public function create() {
 		
-		$data = \Request::all();
-		$this->handleFormData($data);
+		return $this->_saveManagerRole();
 		
-		$roles = $data['roles'];
-		unset($data['id'], $data['roles']);
-		
-		\DB::beginTransaction();
-		
-		$id = \DB::table($this->table)->insertGetId($data);
-		
-		$this->_saveManagerRole($id, $roles);
-		
-		return $id;
 	}
 	
 	/**
@@ -322,7 +313,18 @@ class ManagerService extends BaseService {
 	 */
 	public function update() {
 		
-		$data = \Request::all();
+		return $this->_saveManagerRole();
+	}
+	
+	/**
+	 * 保存管理员的角色信息
+	 * @author 李小同
+	 * @date   2018-7-5 15:19:13
+	 * @return bool
+	 */
+	private function _saveManagerRole() {
+		
+		$data = request_all();
 		
 		$this->handleFormData($data);
 		
@@ -331,24 +333,18 @@ class ManagerService extends BaseService {
 		
 		\DB::beginTransaction();
 		
-		\DB::table($this->table)->where('id', $data['id'])->update($data);
-		
-		$this->_saveManagerRole($data['id'], $roles);
-		
-		return $data['id'];
-	}
-	
-	/**
-	 * 保存管理员的角色信息
-	 * @param int   $managerId
-	 * @param array $roles
-	 * @author 李小同
-	 * @date   2018-7-5 15:19:13
-	 * @return bool
-	 */
-	private function _saveManagerRole($managerId, array $roles = []) {
-		
 		try {
+			
+			if ($data['id'] == 0) {
+				
+				unset($data['id']);
+				$managerId = \DB::table($this->table)->insertGetId($data);
+				
+			} else {
+				
+				\DB::table($this->table)->where('id', $data['id'])->update($data);
+				$managerId = $data['id'];
+			}
 			
 			\DB::table('manager_role')->where('manager_id', $managerId)->delete();
 			
@@ -360,13 +356,13 @@ class ManagerService extends BaseService {
 			}
 			\DB::commit();
 			
-			return true;
+			return $managerId;
 			
 		} catch (\Exception $e) {
+			\DB::rollback();
+			return false;
 		}
 		
-		\DB::rollback();
-		return false;
 	}
 	
 }

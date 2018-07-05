@@ -113,6 +113,20 @@ function getClientIp($int = false) {
 }
 
 /**
+ * 获取\Request::all()，过滤掉其中的s字段，在linux环境下，会有此字段
+ * @author 李小同
+ * @date   2018-7-5 18:19:38
+ * @return mixed
+ */
+function request_all() {
+	
+	$data = \Request::all();
+	if (isset($data['s'])) unset($data['s']);
+	
+	return $data;
+}
+
+/**
  * 简单加密，单向加密，用于生成用户密码
  * @param string $string 明文
  * @param string $salt   盐
