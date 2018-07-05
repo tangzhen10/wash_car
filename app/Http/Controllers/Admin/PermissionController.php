@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 class PermissionController extends BaseController {
 	
-	const TABLE = 'permission';
+	const MODULE = 'permission';
 	
 	/**
 	 * 权限列表

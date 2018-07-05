@@ -18,7 +18,7 @@ class BaseController extends Controller {
 	
 	public function __construct() {
 		
-		$serviceName           = 'App\Services\\'.ucfirst(static::TABLE).'Service';
+		$serviceName           = 'App\Services\\'.ucfirst(static::MODULE).'Service';
 		$this->service         = new $serviceName();
 		$this->data['manager'] = \ManagerService::getManagerInfoByManagerId();
 		$this->data['menu']    = \PermissionService::getMenuList();
@@ -38,7 +38,7 @@ class BaseController extends Controller {
 			$this->data['detail'] = $this->service->getDetailByid($id);
 			if (method_exists(static::class, 'assocDataForForm')) $this->data += static::assocDataForForm($this->data);
 			
-			return view('admin/'.static::TABLE.'/form', $this->data);
+			return view('admin/'.static::MODULE.'/form', $this->data);
 			
 		} else {
 			
@@ -61,7 +61,7 @@ class BaseController extends Controller {
 		
 		$id     = \Request::input('id');
 		$status = \Request::input('status');
-		$res    = $this->service->changeStatus($id, $status, static::TABLE);
+		$res    = $this->service->changeStatus($id, $status, static::MODULE);
 		$res ? json_msg('ok') : json_msg(trans('common.action_failed'), 40004);
 	}
 	

@@ -15,7 +15,7 @@ namespace App\Services;
  */
 class PermissionService extends BaseService {
 	
-	public $table = 'permission';
+	public $module = 'permission';
 	
 	/**
 	 * 初始化的数据，用于填充新增数据表单默认值
@@ -49,7 +49,7 @@ class PermissionService extends BaseService {
 		if ($data['pid'] > 0) {
 			if (empty($data['route'])) json_msg(trans('validation.required', ['attr' => trans('common.route')]), 40001);
 			
-			$pLevel        = \DB::table($this->table)->where('id', $data['pid'])->pluck('level')->toArray();
+			$pLevel        = \DB::table($this->module)->where('id', $data['pid'])->pluck('level')->toArray();
 			$data['level'] = $pLevel[0] + 1;
 		} else {
 			$data['level'] = 1;
@@ -65,7 +65,7 @@ class PermissionService extends BaseService {
 	 */
 	public function getTreeList($status = null) {
 		
-		$list = \DB::table($this->table);
+		$list = \DB::table($this->module);
 		if ($status === null) {
 			$list = $list->where('status', '!=', '-1');
 		} elseif (is_numeric($status)) {
@@ -150,7 +150,7 @@ class PermissionService extends BaseService {
 	 */
 	public function getEnableList($pid = 0) {
 		
-		$list     = \DB::table($this->table)
+		$list     = \DB::table($this->module)
 		               ->where('status', '1')
 		               ->where('show', '1')
 		               ->where('level', '<=', '2')
@@ -190,7 +190,7 @@ class PermissionService extends BaseService {
 		$currentURL   = \Request::getRequestUri();
 		$currentRoute = substr($currentURL, strlen('/admin/'));
 		$currentRoute = preg_replace('/\/\d+/', '', $currentRoute);
-		$selectId     = \DB::table($this->table)
+		$selectId     = \DB::table($this->module)
 		                   ->where('route', $currentRoute)
 		                   ->whereIn('status', ['1', '0'])
 		                   ->pluck('id')

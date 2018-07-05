@@ -50,4 +50,13 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'adminCheckLogin'], functi
 		
 	});
 	
+	# 用户（会员）
+	Route::group(['prefix' => 'member'], function () {
+		
+		# 会员列表
+		Route::get('list', ['uses' => 'MemberController@memberList', 'as' => 'memberList']);
+		# 修改状态
+		Route::post('changeStatus', ['uses' => 'MemberController@changeStatus', 'as' => 'memberChangeStatus']);
+		
+	});
 });

@@ -15,7 +15,7 @@ namespace App\Services;
  */
 class RoleService extends BaseService {
 	
-	public $table = 'role';
+	public $module = 'role';
 	
 	/**
 	 * 初始化的数据，用于填充新增数据表单默认值
@@ -84,7 +84,7 @@ class RoleService extends BaseService {
 	 */
 	public function getList($status = null) {
 		
-		$list = \DB::table($this->table);
+		$list = \DB::table($this->module);
 		
 		if ($status === null) {
 			$list = $list->where('status', '!=', '-1');
@@ -120,11 +120,11 @@ class RoleService extends BaseService {
 			if ($data['id'] == 0) {
 				
 				unset($data['id']);
-				$roleId = \DB::table($this->table)->insertGetId($data);
+				$roleId = \DB::table($this->module)->insertGetId($data);
 				
 			} else {
 				
-				\DB::table($this->table)->where('id', $data['id'])->update($data);
+				\DB::table($this->module)->where('id', $data['id'])->update($data);
 				$roleId = $data['id'];
 			}
 			

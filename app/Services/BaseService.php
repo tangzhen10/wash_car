@@ -22,7 +22,7 @@ class BaseService {
 	public function getDetailById($id) {
 		
 		if ($id) {
-			$detail = \DB::table($this->table)->where('id', $id)->first();
+			$detail = \DB::table($this->module)->where('id', $id)->first();
 		} else {
 			$detail = static::initDetail();
 		}
@@ -42,7 +42,7 @@ class BaseService {
 		if (method_exists(static::class, 'handleFormData')) static::handleFormData($data);
 		unset($data['id']);
 		
-		$id = \DB::table($this->table)->insertGetId($data);
+		$id = \DB::table($this->module)->insertGetId($data);
 		
 		return $id;
 	}
@@ -59,7 +59,7 @@ class BaseService {
 		
 		if (method_exists(static::class, 'handleFormData')) static::handleFormData($data);
 		
-		\DB::table($this->table)->where('id', $data['id'])->update($data);
+		\DB::table($this->module)->where('id', $data['id'])->update($data);
 		
 		return $data['id'];
 	}
@@ -76,7 +76,7 @@ class BaseService {
 	 */
 	public function changeStatus($id, $status, $table) {
 		
-		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status);
+		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status, $table);
 		
 		$source = \DB::table($table)->where('id', $id)->count();
 		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {

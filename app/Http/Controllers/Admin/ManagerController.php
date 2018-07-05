@@ -9,7 +9,7 @@ namespace App\Http\Controllers\Admin;
  */
 class ManagerController extends BaseController {
 	
-	const TABLE = 'manager';
+	const MODULE = 'manager';
 	
 	/**
 	 * 后台首页

@@ -9,7 +9,7 @@ namespace App\Http\Controllers\Admin;
  */
 class RoleController extends BaseController {
 	
-	const TABLE = 'role';
+	const MODULE = 'role';
 	
 	/**
 	 * 角色列表
