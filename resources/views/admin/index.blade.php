@@ -10,7 +10,7 @@
 		</nav>
 		<div class="Hui-article">
 			<article class="cl pd-20">
-				<p class="f-20 text-success">欢迎您，{{$manager['manager_name']}}！</p>
+				<p class="f-20 text-success">欢迎您，{{$manager['name']}}！</p>
 				
 				<table class="table table-border table-bordered table-bg">
 					<thead>

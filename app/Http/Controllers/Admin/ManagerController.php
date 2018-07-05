@@ -9,6 +9,8 @@ namespace App\Http\Controllers\Admin;
  */
 class ManagerController extends BaseController {
 	
+	const TABLE = 'manager';
+	
 	/**
 	 * 后台首页
 	 * @author 李小同
@@ -17,11 +19,10 @@ class ManagerController extends BaseController {
 	 */
 	public function index() {
 		
-		$manager = $this->manager->getManagerInfoByManagerId();
-		$server  = $_SERVER;
-		$data    = compact('manager', 'server');
+		$server = $_SERVER;
+		$this->data += compact('manager', 'server');
 		
-		return view('admin/index', $data);
+		return view('admin/index', $this->data);
 	}
 	
 	/**
@@ -37,7 +38,7 @@ class ManagerController extends BaseController {
 		
 		$post = \Request::all();
 		
-		if (!empty($post['manager_name']) && !empty($post['password'])) {
+		if (!empty($post['name']) && !empty($post['password'])) {
 			$managerId = $this->manager->checkPwd($post);
 			if ($managerId > 0) {
 				$managerInfo = $this->manager->saveLoginInfo($managerId);
@@ -67,5 +68,20 @@ class ManagerController extends BaseController {
 		$this->manager->deleteLoginInfo();
 		
 		return redirect()->route('managerLogin');
+	}
+	
+	/**
+	 * 管理员列表
+	 * @author 李小同
+	 * @date   2018-7-3 15:33:45
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function managerList() {
+		
+		$managers = $this->manager->getManagerList();
+		
+		$this->data += compact('managers');
+		
+		return view('admin/manager/list', $this->data);
 	}
 }

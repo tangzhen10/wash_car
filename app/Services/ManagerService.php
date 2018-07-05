@@ -33,11 +33,11 @@ class ManagerService {
 	 */
 	public function checkPwd(array $post) {
 		
-		$manager = $this->getManagerInfoByManagerName($post['manager_name']);
+		$manager = $this->getManagerInfoByManagerName($post['name']);
 		if ($manager) {
 			if ($manager['status'] == 0) json_msg('该账户已被禁用', 40002);
 			if (sha1(md5($post['password']).$manager['salt']) == $manager['password']) {
-				return $manager['manager_id'];
+				return $manager['id'];
 			} else {
 				json_msg('密码不正确', 40002);
 			}
@@ -55,8 +55,8 @@ class ManagerService {
 	 */
 	public function getManagerInfoByManagerName($managerName) {
 		
-		$fields  = ['manager_id', 'manager_name', 'password', 'salt', 'status'];
-		$manager = \DB::table('manager')->where('manager_name', $managerName)->first($fields);
+		$fields  = ['id', 'name', 'password', 'salt', 'status'];
+		$manager = \DB::table('manager')->where('name', $managerName)->first($fields);
 		
 		return $manager;
 	}
@@ -93,8 +93,8 @@ class ManagerService {
 		
 		if ($managerId == 0) $managerId = $this->managerId;
 		
-		$fields  = ['manager_id', 'manager_name', 'status', 'last_login_ip', 'last_login_time'];
-		$manager = \DB::table('manager')->where('manager_id', $managerId)->first($fields);
+		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_time'];
+		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
 		
 		return $manager;
 	}
@@ -108,7 +108,7 @@ class ManagerService {
 	 */
 	public function updateLoginInfo($managerId) {
 		
-		$where      = ['manager_id' => $managerId];
+		$where      = ['id' => $managerId];
 		$updateData = [
 			'last_login_time' => date('Y-m-d H:i:s'),
 			'last_login_ip'   => getClientIp(),
@@ -127,10 +127,10 @@ class ManagerService {
 		
 		$post = \Request::all();
 		
-		$data['manager_name'] = $post['manager_name'];
-		$data['salt']         = create_salt();
-		$data['password']     = sha1(md5($post['password']).$data['salt']);
-		$data['date_add']     = date('Y-m-d H:i:s');
+		$data['name']     = $post['name'];
+		$data['salt']     = create_salt();
+		$data['password'] = sha1(md5($post['password']).$data['salt']);
+		$data['date_add'] = date('Y-m-d H:i:s');
 		
 		$managerId = \DB::table('manager')->insertGetId($data);
 		
@@ -141,7 +141,7 @@ class ManagerService {
 	 * 检测登录
 	 * @author 李小同
 	 * @date   2018-1-14 15:42:07
-	 * @return int 登录返回manager_id,未登录返回0
+	 * @return int 登录返回id,未登录返回0
 	 */
 	public function checkLogin() {
 		
@@ -152,7 +152,12 @@ class ManagerService {
 			$logId       = $_COOKIE[$adminLogKey];
 			$cacheKey    = sprintf(config('cache.ADMIN_LOG_INFO'), $logId);
 			$managerInfo = redisGet($cacheKey, 'admin');
-			if (!empty($managerInfo['manager_id'])) return $managerInfo['manager_id'];
+			if (!empty($managerInfo['id'])) {
+				
+				redisSet($cacheKey, $managerInfo, 'admin'); # 续签
+				
+				return $managerInfo['id'];
+			}
 		}
 		
 		return 0;
@@ -194,4 +199,44 @@ class ManagerService {
 		
 		return $res;
 	}
+	
+	/**
+	 * 获取管理员列表
+	 * @author 李小同
+	 * @date   2018-7-3 15:26:26
+	 * @return array
+	 */
+	public function getManagerList() {
+		
+		$fields = ['id', 'name', 'date_add', 'last_login_time', 'last_login_ip', 'status'];
+		$rows   = \DB::table('manager')->where('status', '!=', '-1')->get($fields)->toArray();
+		foreach ($rows as &$row) {
+			$row['status_text'] = $row['status'] == '1' ? trans('common.enable') : trans('common.disable');
+		}
+		unset($row);
+		
+		return $rows;
+	}
+	
+	/**
+	 * 修改状态
+	 * 启用、停用、删除
+	 * @param $id     int
+	 * @param $status int 新状态 1启用 0停用 -1删除
+	 * @param $table  string 表名
+	 * @author 李小同
+	 * @date   2018-7-4 09:14:47
+	 * @return bool
+	 */
+	public function changeStatus($id, $status, $table) {
+		
+		$source = \DB::table($table)->where('id', $id)->count();
+		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {
+			\DB::table($table)->where('id', $id)->update(['status' => $status]);
+			return true;
+		} else {
+			json_msg(trans('error.error_illegal_param'), 40003);
+		}
+	}
+	
 }
