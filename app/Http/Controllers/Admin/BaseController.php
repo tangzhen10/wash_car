@@ -18,7 +18,7 @@ class BaseController extends Controller {
 	
 	public function __construct() {
 		
-		$serviceName           = 'App\Services\\'.static::TABLE.'Service';
+		$serviceName           = 'App\Services\\'.ucfirst(static::TABLE).'Service';
 		$this->service         = new $serviceName();
 		$this->data['manager'] = \ManagerService::getManagerInfoByManagerId();
 		$this->data['menu']    = \PermissionService::getMenuList();
