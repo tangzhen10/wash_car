@@ -7,6 +7,7 @@ return [
 	'phone'          => '手机号码',
 	'email'          => '邮箱',
 	'username'       => '用户名',
+	'manager_name'   => '管理员名称',
 	'status'         => '状态',
 	'route'          => '路由',
 	'create_at'      => '创建时间',

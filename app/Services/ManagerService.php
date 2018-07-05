@@ -14,14 +14,34 @@ namespace App\Services;
  * Class ManagerService
  * @package App\Services
  */
-class ManagerService {
+class ManagerService extends BaseService {
 	
 	public $managerId = 0;
+	public $table = 'manager';
 	
 	public function __construct() {
 		
 		$this->managerId = $this->checkLogin();
 		
+	}
+	
+	/**
+	 * 初始化的数据，用于填充新增数据表单默认值
+	 * @author 李小同
+	 * @date   2018-7-5 11:17:55
+	 * @return array
+	 */
+	public function initDetail() {
+		
+		$detail = [
+			'id'       => '0',
+			'name'     => '',
+			'password' => '',
+			'role'     => [],
+			'status'   => '1',
+		];
+		
+		return $detail;
 	}
 	
 	/**
@@ -35,14 +55,16 @@ class ManagerService {
 		
 		$manager = $this->getManagerInfoByManagerName($post['name']);
 		if ($manager) {
-			if ($manager['status'] == 0) json_msg('该账户已被禁用', 40002);
-			if (sha1(md5($post['password']).$manager['salt']) == $manager['password']) {
+			
+			if ($manager['status'] == 0) json_msg('该账户已被禁用', 50001);
+			
+			if (easy_encrypt($post['password'], $manager['salt']) == $manager['password']) {
 				return $manager['id'];
 			} else {
-				json_msg('密码不正确', 40002);
+				json_msg('密码不正确', 50001);
 			}
 		} else {
-			json_msg('不存在的账户', 40002);
+			json_msg('不存在的账户', 50001);
 		}
 	}
 	
@@ -93,7 +115,7 @@ class ManagerService {
 		
 		if ($managerId == 0) $managerId = $this->managerId;
 		
-		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_time'];
+		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_at'];
 		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
 		
 		return $manager;
@@ -110,31 +132,44 @@ class ManagerService {
 		
 		$where      = ['id' => $managerId];
 		$updateData = [
-			'last_login_time' => date('Y-m-d H:i:s'),
-			'last_login_ip'   => getClientIp(),
+			'last_login_at' => date('Y-m-d H:i:s'),
+			'last_login_ip' => getClientIp(),
 		];
 		$res        = \DB::table('manager')->where($where)->update($updateData);
 		return $res;
 	}
 	
 	/**
-	 * 创建后台账户
+	 * 预处理请求数据
+	 * @param array $data
 	 * @author 李小同
-	 * @date   2018-1-12 21:20:29
-	 * @return mixed 创建的账户ID
+	 * @date   2018-7-5 11:45:34
 	 */
-	public function creteManager() {
+	public function handleFormData(array &$data) {
 		
-		$post = \Request::all();
-		
-		$data['name']     = $post['name'];
-		$data['salt']     = create_salt();
-		$data['password'] = sha1(md5($post['password']).$data['salt']);
-		$data['date_add'] = date('Y-m-d H:i:s');
-		
-		$managerId = \DB::table('manager')->insertGetId($data);
-		
-		return $managerId;
+		$detail = \DB::table($this->table)->where('name', $data['name'])->first();
+		if ($data['id']) { # 更新
+			
+			if (($data['password'] || $data['password_repeat']) && $data['password'] != $data['password_repeat']) {
+				json_msg(trans('error.different_twice_pwd'), 50001);
+			}
+			
+			# 无密码则密码不更新
+			if (is_null($data['password'])) {
+				$data['password'] = $detail['password'];
+			} else {
+				$data['password'] = easy_encrypt($data['password'], $detail['salt']);
+			}
+		} else { # 新增
+			# 检查重名
+			$error = trans('validation.has_been_registered', ['attr' => trans('common.manager_name')]);
+			if (isset($detail['name'])) json_msg($error, 40002);
+			
+			$data['salt']      = create_salt();
+			$data['password']  = easy_encrypt($data['password'], $data['salt']);
+			$data['create_at'] = date('Y-m-d H:i:s');
+		}
+		unset($data['password_repeat']);
 	}
 	
 	/**
@@ -206,10 +241,17 @@ class ManagerService {
 	 * @date   2018-7-3 15:26:26
 	 * @return array
 	 */
-	public function getManagerList() {
+	public function getList() {
 		
-		$fields = ['id', 'name', 'date_add', 'last_login_time', 'last_login_ip', 'status'];
-		$rows   = \DB::table('manager')->where('status', '!=', '-1')->get($fields)->toArray();
+		$fields   = ['a.id', 'a.name', 'a.create_at', 'a.last_login_at', 'a.last_login_ip', 'a.status'];
+		$fields[] = \DB::raw('GROUP_CONCAT(t_c.name) AS role');
+		$rows     = \DB::table('manager AS a')
+		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')
+		               ->leftJoin('role AS c', 'c.id', '=', 'b.role_id')
+		               ->where('a.status', '!=', '-1')
+		               ->groupBy('a.id')
+		               ->get($fields)
+		               ->toArray();
 		foreach ($rows as &$row) {
 			$row['status_text'] = $row['status'] == '1' ? trans('common.enable') : trans('common.disable');
 		}
@@ -219,24 +261,112 @@ class ManagerService {
 	}
 	
 	/**
-	 * 修改状态
-	 * 启用、停用、删除
+	 * 检查是否允许修改状态
 	 * @param $id     int
 	 * @param $status int 新状态 1启用 0停用 -1删除
-	 * @param $table  string 表名
 	 * @author 李小同
-	 * @date   2018-7-4 09:14:47
+	 * @date   2018-7-5 14:45:13
 	 * @return bool
 	 */
-	public function changeStatus($id, $status, $table) {
+	public function checkChangeStatus($id, $status) {
 		
-		$source = \DB::table($table)->where('id', $id)->count();
-		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {
-			\DB::table($table)->where('id', $id)->update(['status' => $status]);
-			return true;
-		} else {
-			json_msg(trans('error.error_illegal_param'), 40003);
+		# 不能删除自己
+		if ($status == '-1' && $id == $this->managerId) {
+			json_msg(trans('error.can_not_delete_self'), 40003);
 		}
+	}
+	
+	/**
+	 * 获取管理员的角色
+	 * @param int $managerId
+	 * @author 李小同
+	 * @date   2018-7-5 15:28:55
+	 * @return mixed
+	 */
+	public function getRolesByManagerId($managerId = 0) {
+		
+		if (empty($managerId)) $managerId = $this->managerId;
+		$managerRoles = \DB::table('manager_role')->where('manager_id', $managerId)->pluck('role_id')->toArray();
+		
+		return $managerRoles;
+	}
+	
+	/**
+	 * 创建
+	 * @author 李小同
+	 * @date   2018-7-4 13:59:36
+	 * @return mixed
+	 */
+	public function create() {
+		
+		$data = \Request::all();
+		$this->handleFormData($data);
+		
+		$roles = $data['roles'];
+		unset($data['id'], $data['roles']);
+		
+		\DB::beginTransaction();
+		
+		$id = \DB::table($this->table)->insertGetId($data);
+		
+		$this->_saveManagerRole($id, $roles);
+		
+		return $id;
+	}
+	
+	/**
+	 * 修改
+	 * @author 李小同
+	 * @date   2018-7-4 13:59:36
+	 * @return mixed
+	 */
+	public function update() {
+		
+		$data = \Request::all();
+		
+		$this->handleFormData($data);
+		
+		$roles = $data['roles'];
+		unset($data['roles']);
+		
+		\DB::beginTransaction();
+		
+		\DB::table($this->table)->where('id', $data['id'])->update($data);
+		
+		$this->_saveManagerRole($data['id'], $roles);
+		
+		return $data['id'];
+	}
+	
+	/**
+	 * 保存管理员的角色信息
+	 * @param int   $managerId
+	 * @param array $roles
+	 * @author 李小同
+	 * @date   2018-7-5 15:19:13
+	 * @return bool
+	 */
+	private function _saveManagerRole($managerId, array $roles = []) {
+		
+		try {
+			
+			\DB::table('manager_role')->where('manager_id', $managerId)->delete();
+			
+			$sql = 'INSERT INTO `t_manager_role` (manager_id, role_id) VALUES ';
+			if (count($roles)) {
+				foreach ($roles as $roleId) $sql .= sprintf('(%s, %s),', $managerId, $roleId);
+				$sql = substr($sql, 0, -1);
+				\DB::insert($sql);
+			}
+			\DB::commit();
+			
+			return true;
+			
+		} catch (\Exception $e) {
+		}
+		
+		\DB::rollback();
+		return false;
 	}
 	
 }

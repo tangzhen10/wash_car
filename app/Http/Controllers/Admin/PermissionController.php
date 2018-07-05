@@ -14,37 +14,23 @@ class PermissionController extends BaseController {
 	 */
 	public function permissionList() {
 		
-		$this->data['permissions'] = \PermissionService::getList();
+		$this->data['permissions'] = $this->service->getList();
 		
 		return view('admin/permission/list', $this->data);
 	}
 	
 	/**
-	 * 增修权限
-	 * @param $id int
+	 * 增改表单所需相关数据
+	 * @param $data
 	 * @author 李小同
-	 * @date   2018-7-4 16:50:50
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @date   2018-7-5 14:56:35
+	 * @return array
 	 */
-	public function form($id = 0) {
+	public function assocDataForForm($data = null) {
 		
-		if (\Request::getMethod() == 'GET') {
-			
-			$this->data['detail']      = \PermissionService::getDetailById($id);
-			$this->data['permissions'] = \PermissionService::getEnableList($this->data['detail']['pid']);
-			
-			return view('admin/permission/form', $this->data);
-			
-		} else {
-			
-			$id = \Request::input('id');
-			if ($id) {
-				$res = \PermissionService::update();
-			} else {
-				$res = \PermissionService::create();
-			}
-			$this->render($res);
-		}
+		$permissions = $this->service->getEnableList($data['detail']['pid']);
+		
+		return compact('permissions');
 	}
 	
 }

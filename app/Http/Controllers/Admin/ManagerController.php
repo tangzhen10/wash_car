@@ -26,6 +26,19 @@ class ManagerController extends BaseController {
 	}
 	
 	/**
+	 * 管理员列表
+	 * @author 李小同
+	 * @date   2018-7-3 15:33:45
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function managerList() {
+		
+		$this->data['managers'] = $this->service->getList();
+		
+		return view('admin/manager/list', $this->data);
+	}
+	
+	/**
 	 * 登录
 	 * @author 李小同
 	 * @date
@@ -33,15 +46,12 @@ class ManagerController extends BaseController {
 	 */
 	public function login() {
 		
-		# 注册用户
-//		$this->manager->creteManager();die;
-		
 		$post = \Request::all();
 		
 		if (!empty($post['name']) && !empty($post['password'])) {
-			$managerId = $this->manager->checkPwd($post);
+			$managerId = $this->service->checkPwd($post);
 			if ($managerId > 0) {
-				$managerInfo = $this->manager->saveLoginInfo($managerId);
+				$managerInfo = $this->service->saveLoginInfo($managerId);
 				if ($managerInfo) {
 					json_msg('ok');
 				} else {
@@ -50,7 +60,7 @@ class ManagerController extends BaseController {
 			}
 		} else {
 			# 登录状态下不允许进入登录页面
-			$managerId = $this->manager->getManagerId();
+			$managerId = $this->service->getManagerId();
 			if ($managerId > 0) return redirect()->route('adminIndex');
 		}
 		
@@ -65,23 +75,32 @@ class ManagerController extends BaseController {
 	 */
 	public function logout() {
 		
-		$this->manager->deleteLoginInfo();
+		$this->service->deleteLoginInfo();
 		
 		return redirect()->route('managerLogin');
 	}
 	
 	/**
-	 * 管理员列表
+	 * 增改表单所需相关数据
+	 * @param $data
 	 * @author 李小同
-	 * @date   2018-7-3 15:33:45
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 * @date   2018-7-5 14:55:15
+	 * @return array
 	 */
-	public function managerList() {
+	public function assocDataForForm($data = null) {
 		
-		$managers = $this->manager->getManagerList();
+		# 获取管理员拥有的角色
+		$managerRoles = $this->service->getRolesByManagerId();
 		
-		$this->data += compact('managers');
+		# 所有启用的角色列表
+		$roles = \RoleService::getList('1');
 		
-		return view('admin/manager/list', $this->data);
+		# 给管理员拥有的角色加上选中效果
+		foreach ($roles as &$role) {
+			$role['checked'] = in_array($role['id'], $managerRoles) ? 'checked' : '';
+		}
+		unset($role);
+		
+		return compact('roles', 'managerRoles');
 	}
 }

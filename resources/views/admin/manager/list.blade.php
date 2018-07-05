@@ -1,7 +1,5 @@
 @extends('admin.public')
 @section('body')
-	
-	
 	<section class="Hui-article-box">
 		<nav class="breadcrumb">
 			<i class="Hui-iconfont">&#xe67f;</i> 首页
@@ -22,7 +20,12 @@
 					</button>
 				</div>
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
-					<span class="l"> <a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="admin_add('添加管理员','admin-add.html','800','500')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a> </span>
+					<span class="l">
+						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+						<a href="javascript:;" onclick="admin_add('添加管理员','{{route('managerForm')}}','800','500')" class="btn btn-primary radius">
+							<i class="Hui-iconfont">&#xe600;</i> 添加管理员
+						</a>
+					</span>
 					<span class="r">共有数据：<strong>54</strong> 条</span>
 				</div>
 				<table class="table table-border table-bordered table-bg">
@@ -33,11 +36,11 @@
 					<tr class="text-c">
 						<th width="25"><input type="checkbox" name="" value=""></th>
 						<th width="40">ID</th>
-						<th width="150">登录名</th>
-						<th width="90">手机</th>
-						<th width="150">邮箱</th>
+						<th>登录名</th>
 						<th>角色</th>
-						<th width="130">{{trans('common.create_at')}}</th>
+						<th>{{trans('common.create_at')}}</th>
+						<th>上次登录时间</th>
+						<th>上次登录ip</th>
 						<th width="100">{{trans('common.status')}}</th>
 						<th width="100">{{trans('common.action')}}</th>
 					</tr>
@@ -48,10 +51,10 @@
 							<td><input type="checkbox" value="{{$row['id']}}" name=""></td>
 							<td>{{$row['id']}}</td>
 							<td>{{$row['name']}}</td>
-							<td>13000000000</td>
-							<td>admin@mail.com</td>
-							<td>超级管理员</td>
-							<td>{{$row['date_add']}}</td>
+							<td>{{$row['role']}}</td>
+							<td>{{$row['create_at']}}</td>
+							<td>{{$row['last_login_at']}}</td>
+							<td>{{$row['last_login_ip']}}</td>
 							<td class="td-status">
 								<span class="label label-{{$row['status'] ? 'success' : 'danger'}} radius">{{$row['status_text']}}</span>
 							</td>
@@ -69,7 +72,7 @@
 									</a>
 								@endif
 								
-								<a title="{{trans('common.edit')}}" onclick="admin_edit(this,'admin-add.html','{{$row['id']}}','800','500')"
+								<a title="{{trans('common.edit')}}" onclick="admin_edit(this,'{{route('managerForm').'/'.$row['id']}}','800','500')"
 								   href="javascript:;" class="ml-5" style="text-decoration:none">
 									<i class="Hui-iconfont">&#xe6df;</i>
 								</a>
@@ -130,7 +133,7 @@
 			});
 		}
 		/*管理员-编辑*/
-		function admin_edit(obj, url, id, w, h) {
+		function admin_edit(obj, url, w, h) {
 			var title = $(obj).attr('title');
 			layer_show(title, url, w, h);
 		}

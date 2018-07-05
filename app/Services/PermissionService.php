@@ -13,66 +13,69 @@ namespace App\Services;
  * Class PermissionService
  * @package App\Services
  */
-class PermissionService {
+class PermissionService extends BaseService {
+	
+	public $table = 'permission';
 	
 	/**
-	 * 创建权限
+	 * 初始化的数据，用于填充新增数据表单默认值
 	 * @author 李小同
-	 * @date   2018-7-4 13:59:36
-	 * @return mixed
+	 * @date   2018-7-5 09:53:55
+	 * @return array
 	 */
-	public function create() {
+	public function initDetail() {
 		
-		$data = \Request::all();
+		$detail = [
+			'id'     => 0,
+			'name'   => '',
+			'route'  => '',
+			'pid'    => 0,
+			'sort'   => 1,
+			'status' => '1',
+			'show'   => '1',
+		];
+		
+		return $detail;
+	}
+	
+	/**
+	 * 预处理请求数据
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-7-5 10:01:08
+	 */
+	public function handleFormData(array &$data) {
+		
 		if ($data['pid'] > 0) {
 			if (empty($data['route'])) json_msg(trans('validation.required', ['attr' => trans('common.route')]), 40001);
 			
-			$pLevel        = \DB::table('permission')->where('id', $data['pid'])->pluck('level');
+			$pLevel        = \DB::table($this->table)->where('id', $data['pid'])->pluck('level')->toArray();
 			$data['level'] = $pLevel[0] + 1;
 		} else {
 			$data['level'] = 1;
 		}
-		$permissionId = \DB::table('permission')->insertGetId($data);
-		
-		return $permissionId;
 	}
 	
 	/**
-	 * 修改权限
-	 * @author 李小同
-	 * @date   2018-7-4 13:59:36
-	 * @return mixed
-	 */
-	public function update() {
-		
-		$data = \Request::all();
-		if ($data['pid'] > 0) {
-			if (empty($data['route'])) json_msg(trans('validation.required', ['attr' => trans('common.route')]), 40001);
-			
-			$pLevel        = \DB::table('permission')->where('id', $data['pid'])->pluck('level');
-			$data['level'] = $pLevel[0] + 1;
-		} else {
-			$data['level'] = 1;
-		}
-		\DB::table('permission')->where('id', $data['id'])->update($data);
-		
-		return $data['id'];
-	}
-	
-	/**
-	 * 获取权限列表，level <= 3
+	 * 获取权限树状列表，level <= 3
+	 * @param $status null|string 状态
 	 * @author 李小同
 	 * @date   2018-7-4 14:02:21
 	 * @return array
 	 */
-	public function getList() {
+	public function getTreeList($status = null) {
 		
-		$list = \DB::table('permission')
-		           ->where('status', '!=', '-1')
-		           ->orderBy('level', 'asc')
-		           ->orderBy('sort', 'asc')
-		           ->get()
-		           ->toArray();
+		$list = \DB::table($this->table);
+		if ($status === null) {
+			$list = $list->where('status', '!=', '-1');
+		} elseif (is_numeric($status)) {
+			$list = $list->where('status', $status);
+		} elseif (is_array($status)) {
+			$list = $list->whereIn('status', $status);
+		}
+		
+		$list = $list->orderBy('level', 'asc')->orderBy('sort', 'asc')->get()->toArray();
+		
 		foreach ($list as &$item) {
 			$item['status_text'] = trans('common.'.($item['status'] ? 'enable' : 'disable'));
 		}
@@ -99,7 +102,19 @@ class PermissionService {
 			}
 		}
 		
+		return $treeList;
+	}
+	
+	/**
+	 * 获取权限列表，二维数组，平行结构
+	 * @author 李小同
+	 * @date   2018-7-5 09:37:25
+	 * @return array
+	 */
+	public function getList() {
+		
 		$sortList = [];
+		$treeList = $this->getTreeList();
 		foreach ($treeList as $item) {
 			
 			$subList2 = [];
@@ -125,7 +140,9 @@ class PermissionService {
 	}
 	
 	/**
-	 * 获取启用的权限列表，用于权限表单页的父节点下拉选项
+	 * 获取启用的权限列表
+	 * 1. 权限表单页的父节点下拉选项
+	 * 2. 后台页面左侧菜单列表
 	 * @param $pid int 父节点
 	 * @author 李小同
 	 * @date   2018-7-4 16:52:30
@@ -133,9 +150,10 @@ class PermissionService {
 	 */
 	public function getEnableList($pid = 0) {
 		
-		$list     = \DB::table('permission')
+		$list     = \DB::table($this->table)
 		               ->where('status', '1')
-		               ->where('level', '<', '3')
+		               ->where('show', '1')
+		               ->where('level', '<=', '2')
 		               ->orderBy('level', 'asc')
 		               ->orderBy('sort', 'asc')
 		               ->get()
@@ -150,7 +168,10 @@ class PermissionService {
 		
 		foreach ($list as $item) {
 			if ($item['level'] == '2') {
-				$item['selected']                = $pid == $item['id'] ? 'selected' : '';
+				
+				$item['selected'] = $pid == $item['id'] ? 'selected' : '';
+				if ($pid == $item['id']) $sortList[$item['pid']]['display'] = 'block';
+				
 				$sortList[$item['pid']]['sub'][] = $item;
 			}
 		}
@@ -159,29 +180,26 @@ class PermissionService {
 	}
 	
 	/**
-	 * 获取详情
-	 * @param $id
+	 * 获取页面菜单
 	 * @author 李小同
-	 * @date   2018-7-4 17:40:46
+	 * @date   2018-7-5 10:59:15
 	 * @return array
 	 */
-	public function getDetailById($id) {
+	public function getMenuList() {
 		
-		if ($id) {
-			$detail = \DB::table('permission')->where('id', $id)->first();
-		} else {
-			$detail = [
-				'id'     => 0,
-				'name'   => '',
-				'route'  => '',
-				'pid'    => 0,
-				'sort'   => 1,
-				'status' => '1',
-				'show'   => '1',
-			];
-		}
+		$currentURL   = \Request::getRequestUri();
+		$currentRoute = substr($currentURL, strlen('/admin/'));
+		$currentRoute = preg_replace('/\/\d+/', '', $currentRoute);
+		$selectId     = \DB::table($this->table)
+		                   ->where('route', $currentRoute)
+		                   ->whereIn('status', ['1', '0'])
+		                   ->pluck('id')
+		                   ->toArray();
+		if (empty($selectId)) $selectId = [0];
 		
-		return $detail;
+		$menus = $this->getEnableList($selectId[0]);
+		
+		return $menus;
 	}
 	
 }

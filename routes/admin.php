@@ -19,6 +19,8 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'adminCheckLogin'], functi
 		Route::post('changePassword', ['uses' => 'ManagerController@changePassword', 'as' => 'managerChangePassword']);
 		# 管理员列表
 		Route::get('list', ['uses' => 'ManagerController@managerList', 'as' => 'managerList']);
+		# 增改管理员
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ManagerController@form', 'as' => 'managerForm']);
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'ManagerController@changeStatus', 'as' => 'managerChangeStatus']);
 		
@@ -27,8 +29,10 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'adminCheckLogin'], functi
 	# 角色
 	Route::group(['prefix' => 'role'], function () {
 		
-		# 新增角色
-		Route::match(['get', 'post'], 'add', ['uses' => 'RoleController@add', 'as' => 'addRole']);
+		# 角色列表
+		Route::get('list', ['uses' => 'RoleController@roleList', 'as' => 'roleList']);
+		# 增改角色
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'RoleController@form', 'as' => 'roleForm']);
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'RoleController@changeStatus', 'as' => 'roleChangeStatus']);
 		
@@ -39,7 +43,7 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'adminCheckLogin'], functi
 		
 		# 权限列表
 		Route::get('list', ['uses' => 'PermissionController@permissionList', 'as' => 'permissionList']);
-		# 增修权限
+		# 增改权限
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'PermissionController@form', 'as' => 'permissionForm']);
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'PermissionController@changeStatus', 'as' => 'permissionChangeStatus']);

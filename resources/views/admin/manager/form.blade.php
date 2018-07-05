@@ -1,43 +1,24 @@
 @extends('admin.base')
 @section('body')
 	<article class="cl pd-20">
-		<form class="form form-horizontal" id="form-permission">
+		<form action="" method="post" class="form form-horizontal" id="form-manager">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="{{$detail['name']}}" placeholder="" id="name" name="name">
+					<input type="text" class="input-text" value="{{$detail['name']}}" placeholder="" id="adminName" name="name">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>父节点：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<select class="select-box" name="pid">
-						<option value="0">Top</option>
-						@foreach($permissions as $permission)
-							<option style="font-weight: bold;" {{$permission['selected']}} value="{{$permission['id']}}">{{$permission['name']}}</option>
-							@if (!empty($permission['sub']))
-								@foreach($permission['sub'] as $item)
-									<option value="{{$item['id']}}" {{$item['selected']}}>
-										@for($i = 1; $i < $item['level']; ++$i) &nbsp;&nbsp;&nbsp;&nbsp; @endfor
-										{{$item['name']}}
-									</option>
-								@endforeach
-							@endif
-						@endforeach
-					</select>
+					<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" id="password" name="password">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">路由：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="{{$detail['route']}}" id="route" name="route">
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>排序：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input type="number" class="input-text" value="{{$detail['sort']}}" id="sort" name="sort">
+					<input type="password" class="input-text" autocomplete="off" placeholder="确认新密码" id="password_repeat" name="password_repeat">
 				</div>
 			</div>
 			<div class="row cl">
@@ -54,16 +35,13 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>显示：</label>
-				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-					<div class="radio-box">
-						<input type="radio" id="show-1" value="1" name="show" @if ($detail['show'] == '1') checked @endif>
-						<label for="show-1">显示</label>
-					</div>
-					<div class="radio-box">
-						<input type="radio" id="show-0" value="0" name="show" @if ($detail['show'] == '0') checked @endif>
-						<label for="show-0">不显示</label>
-					</div>
+				<label class="form-label col-xs-4 col-sm-3">角色：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					@foreach($roles as $role)
+						<label title="{{$role['description']}}" class="mr-10">
+							<input type="checkbox" name="roles[]" value="{{$role['id']}}" @if ($role['checked']) checked @endif />{{$role['name']}}
+						</label>
+					@endforeach
 				</div>
 			</div>
 			<div class="row cl">
@@ -87,18 +65,12 @@
 				increaseArea  : '20%'
 			});
 			
-			$("#form-permission").validate({
+			$("#form-manager").validate({
 				rules         : {
-					name   : {
+					name : {
 						required  : true,
-						minlength : 4,
+						minlength : 1,
 						maxlength : 16
-					},
-					route  : {
-						required : false,
-					},
-					status : {
-						required : true,
 					}
 				},
 				onkeyup       : false,
