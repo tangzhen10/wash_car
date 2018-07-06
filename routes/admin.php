@@ -55,8 +55,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		
 		# 会员列表
 		Route::get('list', ['uses' => 'MemberController@memberList', 'as' => 'memberList']);
-		# 修改状态
-		Route::post('changeStatus', ['uses' => 'MemberController@changeStatus', 'as' => 'memberChangeStatus']);
+		# 修改用户信息
+		Route::match(['get', 'post'], 'form/{id}', ['uses' => 'MemberController@form', 'as' => 'memberForm']);
 		
 	});
 });

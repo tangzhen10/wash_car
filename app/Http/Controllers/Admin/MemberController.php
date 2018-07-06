@@ -21,8 +21,20 @@ class MemberController extends BaseController {
 		
 		$this->data['pagination'] = $this->service->getPaginationList();
 		$this->data['total']      = json_decode(json_encode($this->data['pagination']), 1)['total'];
-		$this->data['users']      = $this->service->getListByPage($this->data['pagination']);
+		$this->data['members']    = $this->service->getListByPage($this->data['pagination']);
 		
 		return view('admin/member/list', $this->data);
+	}
+	
+	/**
+	 * 增改表单所需相关数据
+	 * @param $data
+	 * @author 李小同
+	 * @date   2018-7-6 21:12:08
+	 * @return array
+	 */
+	public function assocDataForForm($data = null) {
+		
+		return [];
 	}
 }

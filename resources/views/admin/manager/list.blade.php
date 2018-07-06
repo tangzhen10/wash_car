@@ -72,7 +72,7 @@
 									</a>
 								@endif
 								
-								<a title="{{trans('common.edit')}}" onclick="admin_edit(this,'{{route('managerForm').'/'.$row['id']}}','800','500')"
+								<a title="{{trans('common.edit')}}" onclick="admin_edit(this,'{{route('managerForm', $row['id'])}}','800','500')"
 								   href="javascript:;" class="ml-5" style="text-decoration:none">
 									<i class="Hui-iconfont">&#xe6df;</i>
 								</a>

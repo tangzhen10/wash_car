@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId   = 0;
+	public $userId = 0;
 	public $nickname = 0;
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -105,7 +105,8 @@ class UserService {
 		\DB::beginTransaction();
 		try {
 			
-			$userInfo = ['nickname' => ''];
+			$now      = time();
+			$userInfo = ['create_at' => $now];
 			switch ($data['identityType']) {
 				case 'phone':
 					$userInfo['phone'] = $data['account'];
@@ -129,7 +130,7 @@ class UserService {
 				'identity'      => $data['account'],
 				'credential'    => $data['password'],
 				'salt'          => $salt,
-				'create_at'     => time(),
+				'create_at'     => $now,
 				'create_ip'     => getClientIp(true),
 			];
 			$authId   = \DB::table('user_auth')->insertGetId($userAuth);
@@ -175,13 +176,8 @@ class UserService {
 			$where         = ['user_id' => $identityInfo['user_id']];
 			\DB::table('user')->where($where)->update($lastLoginInfo);
 			
-			$userInfo = \DB::table('user')->where($where)->first();
-			
-			# 生日在1970-01-01的人，birthday字段为0
-			$userInfo['birthday']      = $userInfo['birthday'] != -1 ? date('Y-m-d', $userInfo['birthday']) : '';
-			$userInfo['last_login_at'] = $userInfo['last_login_at'] > 0 ? date('Y-m-d H:i:s', $userInfo['last_login_at']) : '';
-			$userInfo['last_login_ip'] = long2ip($userInfo['last_login_ip']);
-			$userInfo['token']         = create_token();
+			$userInfo          = $this->getUserInfo($identityInfo['user_id']);
+			$userInfo['token'] = create_token();
 			
 			# 服务器端保存登录信息
 			$cacheKey = sprintf(config('cache.USER_INFO'), $userInfo['token']);
@@ -200,6 +196,30 @@ class UserService {
 				# todo lxt 登录错误日志
 			}
 		}
+	}
+	
+	/**
+	 * 获取用户信息
+	 * @param $id int 用户id
+	 * @author 李小同
+	 * @date   2018-7-6 20:34:07
+	 * @return array
+	 */
+	public function getUserInfo($id) {
+		
+		$userInfo = \DB::table('user')->where('user_id', $id)->first();
+		
+		if (!empty($userInfo)) {
+			
+			# 生日在1970-01-01的人，birthday字段为0
+			$userInfo['birthday'] = $userInfo['birthday'] != -1 ? date('Y-m-d', $userInfo['birthday']) : '';
+			
+			$userInfo['create_at']     = date('Y-m-d H:i:s', $userInfo['create_at']);
+			$userInfo['last_login_at'] = $userInfo['last_login_at'] > 0 ? date('Y-m-d H:i:s', $userInfo['last_login_at']) : '';
+			$userInfo['last_login_ip'] = long2ip($userInfo['last_login_ip']);
+		}
+		
+		return $userInfo;
 	}
 	
 	/**

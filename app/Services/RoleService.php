@@ -100,7 +100,7 @@ class RoleService extends BaseService {
 		} elseif (is_array($status)) {
 			$list = $list->whereIn('status', $status);
 		} else {
-			json_msg(trans('error.error_illegal_param'), 40003);
+			json_msg(trans('error.illegal_param'), 40003);
 		}
 		$list = $list->get()->toArray();
 		

@@ -8,11 +8,12 @@ class adminCheckPermission {
 	
 	protected $except = [
 		'adminIndex', # 后台首页
+		'managerLogin', # 登录
+		'managerLogout', # 登出
 	];
 	
 	/**
 	 * Handle an incoming request.
-	 *
 	 * @param  \Illuminate\Http\Request $request
 	 * @param  \Closure                 $next
 	 * @return mixed

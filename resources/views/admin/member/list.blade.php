@@ -13,7 +13,7 @@
 			<article class="cl pd-20">
 				<div class="text-c"> 日期范围：
 					<input type="text" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})" id="datemin" class="input-text Wdate" style="width:120px;">
-									 -
+				                     -
 					<input type="text" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})" id="datemax" class="input-text Wdate" style="width:120px;">
 					<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name="">
 					<button type="submit" class="btn btn-success radius" id="" name="">
@@ -28,41 +28,30 @@
 						<thead>
 						<tr class="text-c">
 							<th width="25"><input type="checkbox" name="" value=""></th>
-							<th width="80">ID</th>
-							<th width="100">用户名</th>
+							<th width="35">ID</th>
+							<th width="150">用户名</th>
 							<th width="40">性别</th>
 							<th width="90">手机</th>
 							<th width="150">邮箱</th>
-							{{--<th width="">地址</th>--}}
-							{{--<th width="130">加入时间</th>--}}
-							<th width="70">状态</th>
+							<th width="150">注册时间</th>
 							<th width="100">操作</th>
 						</tr>
 						</thead>
 						<tbody>
-						@foreach($users as $user)
+						@foreach($members as $member)
 							<tr class="text-c">
-								<td><input type="checkbox" value="{{$user['user_id']}}" name=""></td>
-								<td>{{$user['user_id']}}</td>
-								<td>
-									<u style="cursor:pointer" class="text-primary" onclick="member_show('张三','member-show.html','10001','360','400')">{{$user['nickname']}}</u>
-								</td>
-								<td>{{$user['gender_text']}}</td>
-								<td>{{$user['phone']}}</td>
-								<td>{{$user['email']}}</td>
-								{{--<td class="text-l">北京市 海淀区</td>--}}
-								{{--<td>2014-6-11 11:11:42</td>--}}
-								<td class="td-status">
-								{{--<span class="label label-success radius">{{$user['status_text']}}</span></td>--}}
+								<td><input type="checkbox" value="{{$member['user_id']}}" name=""></td>
+								<td>{{$member['user_id']}}</td>
+								<td>{{$member['nickname']}}</td>
+								<td>{{$member['gender_text']}}</td>
+								<td>{{$member['phone']}}</td>
+								<td>{{$member['email']}}</td>
+								<td>{{$member['create_at']}}</td>
 								<td class="td-manage">
-									<a style="text-decoration:none" onClick="member_stop(this,'10001')" href="javascript:;" title="停用"><i class="Hui-iconfont">
-											&#xe631;</i></a>
-									<a title="编辑" href="javascript:;" onclick="member_edit('编辑','member-add.html','4','','510')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">
-											&#xe6df;</i></a>
-									<a style="text-decoration:none" class="ml-5" onClick="change_password('修改密码','change-password.html','10001','600','270')" href="javascript:;" title="修改密码"><i class="Hui-iconfont">
-											&#xe63f;</i></a>
-									<a title="删除" href="javascript:;" onclick="member_del(this,'1')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">
-											&#xe6e2;</i></a></td>
+									<a title="编辑" href="javascript:;" onclick="member_edit(this,'{{route('memberForm', $member['user_id'])}}','','550')" class="ml-5" style="text-decoration:none">
+										<i class="Hui-iconfont">&#xe6df;</i>
+									</a>
+								</td>
 							</tr>
 						@endforeach
 						</tbody>
@@ -72,4 +61,14 @@
 			</article>
 		</div>
 	</section>
+@endsection
+@section('js')
+	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/My97DatePicker/4.8/WdatePicker.js')}}"></script>
+	<script>
+		/*管理员-编辑*/
+		function member_edit(obj, url, w, h) {
+			var title = $(obj).attr('title');
+			layer_show(title, url, w, h);
+		}
+	</script>
 @endsection

@@ -42,7 +42,7 @@ class BaseController extends Controller {
 			
 		} else {
 			
-			$id = \Request::input('id');
+//			$id = \Request::input('id');
 			if ($id) {
 				$res = $this->service->update();
 			} else {

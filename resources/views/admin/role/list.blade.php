@@ -41,7 +41,7 @@
 								<td>{{$row['name']}}</td>
 								<td>{{$row['description']}}</td>
 								<td class="f-14">
-									<a title="编辑" href="javascript:;" onclick="admin_role_edit(this,'{{route('roleForm').'/'.$row['id']}}')" style="text-decoration:none"><i class="Hui-iconfont">
+									<a title="编辑" href="javascript:;" onclick="admin_role_edit(this,'{{route('roleForm', $row['id'])}}')" style="text-decoration:none"><i class="Hui-iconfont">
 											&#xe6df;</i></a>
 									<a title="删除" href="javascript:;" onclick="admin_role_del(this,'{{$row['id']}}')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">
 											&#xe6e2;</i></a></td>

@@ -40,7 +40,7 @@ class ToolService {
 		}
 		
 		# 验证是否是合法的使用用途
-		if (!in_array($useType, $this->_validSMSCodeUseTypes)) json_msg(trans('error.error_illegal_param'), 40003);
+		if (!in_array($useType, $this->_validSMSCodeUseTypes)) json_msg(trans('error.illegal_param'), 40003);
 		
 		switch ($useType) {
 			case 'register' :

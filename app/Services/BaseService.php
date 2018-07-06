@@ -10,7 +10,7 @@ namespace App\Services;
 
 class BaseService {
 	
-	protected $table = '';
+	protected $module = '';
 	
 	/**
 	 * 获取详情
@@ -67,23 +67,23 @@ class BaseService {
 	/**
 	 * 修改状态
 	 * 启用、停用、删除
-	 * @param $id     int
-	 * @param $status int 新状态 1启用 0停用 -1删除
-	 * @param $table  string 表名
+	 * @param $id      int
+	 * @param $status  int 新状态 1启用 0停用 -1删除
+	 * @param $module  string 模块名
 	 * @author 李小同
 	 * @date   2018-7-4 09:14:47
 	 * @return bool
 	 */
-	public function changeStatus($id, $status, $table) {
+	public function changeStatus($id, $status, $module) {
 		
-		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status, $table);
+		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status, $module);
 		
-		$source = \DB::table($table)->where('id', $id)->count();
+		$source = \DB::table($module)->where('id', $id)->count();
 		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {
-			\DB::table($table)->where('id', $id)->update(['status' => $status]);
+			\DB::table($module)->where('id', $id)->update(['status' => $status]);
 			return true;
 		} else {
-			json_msg(trans('error.error_illegal_param'), 40003);
+			json_msg(trans('error.illegal_param'), 40003);
 		}
 	}
 }
