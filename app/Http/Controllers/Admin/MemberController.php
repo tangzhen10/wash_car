@@ -35,6 +35,26 @@ class MemberController extends BaseController {
 	 */
 	public function assocDataForForm($data = null) {
 		
-		return [];
+		$check    = [];
+		$userId   = $data['detail']['user_id'];
+		$authList = $this->service->getUserAuthList($userId);
+		
+		foreach ($authList as $auth) {
+			
+			switch ($auth['identity_type']) {
+				case 'email':
+					if ($data['detail']['email'] == $auth['identity']) {
+						$check['email'] = true;
+					}
+					break;
+				case 'phone':
+					if ($data['detail']['phone'] == $auth['identity']) {
+						$check['phone'] = true;
+					}
+					break;
+			}
+		}
+		
+		return compact('check');
 	}
 }

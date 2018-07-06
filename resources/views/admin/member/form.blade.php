@@ -25,13 +25,23 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">手机：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="{{$detail['phone']}}" placeholder="" id="phone" name="phone">
+					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['phone']}}" placeholder="" id="phone" name="phone">
+					@if (empty($check['phone']))
+						<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此手机尚未验证，不可用于登录</span>
+					@else
+						<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此手机已通过验证，可用于登录</span>
+					@endif
 				</div>
 			</div>
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">邮箱：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="{{$detail['email']}}" placeholder="@" name="email" id="email">
+					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['email']}}" placeholder="@" name="email" id="email">
+					@if (empty($check['email']))
+						<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此邮箱尚未验证，不可用于登录</span>
+					@else
+						<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此邮箱已通过验证，可用于登录</span>
+					@endif
 				</div>
 			</div>
 			<div class="row cl">

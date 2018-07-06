@@ -121,6 +121,21 @@ class MemberService extends BaseService {
 	}
 	
 	/**
+	 * 获取用户生效的登录凭证通道
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-7-7 00:16:17
+	 * @return array
+	 */
+	public function getUserAuthList($userId) {
+		
+		$where    = ['user_id' => $userId, 'status' => '1'];
+		$authList = \DB::table('user_auth')->where($where)->get(['identity_type', 'identity'])->toArray();
+		
+		return $authList;
+	}
+	
+	/**
 	 * 检查并处理表单数据
 	 * @author 李小同
 	 * @date   2018-7-6 23:51:54
