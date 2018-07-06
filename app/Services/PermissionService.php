@@ -143,37 +143,26 @@ class PermissionService extends BaseService {
 	 * 获取启用的权限列表
 	 * 1. 权限表单页的父节点下拉选项
 	 * 2. 后台页面左侧菜单列表
-	 * @param $pid int 父节点
+	 * @param $permissions array 允许的权限
 	 * @author 李小同
 	 * @date   2018-7-4 16:52:30
 	 * @return array
 	 */
-	public function getEnableList($pid = 0) {
+	public function getEnableList($permissions = []) {
 		
-		$list     = \DB::table($this->module)
-		               ->where('status', '1')
-		               ->where('show', '1')
-		               ->where('level', '<=', '2')
-		               ->orderBy('level', 'asc')
-		               ->orderBy('sort', 'asc')
-		               ->get()
-		               ->toArray();
+		$list = \DB::table($this->module)->where('status', '1')->where('show', '1')->where('level', '<=', '2');
+		
+		if ($permissions) $list = $list->whereIn('id', $permissions);
+		
+		$list = $list->orderBy('level', 'asc')->orderBy('sort', 'asc')->get()->toArray();
+		
 		$sortList = [];
 		foreach ($list as $item) {
-			if ($item['level'] == '1') {
-				$item['selected']      = $pid == $item['id'] ? 'selected' : '';
-				$sortList[$item['id']] = $item;
-			}
+			if ($item['level'] == '1') $sortList[$item['id']] = $item;
 		}
 		
 		foreach ($list as $item) {
-			if ($item['level'] == '2') {
-				
-				$item['selected'] = $pid == $item['id'] ? 'selected' : '';
-				if ($pid == $item['id']) $sortList[$item['pid']]['display'] = 'block';
-				
-				$sortList[$item['pid']]['sub'][] = $item;
-			}
+			if ($item['level'] == '2') $sortList[$item['pid']]['sub'][] = $item;
 		}
 		
 		return $sortList;
@@ -187,17 +176,11 @@ class PermissionService extends BaseService {
 	 */
 	public function getMenuList() {
 		
-		$currentURL   = \Request::getRequestUri();
-		$currentRoute = substr($currentURL, strlen('/admin/'));
-		$currentRoute = preg_replace('/\/\d+/', '', $currentRoute);
-		$selectId     = \DB::table($this->module)
-		                   ->where('route', $currentRoute)
-		                   ->whereIn('status', ['1', '0'])
-		                   ->pluck('id')
-		                   ->toArray();
-		if (empty($selectId)) $selectId = [0];
+		# 获取用户权限
+		$roleIds     = \ManagerService::getRolesByManagerId();
+		$permissions = \RoleService::getPermissionsByRoleId($roleIds);
 		
-		$menus = $this->getEnableList($selectId[0]);
+		$menus = $this->getEnableList($permissions);
 		
 		return $menus;
 	}

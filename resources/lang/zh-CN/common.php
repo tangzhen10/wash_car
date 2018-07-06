@@ -12,6 +12,11 @@ return [
 	'route'          => '路由',
 	'create_at'      => '创建时间',
 	
+	# 性别
+	'gender_0'       => '',
+	'gender_1'       => '男',
+	'gender_2'       => '女',
+	
 	# 动作
 	'action'         => '操作',
 	'edit'           => '编辑',

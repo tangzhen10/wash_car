@@ -34,9 +34,13 @@ class Kernel extends HttpKernel {
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		],
 		
-		'api' => [
+		'api'   => [
 			'throttle:60,1',
 			'bindings',
+		],
+		'admin' => [
+			'adminCheckLogin', # 检测登录
+			'adminCheckPermission', # 验证权限
 		],
 	];
 	
@@ -46,15 +50,16 @@ class Kernel extends HttpKernel {
 	 * @var array
 	 */
 	protected $routeMiddleware = [
-		'auth'            => \Illuminate\Auth\Middleware\Authenticate::class,
-		'auth.basic'      => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-		'bindings'        => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-		'can'             => \Illuminate\Auth\Middleware\Authorize::class,
-		'guest'           => \App\Http\Middleware\RedirectIfAuthenticated::class,
-		'throttle'        => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+		'auth'                 => \Illuminate\Auth\Middleware\Authenticate::class,
+		'auth.basic'           => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+		'bindings'             => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+		'can'                  => \Illuminate\Auth\Middleware\Authorize::class,
+		'guest'                => \App\Http\Middleware\RedirectIfAuthenticated::class,
+		'throttle'             => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		
 		# 自定义路由中间件
-		'checkLogin'      => \App\Http\Middleware\CheckLogin::class,
-		'adminCheckLogin' => \App\Http\Middleware\adminCheckLogin::class,
+		'checkLogin'           => \App\Http\Middleware\CheckLogin::class,
+		'adminCheckLogin'      => \App\Http\Middleware\adminCheckLogin::class,
+		'adminCheckPermission' => \App\Http\Middleware\adminCheckPermission::class,
 	];
 }

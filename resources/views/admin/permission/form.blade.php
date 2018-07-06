@@ -15,10 +15,10 @@
 					<select class="select-box" name="pid">
 						<option value="0">Top</option>
 						@foreach($permissions as $permission)
-							<option style="font-weight: bold;" {{$permission['selected']}} value="{{$permission['id']}}">{{$permission['name']}}</option>
+							<option style="font-weight: bold;" {{$permission['id'] == $detail['pid'] ? 'selected' : ''}} value="{{$permission['id']}}">{{$permission['name']}}</option>
 							@if (!empty($permission['sub']))
 								@foreach($permission['sub'] as $item)
-									<option value="{{$item['id']}}" {{$item['selected']}}>
+									<option value="{{$item['id']}}" {{$item['id'] == $detail['pid'] ? 'selected' : ''}}>
 										@for($i = 1; $i < $item['level']; ++$i) &nbsp;&nbsp;&nbsp;&nbsp; @endfor
 										{{$item['name']}}
 									</option>

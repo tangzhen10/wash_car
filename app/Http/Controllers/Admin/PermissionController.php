@@ -28,7 +28,7 @@ class PermissionController extends BaseController {
 	 */
 	public function assocDataForForm($data = null) {
 		
-		$permissions = $this->service->getEnableList($data['detail']['pid']);
+		$permissions = $this->service->getEnableList();
 		
 		return compact('permissions');
 	}

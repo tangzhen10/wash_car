@@ -3,7 +3,7 @@
 /**
  * 后台路由
  */
-Route::group(['namespace' => 'Admin', 'middleware' => 'adminCheckLogin'], function () {
+Route::group(['namespace' => 'Admin'], function () {
 	
 	# 后台首页
 	Route::get('/', ['uses' => 'ManagerController@index', 'as' => 'adminIndex']);

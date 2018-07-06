@@ -13,7 +13,7 @@
 			<article class="cl pd-20">
 				<div class="text-c"> 日期范围：
 					<input type="text" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})" id="datemin" class="input-text Wdate" style="width:120px;">
-				                     -
+									 -
 					<input type="text" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})" id="datemax" class="input-text Wdate" style="width:120px;">
 					<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name="">
 					<button type="submit" class="btn btn-success radius" id="" name="">
@@ -22,7 +22,7 @@
 				</div>
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="l"><a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="member_add('添加用户','member-add.html','','510')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加用户</a></span>
-					<span class="r">共有数据：<strong>88</strong> 条</span></div>
+					<span class="r">共有数据：<strong>{{$total}}</strong> 条</span></div>
 				<div class="mt-20">
 					<table class="table table-border table-bordered table-hover table-bg table-sort">
 						<thead>
@@ -47,13 +47,13 @@
 								<td>
 									<u style="cursor:pointer" class="text-primary" onclick="member_show('张三','member-show.html','10001','360','400')">{{$user['nickname']}}</u>
 								</td>
-								<td>男</td>
+								<td>{{$user['gender_text']}}</td>
 								<td>{{$user['phone']}}</td>
 								<td>{{$user['email']}}</td>
 								{{--<td class="text-l">北京市 海淀区</td>--}}
 								{{--<td>2014-6-11 11:11:42</td>--}}
 								<td class="td-status">
-									<span class="label label-success radius">{{$user['status_text']}}</span></td>
+								{{--<span class="label label-success radius">{{$user['status_text']}}</span></td>--}}
 								<td class="td-manage">
 									<a style="text-decoration:none" onClick="member_stop(this,'10001')" href="javascript:;" title="停用"><i class="Hui-iconfont">
 											&#xe631;</i></a>
@@ -67,7 +67,7 @@
 						@endforeach
 						</tbody>
 					</table>
-					{{!!$pagination->link()!!}}
+					{{$pagination->links()}}
 				</div>
 			</article>
 		</div>

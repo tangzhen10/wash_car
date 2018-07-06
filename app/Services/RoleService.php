@@ -70,9 +70,16 @@ class RoleService extends BaseService {
 	 */
 	public function getPermissionsByRoleId($roleId) {
 		
-		$rolePermissions = \DB::table('role_permission')->where('role_id', $roleId)->pluck('permission_id')->toArray();
+		$res = \DB::table('role_permission');
 		
-		return $rolePermissions;
+		if (is_array($roleId)) {
+			$res = $res->whereIn('role_id', $roleId);
+		} else {
+			$res = $res->where('role_id', $roleId);
+		}
+		$res = $res->pluck(\DB::raw('DISTINCT(permission_id) AS permission_id'))->toArray();
+		
+		return $res;
 	}
 	
 	/**

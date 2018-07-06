@@ -14,6 +14,19 @@
 			radioClass    : 'iradio-blue',
 			increaseArea  : '20%'
 		});
+		
+		// 菜单栏
+		var current_url = '{{route(Request::route()->getName())}}';
+		for (var x in $('.menu_item')) {
+			var url = $('.menu_item').eq(x).attr('href');
+			if (url) {
+				if (current_url == url) {
+					$('.menu_item').eq(x).parent('li').addClass('current');
+					$('.menu_item').eq(x).parents('dd').show().siblings('dt').addClass('selected');
+					break;
+				}
+			}
+		}
 	});
 </script>
 <!--/_footer 作为公共模版分离出去-->

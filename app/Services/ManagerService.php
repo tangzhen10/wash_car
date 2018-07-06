@@ -17,7 +17,7 @@ namespace App\Services;
 class ManagerService extends BaseService {
 	
 	public $managerId = 0;
-	public $module = 'manager';
+	public $module    = 'manager';
 	
 	public function __construct() {
 		
@@ -149,7 +149,7 @@ class ManagerService extends BaseService {
 	 */
 	public function handleFormData(array &$data) {
 		
-		$detail = \DB::table($this->module)->where('name', $data['name'])->first();
+		$detail = \DB::table($this->module)->where('name', $data['name'])->orWhere('id', $data['id'])->first();
 		if ($data['id']) { # 更新
 			
 			if (($data['password'] || $data['password_repeat']) && $data['password'] != $data['password_repeat']) {

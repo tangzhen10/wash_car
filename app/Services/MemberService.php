@@ -32,20 +32,47 @@ class MemberService {
 	
 	/**
 	 * 获取前台用户
+	 * @param int $perPage
 	 * @author 李小同
 	 * @date
 	 * @return mixed
 	 */
-	public function getPaginationList() {
+	public function getPaginationList($perPage = 0) {
 		
-		$fields     = ['a.user_id', 'a.nickname', 'a.phone', 'a.email', 'a.last_login_at', 'a.last_login_ip'];
-		$pagination = \DB::table('user AS a')->select($fields)->paginate(2);
+		$fields = [
+			'a.user_id',
+			'a.nickname',
+			'a.phone',
+			'a.email',
+			'a.gender',
+			'a.last_login_at',
+			'a.last_login_ip',
+		];
+		if (empty($perPage)) $perPage = config('project.DEFAULT_PER_PAGE');
+		$pagination = \DB::table('user AS a')->select($fields)->paginate($perPage);
 		
 		return $pagination;
 	}
 	
-	public function getList() {
+	/**
+	 * 通过分页对象获取数据
+	 * @param $pagination DB::pagination()
+	 * @author 李小同
+	 * @date   2018-7-6 15:09:40
+	 * @return array
+	 */
+	public function getListByPage($pagination) {
 		
+		$paginationArr = json_decode(json_encode($pagination), 1);
+		if (empty($paginationArr)) return [];
+		$list = $paginationArr['data'];
+		foreach ($list as &$item) {
+			//$item['status_text'] = trans('common.'.($item['status'] ? 'enable' : 'disable'));
+			$item['gender_text'] = trans('common.gender_'.$item['gender']);
+		}
+		unset($item);
+		
+		return $list;
 	}
 	
 }

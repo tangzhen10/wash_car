@@ -19,8 +19,9 @@ class MemberController extends BaseController {
 	 */
 	public function memberList() {
 		
-		$this->data['pagination'] = $this->service->getList();
-		$this->data['users']      = json_decode(json_encode($this->data['pagination']), 1)['data'];
+		$this->data['pagination'] = $this->service->getPaginationList();
+		$this->data['total']      = json_decode(json_encode($this->data['pagination']), 1)['total'];
+		$this->data['users']      = $this->service->getListByPage($this->data['pagination']);
 		
 		return view('admin/member/list', $this->data);
 	}

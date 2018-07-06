@@ -1,3 +1,26 @@
 @charset "utf-8";
 /* 你自己的样式 */
 
+/*分页器*/
+.pagination {
+    float: right;
+    margin: 15px 0 10px 0;
+}
+.pagination li {
+    float: left;
+    border: 1px solid #ccc;
+    text-align: center;
+    margin-left: 5px;
+}
+.pagination li a,.pagination li span {
+    display: inline-block;
+    padding: 5px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-decoration: none;
+}
+.pagination li a:hover {
+    background: #5a98de;
+    color: #fff;
+}
