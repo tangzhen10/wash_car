@@ -1,14 +1,7 @@
 @extends('admin.public')
 @section('body')
 	<section class="Hui-article-box">
-		<nav class="breadcrumb">
-			<i class="Hui-iconfont">&#xe67f;</i> 首页
-			<span class="c-gray en">&gt;</span> 管理员管理
-			<span class="c-gray en">&gt;</span> 角色管理
-			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新">
-				<i class="Hui-iconfont">&#xe68f;</i>
-			</a>
-		</nav>
+		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
 				<div class="cl pd-5 bg-1 bk-gray">
@@ -18,7 +11,7 @@
 							<i class="Hui-iconfont">&#xe600;</i> 添加角色
 						</a>
 					</span>
-					<span class="r">共有数据：<strong>54</strong> 条</span></div>
+					<span class="r">共有数据：<strong>{{count($roles)}}</strong> 条</span></div>
 				<div class="mt-10">
 					<table class="table table-border table-bordered table-hover table-bg">
 						<thead>

@@ -11,6 +11,7 @@ return [
 	'status'         => '状态',
 	'route'          => '路由',
 	'create_at'      => '创建时间',
+	'home_page'      => '首页',
 	
 	# 性别
 	'gender_0'       => '',

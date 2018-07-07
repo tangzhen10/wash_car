@@ -19,9 +19,15 @@ class MemberController extends BaseController {
 	 */
 	public function memberList() {
 		
-		$this->data['pagination'] = $this->service->getPaginationList();
+		$filter                   = [
+			'date_from' => \Request::input('filter_date_from', ''),
+			'date_to'   => \Request::input('filter_date_to', ''),
+			'account'   => \Request::input('filter_account', ''),
+		];
+		$this->data['pagination'] = $this->service->getPaginationList($filter);
 		$this->data['total']      = json_decode(json_encode($this->data['pagination']), 1)['total'];
 		$this->data['members']    = $this->service->getListByPage($this->data['pagination']);
+		$this->data['filter']     = $filter;
 		
 		return view('admin/member/list', $this->data);
 	}

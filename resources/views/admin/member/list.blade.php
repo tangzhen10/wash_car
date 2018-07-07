@@ -1,22 +1,17 @@
 @extends('admin.public')
 @section('body')
 	<section class="Hui-article-box">
-		<nav class="breadcrumb">
-			<i class="Hui-iconfont">&#xe67f;</i> 首页
-			<span class="c-gray en">&gt;</span> 用户中心
-			<span class="c-gray en">&gt;</span> 会员列表
-			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新">
-				<i class="Hui-iconfont">&#xe68f;</i>
-			</a>
-		</nav>
+		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
 				<div class="text-c"> 日期范围：
-					<input type="text" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})" id="datemin" class="input-text Wdate" style="width:120px;">
+					<input type="text" name="date_from" class="input-text Wdate" style="width:120px;" value="{{$filter['date_from']}}"
+					       id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})">
 				                     -
-					<input type="text" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})" id="datemax" class="input-text Wdate" style="width:120px;">
-					<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name="">
-					<button type="submit" class="btn btn-success radius" id="" name="">
+					<input type="text" name="date_to" class="input-text Wdate" style="width:120px;" value="{{$filter['date_to']}}"
+					       id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})">
+					<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name="account" value="{{$filter['account']}}">
+					<button type="submit" class="btn btn-success radius" id="J_search" name="">
 						<i class="Hui-iconfont">&#xe665;</i> 搜用户
 					</button>
 				</div>
@@ -70,5 +65,22 @@
 			var title = $(obj).attr('title');
 			layer_show(title, url, w, h);
 		}
+		
+		$('#J_search').click(function () {
+			var account   = $('input[name="account"]').val().trim(),
+			    date_from = $('input[name="date_from"]').val().trim(),
+			    date_to   = $('input[name="date_to"]').val().trim();
+			if (account || date_from || date_to) {
+				
+				var query_string = [];
+				if (account) query_string.push('filter_account='+account);
+				if (date_from) query_string.push('filter_date_from='+date_from);
+				if (date_to) query_string.push('filter_date_to='+date_to);
+				
+				location.href = '{{route('memberList')}}?'+query_string.join('&');
+			} else {
+				location.reload();
+			}
+		});
 	</script>
 @endsection

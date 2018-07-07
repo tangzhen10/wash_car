@@ -2,7 +2,7 @@
 <aside class="Hui-aside">
 	
 	<div class="menu_dropdown bk_2">
-		@foreach($menu as $item1)
+		@foreach($menus as $item1)
 			<dl>
 				<dt>{{$item1['name']}}<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 				<dd>

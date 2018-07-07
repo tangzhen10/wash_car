@@ -18,10 +18,11 @@ class BaseController extends Controller {
 	
 	public function __construct() {
 		
-		$serviceName           = 'App\Services\\'.ucfirst(static::MODULE).'Service';
-		$this->service         = new $serviceName();
-		$this->data['manager'] = \ManagerService::getManagerInfoByManagerId();
-		$this->data['menu']    = \PermissionService::getMenuList();
+		$serviceName               = 'App\Services\\'.ucfirst(static::MODULE).'Service';
+		$this->service             = new $serviceName();
+		$this->data['manager']     = \ManagerService::getManagerInfoByManagerId();
+		$this->data['menus']       = \PermissionService::getMenuList();
+		$this->data['breadcrumbs'] = \PermissionService::getBreadCrumbs($this->data['menus']);
 	}
 	
 	/**

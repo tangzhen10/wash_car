@@ -48,11 +48,10 @@ class MemberService extends BaseService {
 		if (!empty($detail)) {
 			
 			# 生日在1970-01-01的人，birthday字段为0
-			$detail['birthday'] = $detail['birthday'] != -1 ? date('Y-m-d', $detail['birthday']) : '';
-			
+			$detail['birthday']      = $detail['birthday'] != -1 ? date('Y-m-d', $detail['birthday']) : '';
 			$detail['create_at']     = date('Y-m-d H:i:s', $detail['create_at']);
 			$detail['last_login_at'] = $detail['last_login_at'] > 0 ? date('Y-m-d H:i:s', $detail['last_login_at']) : '';
-			$detail['last_login_ip'] = long2ip($detail['last_login_ip']);
+			$detail['last_login_ip'] = $detail['last_login_ip'] > 0 ? long2ip($detail['last_login_ip']) : '';
 		}
 		
 		return $detail;
@@ -60,12 +59,12 @@ class MemberService extends BaseService {
 	
 	/**
 	 * 获取前台用户
-	 * @param int $perPage
+	 * @param array $data
 	 * @author 李小同
 	 * @date
 	 * @return mixed
 	 */
-	public function getPaginationList($perPage = 0) {
+	public function getPaginationList(array $data = []) {
 		
 		$fields = [
 			'a.user_id',
@@ -77,8 +76,20 @@ class MemberService extends BaseService {
 			'a.last_login_at',
 			'a.last_login_ip',
 		];
-		if (empty($perPage)) $perPage = config('project.DEFAULT_PER_PAGE');
-		$pagination = \DB::table('user AS a')->select($fields)->paginate($perPage);
+		if (empty($data['per_page'])) $data['per_page'] = config('project.DEFAULT_PER_PAGE');
+		$pagination = \DB::table('user AS a')->select($fields);
+		if (!empty($data['account'])) {
+			$pagination = $pagination->where(function ($pagination) use ($data) {
+				
+				$pagination->where('nickname', 'LIKE', '%'.$data['account'].'%')
+				           ->orWhere('phone', 'LIKE', '%'.$data['account'].'%')
+				           ->orWhere('email', 'LIKE', '%'.$data['account'].'%');
+			});
+		}
+		if (!empty($data['date_from'])) $pagination = $pagination->where('create_at', '>=', strtotime($data['date_from']));
+		if (!empty($data['date_to'])) $pagination = $pagination->where('create_at', '<=', strtotime($data['date_to']));
+		
+		$pagination = $pagination->orderBy('a.user_id', 'desc')->paginate($data['per_page']);
 		
 		return $pagination;
 	}
@@ -175,7 +186,11 @@ class MemberService extends BaseService {
 		}
 		
 		# 生日转换成时间戳
-		if (!empty($post['birthday'])) $post['birthday'] = strtotime($post['birthday']);
+		if (!empty($post['birthday'])) {
+			$post['birthday'] = strtotime($post['birthday']);
+		} else {
+			$post['birthday'] = '-1';
+		}
 		
 		unset($post['uploadfile'], $post['file']);
 		

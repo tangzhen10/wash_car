@@ -1,14 +1,7 @@
 @extends('admin.public')
 @section('body')
 	<section class="Hui-article-box">
-		<nav class="breadcrumb">
-			<i class="Hui-iconfont">&#xe67f;</i> 首页
-			<span class="c-gray en">&gt;</span> 管理员管理
-			<span class="c-gray en">&gt;</span> 权限管理
-			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新">
-				<i class="Hui-iconfont">&#xe68f;</i>
-			</a>
-		</nav>
+		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
 				{{--<div class="text-c mb-20">
@@ -24,7 +17,7 @@
 						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 						<a href="javascript:;" onclick="admin_permission_add(this,'{{route('permissionForm')}}','','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限节点</a>
 					</span>
-					<span class="r">共有数据：<strong>54</strong> 条</span></div>
+					<span class="r">共有数据：<strong>{{count($permissions)}}</strong> 条</span></div>
 				<table class="table table-border table-bordered table-bg">
 					<thead>
 					<tr>

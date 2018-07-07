@@ -25,22 +25,28 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">手机：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['phone']}}" placeholder="" id="phone" name="phone">
-					@if (empty($check['phone']))
-						<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此手机尚未验证，不可用于登录</span>
-					@else
-						<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此手机已通过验证，可用于登录</span>
+					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['phone']}}"
+					       id="phone" name="phone" @if (!empty($check['phone'])) disabled @endif>
+					@if ($detail['phone'])
+						@if (empty($check['phone']))
+							<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此手机尚未验证，不可用于登录</span>
+						@else
+							<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此手机已通过验证，可用于登录</span>
+						@endif
 					@endif
 				</div>
 			</div>
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">邮箱：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['email']}}" placeholder="@" name="email" id="email">
-					@if (empty($check['email']))
-						<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此邮箱尚未验证，不可用于登录</span>
-					@else
-						<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此邮箱已通过验证，可用于登录</span>
+					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['email']}}"
+					       placeholder="@" name="email" id="email" @if (!empty($check['email'])) disabled @endif>
+					@if ($detail['email'])
+						@if (empty($check['email']))
+							<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此邮箱尚未验证，不可用于登录</span>
+						@else
+							<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此邮箱已通过验证，可用于登录</span>
+						@endif
 					@endif
 				</div>
 			</div>
@@ -113,6 +119,7 @@
 						maxlength : 16
 					}
 				},
+				// todo lxt 表单验证
 				onkeyup       : false,
 //				focusCleanup  : true,
 				success       : "valid",
@@ -124,7 +131,6 @@
 						success    : function (data) {
 							layer.close(layer.load());
 							if (data.code == 0 && data.msg == 'ok') {
-								layer.msg('ok');
 								var index = parent.layer.getFrameIndex(window.name);
 								window.parent.location.reload();
 								parent.layer.close(index);

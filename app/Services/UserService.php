@@ -105,17 +105,15 @@ class UserService {
 		\DB::beginTransaction();
 		try {
 			
-			$now      = time();
-			$userInfo = ['create_at' => $now];
+			$now                  = time();
+			$userInfo             = ['create_at' => $now];
+			$userInfo['nickname'] = $data['account'];
 			switch ($data['identityType']) {
 				case 'phone':
 					$userInfo['phone'] = $data['account'];
 					break;
 				case 'email':
 					$userInfo['email'] = $data['account'];
-					break;
-				case 'username' :
-					$userInfo['nickname'] = $data['account'];
 					break;
 			}
 			

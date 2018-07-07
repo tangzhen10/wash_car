@@ -185,4 +185,49 @@ class PermissionService extends BaseService {
 		return $menus;
 	}
 	
+	/**
+	 * 面包屑
+	 * @param array $menus 菜单数据
+	 * @author 李小同
+	 * @date   2018-7-7 16:32:46
+	 * @return array
+	 */
+	public function getBreadCrumbs(array $menus = []) {
+		
+		$breadcrumb = [];
+		$currentUrl = \Request::getRequestUri();
+		foreach ($menus as $menu) {
+			if (!empty($menu['sub'])) {
+				foreach ($menu['sub'] as $item) {
+					if ($item['level'] == '2' && '/admin/'.$item['route'] == $currentUrl) {
+						$breadcrumb = [
+							[
+								'text' => trans('common.home_page'),
+								'url'  => route('adminIndex'),
+							],
+							[
+								'text' => '>',
+								'url'  => '',
+							],
+							[
+								'text' => $menu['name'],
+								'url'  => route('adminIndex').'/'.$menu['route'],
+							],
+							[
+								'text' => '>',
+								'url'  => '',
+							],
+							[
+								'text' => $item['name'],
+								'url'  => route('adminIndex').'/'.$item['route'],
+							],
+						];
+						return $breadcrumb;
+					}
+				}
+			}
+		}
+		
+		return $breadcrumb;
+	}
 }

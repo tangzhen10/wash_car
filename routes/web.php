@@ -12,5 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+	
+	if (env('APP_ENV') == 'local') {
+		
+		return redirect('/admin');
+	}
+	
+	return view('welcome');
 });
