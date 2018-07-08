@@ -25,10 +25,10 @@ class UserController extends BaseController {
 	public function register() {
 		
 		# 验证
-		$regInfo = $this->user->checkRegInfo();
+		$regData = $this->user->checkRegInfo();
 		
 		# 注册
-		$res = $this->user->create($regInfo);
+		$res = $this->user->create($regData);
 		if ($res) {
 			json_msg(trans('common.action_success'));
 		} else {

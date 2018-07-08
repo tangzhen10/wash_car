@@ -58,14 +58,18 @@ class UserService {
 	public function checkRegInfo() {
 		
 		$data         = $this->_validation();
-		$account      = $data['account'];
-		$password     = $data['password'];
 		$identityType = $data['identityType'];
+		$identity     = $data['account'];
+		$password     = $data['password'];
 		
 		# 检测是否已注册
-		$this->checkExistIdentity($identityType, $account);
+		$this->checkExistIdentity($identityType, $identity);
 		
-		return compact('account', 'password', 'identityType');
+		# 对密码进行加密
+		$salt       = create_salt();
+		$credential = easy_encrypt($password, $salt);
+		
+		return compact('identityType', 'identity', 'credential', 'salt');
 	}
 	
 	/**
@@ -93,41 +97,30 @@ class UserService {
 	
 	/**
 	 * 创建用户
-	 * @param array $data
+	 * @param array $authData
+	 * @param array $userInfo
 	 * @author 李小同
 	 * @date   2018-6-28 15:13:22
 	 * @return bool
 	 */
-	public function create(array $data) {
-		
-		$salt = create_salt();
+	public function create(array $authData, $userInfo = []) {
 		
 		\DB::beginTransaction();
 		try {
 			
-			$now                  = time();
-			$userInfo             = ['create_at' => $now];
-			$userInfo['nickname'] = $data['account'];
-			switch ($data['identityType']) {
-				case 'phone':
-					$userInfo['phone'] = $data['account'];
-					break;
-				case 'email':
-					$userInfo['email'] = $data['account'];
-					break;
-			}
+			$now = time();
 			
-			$userId = \DB::table('user')->insertGetId($userInfo);
+			# 先保存用户信息，生成user_id
+			$userInfo['create_at'] = $now;
+			$userId                = \DB::table('user')->insertGetId($userInfo);
 			
-			# 对密码进行加密
-			$data['password'] = easy_encrypt($data['password'], $salt);
-			
+			# 保存登录凭证
 			$userAuth = [
 				'user_id'       => $userId,
-				'identity_type' => $data['identityType'],
-				'identity'      => $data['account'],
-				'credential'    => $data['password'],
-				'salt'          => $salt,
+				'identity_type' => $authData['identityType'],
+				'identity'      => $authData['identity'],
+				'credential'    => $authData['credential'],
+				'salt'          => isset($authData['salt']) ? $authData['salt'] : '',
 				'create_at'     => $now,
 				'create_ip'     => getClientIp(true),
 			];
@@ -274,6 +267,10 @@ class UserService {
 		$res   = \DB::table('user_auth')->where($where)->count('id');
 		
 		return $res > 0 ? true : false;
+	}
+	
+	public function handelOAuthLogin($authData, $userData) {
+		
 	}
 	
 	/**

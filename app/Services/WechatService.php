@@ -57,12 +57,14 @@ class WechatService {
 	 */
 	public function getAccessTokenAndOpenId($code) {
 		
-		$url     = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('APPID').'&secret='.env('APPSECRET').'&code='.$code.'&grant_type=authorization_code';
-		$resJson = file_get_contents($url);
-		$res     = json_decode($resJson, 1);
-		$key     = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
+		$url              = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('APPID').'&secret='.env('APPSECRET').'&code='.$code.'&grant_type=authorization_code';
+		$resJson          = file_get_contents($url);
+		$res              = json_decode($resJson, 1);
+		$res['create_at'] = time();
+		$key              = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
 		redisSet($key, $res);
-		echo $resJson;
+		
+		return $res;
 	}
 	
 	/**
@@ -79,6 +81,12 @@ class WechatService {
 		
 		# extra access_token
 		$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$accessToken.'&openid='.$openid.'&lang=zh_CN';
+		$resJson          = file_get_contents($url);
+		$res              = json_decode($resJson, 1);
+		$key              = sprintf(config('cache.WECHAT.USER_INFO'), $res['openid']);
+		redisSet($key, $res);
+		
+		return $res;
 	}
 	
 	public function checkAccessToken($accessToken, $openid) {

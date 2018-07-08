@@ -94,6 +94,7 @@ return [
 	'ADMIN_LOG_INFO'       => env('APP_NAME').':manager_info:%s@86400', # 管理员登录信息
 	'WECHAT'               => [
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
+		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
 	],
 
 ];
