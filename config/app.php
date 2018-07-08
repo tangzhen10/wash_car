@@ -185,6 +185,7 @@ return [
 		App\Providers\ManagerServiceProvider::class, # 管理员 李小同 2018-7-3 08:26:50
 		App\Providers\RoleServiceProvider::class, # 角色 李小同 2018-7-3 15:14:54
 		App\Providers\PermissionServiceProvider::class, # 权限 李小同 2018-7-4 11:23:07
+		App\Providers\WechatServiceProvider::class, # 微信 李小同 2018-7-8 11:10:27
 	
 	],
 	
@@ -241,6 +242,7 @@ return [
 		'ManagerService'    => App\Facades\ManagerServiceFacade::class, # 管理员 李小同 2018-7-3 08:26:27
 		'RoleService'       => App\Facades\RoleServiceFacade::class, # 角色 李小同 2018-7-3 15:14:34
 		'PermissionService' => App\Facades\PermissionServiceFacade::class, # 权限 李小同 2018-7-4 11:23:21
+		'WechatService'     => App\Facades\WechatServiceFacade::class, # 微信 李小同 2018-7-8 11:10:14
 	
 	],
 

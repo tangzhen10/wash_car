@@ -37,5 +37,18 @@ Route::group(['namespace' => 'Main'], function () {
 		
 	});
 	
+	# 微信
+	Route::group(['prefix' => 'wechat'], function () {
+		
+		# 获取access_token
+		Route::get('baseAccessToken', ['uses' => 'WechatController@baseAccessToken', 'as' => 'wechatBaseAccessToken']);
+		
+		# 获取openid
+		Route::get('openid', ['uses' => 'WechatController@getAccessTokenAndOpenId', 'as' => 'wechatOpenid']);
+		
+		# 获取用户信息
+		Route::get('userinfo', ['uses' => 'WechatController@getUserInfo', 'as' => 'wechatUserInfo']);
+	});
+	
 });
 

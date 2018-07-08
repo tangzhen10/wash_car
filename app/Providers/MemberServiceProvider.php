@@ -24,7 +24,7 @@ class MemberServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('MemberService', function () {
-        	return \App\Services\MemberService::class;
+        	return new \App\Services\MemberService();
         });
     }
 }
