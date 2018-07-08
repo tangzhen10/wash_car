@@ -43,7 +43,7 @@ class UserController extends BaseController {
 	 */
 	public function login() {
 		
-		$loginInfo = $this->user->handleLogin();
+		$loginInfo = $this->user->loginByPassword();
 		
 		json_msg($loginInfo);
 	}

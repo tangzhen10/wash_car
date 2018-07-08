@@ -77,10 +77,9 @@ class WechatService {
 		$url = 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.env('APPID').'&grant_type=refresh_token&refresh_token='.$refreshToken;
 	}
 	
-	public function getUserInfo($accessToken, $openid) {
+	public function getUserInfo($accessToken, $openid, $lang = 'zh_CN') {
 		
-		# extra access_token
-		$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$accessToken.'&openid='.$openid.'&lang=zh_CN';
+		$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$accessToken.'&openid='.$openid.'&lang='.$lang;
 		$resJson          = file_get_contents($url);
 		$res              = json_decode($resJson, 1);
 		$key              = sprintf(config('cache.WECHAT.USER_INFO'), $res['openid']);

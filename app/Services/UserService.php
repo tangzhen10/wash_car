@@ -63,7 +63,11 @@ class UserService {
 		$password     = $data['password'];
 		
 		# 检测是否已注册
-		$this->checkExistIdentity($identityType, $identity);
+		$hasRegister = $this->checkExistIdentity($identityType, $identity);
+		if ($hasRegister) {
+			$errorMsg = trans('validation.has_been_registered', ['attr' => trans('common.'.$identityType)]);
+			json_msg($errorMsg, 40002);
+		}
 		
 		# 对密码进行加密
 		$salt       = create_salt();
@@ -82,17 +86,13 @@ class UserService {
 	 */
 	public function checkExistIdentity($identityType, $identity) {
 		
-		$where       = [
+		$where = [
 			'identity_type' => $identityType,
 			'identity'      => $identity,
 		];
-		$hasRegister = \DB::table('user_auth')->where($where)->count('id');
-		if ($hasRegister) {
-			$errorMsg = trans('validation.has_been_registered', ['attr' => trans('common.'.$identityType)]);
-			json_msg($errorMsg, 40002);
-		}
+		$row   = \DB::table('user_auth')->where($where)->pluck('user_id');
 		
-		return true;
+		return count($row) ? $row[0] : false;
 	}
 	
 	/**
@@ -119,7 +119,7 @@ class UserService {
 				'user_id'       => $userId,
 				'identity_type' => $authData['identityType'],
 				'identity'      => $authData['identity'],
-				'credential'    => $authData['credential'],
+				'credential'    => isset($authData['credential']) ? $authData['credential'] : '',
 				'salt'          => isset($authData['salt']) ? $authData['salt'] : '',
 				'create_at'     => $now,
 				'create_ip'     => getClientIp(true),
@@ -128,7 +128,7 @@ class UserService {
 			
 			if ($userId && $authId) \DB::commit();
 			
-			return true;
+			return $userId;
 			
 		} catch (\Exception $e) {
 			
@@ -138,11 +138,11 @@ class UserService {
 	}
 	
 	/**
-	 * 处理登录操作
+	 * 密码登录
 	 * @author 李小同
 	 * @date   2018-6-29 10:31:51
 	 */
-	public function handleLogin() {
+	public function loginByPassword() {
 		
 		$data         = $this->_validation();
 		$account      = $data['account'];
@@ -159,20 +159,7 @@ class UserService {
 		# 登录成功
 		if (easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
 			
-			# 保存最近登录信息
-			$lastLoginInfo = [
-				'last_login_at' => time(),
-				'last_login_ip' => getClientIp(true),
-			];
-			$where         = ['user_id' => $identityInfo['user_id']];
-			\DB::table('user')->where($where)->update($lastLoginInfo);
-			
-			$userInfo          = $this->getUserInfo($identityInfo['user_id']);
-			$userInfo['token'] = create_token();
-			
-			# 服务器端保存登录信息
-			$cacheKey = sprintf(config('cache.USER_INFO'), $userInfo['token']);
-			redisSet($cacheKey, $userInfo);
+			$userInfo = $this->handleLogin($identityInfo['user_id']);
 			
 			return $userInfo;
 			
@@ -187,6 +174,34 @@ class UserService {
 				# todo lxt 登录错误日志
 			}
 		}
+	}
+	
+	/**
+	 * 处理登录
+	 * 保存登录信息，获取token
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-7-8 22:15:07
+	 * @return array
+	 */
+	public function handleLogin($userId) {
+		
+		# 保存最近登录信息
+		$lastLoginInfo = [
+			'last_login_at' => time(),
+			'last_login_ip' => getClientIp(true),
+		];
+		$where         = ['user_id' => $userId];
+		\DB::table('user')->where($where)->update($lastLoginInfo);
+		
+		$userInfo          = $this->getUserInfo($userId);
+		$userInfo['token'] = create_token();
+		
+		# 服务器端保存登录信息
+		$cacheKey = sprintf(config('cache.USER_INFO'), $userInfo['token']);
+		redisSet($cacheKey, $userInfo);
+		
+		return $userInfo;
 	}
 	
 	/**
@@ -205,6 +220,7 @@ class UserService {
 			# 生日在1970-01-01的人，birthday字段为0
 			$userInfo['birthday'] = $userInfo['birthday'] != -1 ? date('Y-m-d', $userInfo['birthday']) : '';
 			
+			$userInfo['gender_text']   = trans('common.gender_'.$userInfo['gender']);
 			$userInfo['create_at']     = date('Y-m-d H:i:s', $userInfo['create_at']);
 			$userInfo['last_login_at'] = $userInfo['last_login_at'] > 0 ? date('Y-m-d H:i:s', $userInfo['last_login_at']) : '';
 			$userInfo['last_login_ip'] = long2ip($userInfo['last_login_ip']);
