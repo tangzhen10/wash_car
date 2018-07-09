@@ -14,42 +14,44 @@ class UserController extends Controller {
 		
 		if (is_weixin()) {
 			
-			$token = cookie('token');
+			$flagLogin = false;
+			
+			$token = isset($_COOKIE['token']) ? $_COOKIE['token'] : '';
 			if ($token) {
 				$cacheKey = sprintf(config('cache.USER_INFO'), $token);
 				$userInfo = redisGet($cacheKey);
-				if (is_array($userInfo) && !empty($userInfo['user_id'])) {
-					
+				if (is_array($userInfo) && !empty($userInfo['user_id'])) $flagLogin = true;
+			}
+			
+			if (!$flagLogin) {
+				
+				$refreshToken = isset($_COOKIE['refresh_token']) ? $_COOKIE['refresh_token'] : '';
+				if ($refreshToken) {
+					$res = \WechatService::refreshAccessToken($refreshToken);
+				} elseif (!empty($_GET['code'])) {
+					$code = $_GET['code'];
+					$res  = \WechatService::getAccessTokenAndOpenId($code);
 				} else {
-					$refreshToken = cookie('refresh_token');
-					if ($refreshToken) {
-						$res = \WechatService::refreshAccessToken($refreshToken);
+					\WechatService::getCode('user/info', 'snsapi_base');
+				}
+				
+				if (!empty($res['openid'])) {
+					# 获取到openid后，检测之前有无注册过
+					$userId = \UserService::checkExistIdentity('wechat', $res['openid']);
+					
+					if (!$userId) { # 微信自动注册
+						$userId = $this->_bindUserId($res['access_token'], $res['openid']);
 					}
 					
-					if (!empty($_GET['code'])) {
-						$code = $_GET['code'];
-						$res  = \WechatService::getAccessTokenAndOpenId($code);
-					} else {
-						\WechatService::getCode('user/info', 'snsapi_base');
-//						\WechatService::getCode('user/info', 'snsapi_userinfo');
-					}
+					# 登录
+					$userInfo = \UserService::handleLogin($userId, ['wechat' => $res]);
 					
-					if (!empty($res['openid'])) {
-						# 获取到openid后，检测之前有无注册过
-						$userId = \UserService::checkExistIdentity('wechat', $res['openid']);
-						
-						if (!$userId) { # 微信自动注册
-							$userId = $this->_bindUserId($res['access_token'], $res['openid']);
-						}
-						
-						# 登录
-						$userInfo = \UserService::handleLogin($userId, ['wechat' => $res]);
-						
-						setcookie('token', $userInfo['token']);
-						setcookie('refresh_token', $userInfo['refresh_token']);
-						
-						$userInfo = \UserService::getUserInfo($userId);
-					}
+					setcookie('token', $userInfo['token'], time() + 7000, '/');
+					setcookie('refresh_token', $res['refresh_token'], time() + 29*24*3600, '/');
+					
+					$userInfo = \UserService::getUserInfo($userId);
+				} else {
+					return redirect()->route(\Route::currentRouteName());
 				}
 			}
 			

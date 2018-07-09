@@ -48,6 +48,7 @@ class WechatService {
 		# 若提示“该链接无法访问”，请检查参数是否填写错误，是否拥有scope参数对应的授权作用域权限。
 		$url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.env('APPID').'&redirect_uri='.urlencode(env('REDIRECT_URI').'/'.$url).'&response_type=code&scope='.$scope.'&state=113#wechat_redirect';
 		header('Location:'.$url);
+		die;
 	}
 	
 	/**
@@ -60,7 +61,7 @@ class WechatService {
 		$url     = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('APPID').'&secret='.env('APPSECRET').'&code='.$code.'&grant_type=authorization_code';
 		$resJson = file_get_contents($url);
 		$res     = json_decode($resJson, 1);
-		if (empty($res['openid'])) json_msg($res['errmsg'], $res['errcode']);
+		if (empty($res['openid'])) return [];
 		
 		$res['create_at'] = time();
 		$key              = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
@@ -81,7 +82,7 @@ class WechatService {
 		$url     = 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.env('APPID').'&grant_type=refresh_token&refresh_token='.$refreshToken;
 		$resJson = file_get_contents($url);
 		$res     = json_decode($resJson, 1);
-		if (empty($res['openid'])) json_msg($res['errmsg'], $res['errcode']);
+		if (empty($res['openid'])) return [];
 		
 		$res['create_at'] = time();
 		$key              = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
