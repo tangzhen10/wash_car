@@ -10,41 +10,52 @@ class UserController extends Controller {
 	# 个人中心
 	public function info() {
 		
+		$pageTitle = '个人中心';
+		
 		if (is_weixin()) {
 			
-			if (!empty($_GET['code'])) {
-				$code = $_GET['code'];
-				$res  = \WechatService::getAccessTokenAndOpenId($code);
-				
-				if (!empty($res['openid'])) {
-					# 获取到openid后，检测之前有无注册过
-					$userId = \UserService::checkExistIdentity('wechat', $res['openid']);
-					if (!$userId) {
-						$userId = $this->_bindUserId($res['access_token'], $res['openid']);
-					} else {
-						# 登录
-						$userInfo = \UserService::handleLogin($userId);
-						
-						setcookie('token', $userInfo['token']);
+			$token = cookie('token');
+			if ($token) {
+				$cacheKey = sprintf(config('cache.USER_INFO'), $token);
+				$userInfo = redisGet($cacheKey);
+				if (is_array($userInfo) && !empty($userInfo['user_id'])) {
+					
+				} else {
+					$refreshToken = cookie('refresh_token');
+					if ($refreshToken) {
+						$res = \WechatService::refreshAccessToken($refreshToken);
 					}
 					
-					$userInfo = \UserService::getUserInfo($userId);
+					if (!empty($_GET['code'])) {
+						$code = $_GET['code'];
+						$res  = \WechatService::getAccessTokenAndOpenId($code);
+					} else {
+						\WechatService::getCode('user/info', 'snsapi_base');
+//						\WechatService::getCode('user/info', 'snsapi_userinfo');
+					}
 					
-					return view('wechat/user/info', compact('userInfo'));
+					if (!empty($res['openid'])) {
+						# 获取到openid后，检测之前有无注册过
+						$userId = \UserService::checkExistIdentity('wechat', $res['openid']);
+						
+						if (!$userId) { # 微信自动注册
+							$userId = $this->_bindUserId($res['access_token'], $res['openid']);
+						}
+						
+						# 登录
+						$userInfo = \UserService::handleLogin($userId, ['wechat' => $res]);
+						
+						setcookie('token', $userInfo['token']);
+						setcookie('refresh_token', $userInfo['refresh_token']);
+						
+						$userInfo = \UserService::getUserInfo($userId);
+					}
 				}
-				
-			} else {
-				\WechatService::getCode('user/info', 'snsapi_base');
-//				\WechatService::getCode('user/info', 'snsapi_userinfo');
 			}
-
-//			if (!empty($_GET['code'])) {
-//				$code = $_GET['code'];
-//				\WechatService::getAccessTokenAndOpenId($code);
-//			} else {
-//				\WechatService::getCode('user/info', 'snsapi_base');
-//			}
 			
+			return view('wechat/user/info', compact('userInfo', 'pageTitle'));
+		} else {
+			echo '非微信浏览器，个人中心待完成';
 		}
 	}
 	
@@ -66,7 +77,7 @@ class UserController extends Controller {
 		];
 		$userData = [
 			'nickname' => $wechatUserInfo['nickname'],
-			'gender'   => $wechatUserInfo['sex'],
+			'gender'   => strval($wechatUserInfo['sex']),
 			'avatar'   => $wechatUserInfo['headimgurl'],
 			'language' => $wechatUserInfo['language'],
 			'city'     => $wechatUserInfo['city'],

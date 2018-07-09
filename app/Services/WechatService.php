@@ -57,9 +57,11 @@ class WechatService {
 	 */
 	public function getAccessTokenAndOpenId($code) {
 		
-		$url              = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('APPID').'&secret='.env('APPSECRET').'&code='.$code.'&grant_type=authorization_code';
-		$resJson          = file_get_contents($url);
-		$res              = json_decode($resJson, 1);
+		$url     = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.env('APPID').'&secret='.env('APPSECRET').'&code='.$code.'&grant_type=authorization_code';
+		$resJson = file_get_contents($url);
+		$res     = json_decode($resJson, 1);
+		if (empty($res['openid'])) json_msg($res['errmsg'], $res['errcode']);
+		
 		$res['create_at'] = time();
 		$key              = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
 		redisSet($key, $res);
@@ -68,26 +70,65 @@ class WechatService {
 	}
 	
 	/**
+	 * @param $refreshToken
 	 * 由于access_token拥有较短的有效期，当access_token超时后，可以使用refresh_token进行刷新，refresh_token有效期为30天，当refresh_token失效之后，需要用户重新授权。
 	 * @author 李小同
-	 * @date
+	 * @date   2018-7-9 20:47:52
+	 * @return array $res
 	 */
 	public function refreshAccessToken($refreshToken) {
 		
-		$url = 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.env('APPID').'&grant_type=refresh_token&refresh_token='.$refreshToken;
-	}
-	
-	public function getUserInfo($accessToken, $openid, $lang = 'zh_CN') {
+		$url     = 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.env('APPID').'&grant_type=refresh_token&refresh_token='.$refreshToken;
+		$resJson = file_get_contents($url);
+		$res     = json_decode($resJson, 1);
+		if (empty($res['openid'])) json_msg($res['errmsg'], $res['errcode']);
 		
-		$url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$accessToken.'&openid='.$openid.'&lang='.$lang;
-		$resJson          = file_get_contents($url);
-		$res              = json_decode($resJson, 1);
-		$key              = sprintf(config('cache.WECHAT.USER_INFO'), $res['openid']);
+		$res['create_at'] = time();
+		$key              = sprintf(config('cache.WECHAT.ACCESS_TOKEN'), $res['openid']);
 		redisSet($key, $res);
 		
 		return $res;
 	}
 	
+	/**
+	 * 获取微信用户信息
+	 * @param        $accessToken
+	 * @param        $openid
+	 * @param string $lang
+	 * @author 李小同
+	 * @date   2018-7-9 20:48:25
+	 * @return mixed
+	 */
+	public function getUserInfo($accessToken, $openid, $lang = 'zh_CN') {
+		
+		$url     = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$accessToken.'&openid='.$openid.'&lang='.$lang;
+		$resJson = file_get_contents($url);
+		$res     = json_decode($resJson, 1);
+		$key     = sprintf(config('cache.WECHAT.USER_INFO'), $res['openid']);
+		redisSet($key, $res);
+		
+		return $res;
+	}
+	
+	/*
+	 * 附：检验授权凭证（access_token）是否有效
+		
+		请求方法
+		
+		http：GET（请使用https协议） https://api.weixin.qq.com/sns/auth?access_token=ACCESS_TOKEN&openid=OPENID
+		参数说明
+		
+		参数	描述
+		access_token	网页授权接口调用凭证,注意：此access_token与基础支持的access_token不同
+		openid	用户的唯一标识
+		返回说明
+		正确的JSON返回结果：
+		
+		{ "errcode":0,"errmsg":"ok"}
+		错误时的JSON返回示例：
+		
+		{ "errcode":40003,"errmsg":"invalid openid"}
+	 */
 	public function checkAccessToken($accessToken, $openid) {
 		
 		$url = 'https://api.weixin.qq.com/sns/auth?access_token='.$accessToken.'&openid='.$openid;

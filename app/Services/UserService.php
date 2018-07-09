@@ -179,12 +179,13 @@ class UserService {
 	/**
 	 * 处理登录
 	 * 保存登录信息，获取token
-	 * @param $userId
+	 * @param int   $userId    用户id
+	 * @param array $extraData 额外保存的一些数据
 	 * @author 李小同
 	 * @date   2018-7-8 22:15:07
 	 * @return array
 	 */
-	public function handleLogin($userId) {
+	public function handleLogin($userId, $extraData = []) {
 		
 		# 保存最近登录信息
 		$lastLoginInfo = [
@@ -196,6 +197,7 @@ class UserService {
 		
 		$userInfo          = $this->getUserInfo($userId);
 		$userInfo['token'] = create_token();
+		$userInfo += $extraData;
 		
 		# 服务器端保存登录信息
 		$cacheKey = sprintf(config('cache.USER_INFO'), $userInfo['token']);
