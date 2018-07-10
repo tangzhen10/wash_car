@@ -59,4 +59,13 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'form/{id}', ['uses' => 'MemberController@form', 'as' => 'memberForm']);
 		
 	});
+	
+	# 内容
+	Route::group(['prefix' => 'content'], function () {
+		
+		# 文档类型结构
+		Route::get('structure', ['uses' => 'ContentController@structure', 'as' => 'contentStructure']);
+		# 文档类型结构表单
+		Route::get('structureForm/{id?}', ['uses' => 'ContentController@structureForm', 'as' => 'contentStructureForm']);
+	});
 });

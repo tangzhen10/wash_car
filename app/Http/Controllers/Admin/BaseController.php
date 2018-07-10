@@ -36,7 +36,7 @@ class BaseController extends Controller {
 		
 		if (\Request::getMethod() == 'GET') {
 			
-			$this->data['detail'] = $this->service->getDetailByid($id);
+			$this->data['detail'] = $this->service->getDetailById($id);
 			if (method_exists(static::class, 'assocDataForForm')) $this->data += static::assocDataForForm($this->data);
 			
 			return view('admin/'.static::MODULE.'/form', $this->data);
