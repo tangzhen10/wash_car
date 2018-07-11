@@ -6,10 +6,10 @@
 			<article class="cl pd-20">
 				<div class="text-c"> 日期范围：
 					<input type="text" name="date_from" class="input-text Wdate" style="width:120px;" value="{{$filter['date_from']}}"
-						   id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}'})">
+						   id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})">
 									 -
 					<input type="text" name="date_to" class="input-text Wdate" style="width:120px;" value="{{$filter['date_to']}}"
-						   id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d'})">
+						   id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
 					<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、电话、邮箱" id="" name="account" value="{{$filter['account']}}">
 					<button type="submit" class="btn btn-success radius" id="J_search" name="">
 						<i class="Hui-iconfont">&#xe665;</i> 搜用户

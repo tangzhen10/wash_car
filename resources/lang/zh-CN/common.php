@@ -10,6 +10,7 @@ return [
 	'wechat'              => '微信',
 	'manager_name'        => '管理员名称',
 	'permission'          => '权限',
+	'name'                => '名称',
 	'status'              => '状态',
 	'route'               => '路由',
 	'create_at'           => '创建时间',

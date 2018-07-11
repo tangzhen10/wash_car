@@ -180,14 +180,14 @@ return [
 		App\Providers\RouteServiceProvider::class,
 		
 		# 自定义服务
-		App\Providers\UserServiceProvider::class, # 用户 李小同 2018-6-28 14:26:45
-		App\Providers\ToolServiceProvider::class, # 工具 李小同 2018-6-29 16:39:52
-		App\Providers\ManagerServiceProvider::class, # 管理员 李小同 2018-7-3 08:26:50
-		App\Providers\RoleServiceProvider::class, # 角色 李小同 2018-7-3 15:14:54
-		App\Providers\PermissionServiceProvider::class, # 权限 李小同 2018-7-4 11:23:07
-		App\Providers\WechatServiceProvider::class, # 微信 李小同 2018-7-8 11:10:27
-		App\Providers\ContentTypeServiceProvider::class, # 文档类型 李小同 2018-7-10 23:59:16
-	
+		App\Providers\UserServiceProvider::class,           # 用户 李小同 2018-6-28 14:26:45
+		App\Providers\ToolServiceProvider::class,           # 工具 李小同 2018-6-29 16:39:52
+		App\Providers\ManagerServiceProvider::class,        # 管理员 李小同 2018-7-3 08:26:50
+		App\Providers\RoleServiceProvider::class,           # 角色 李小同 2018-7-3 15:14:54
+		App\Providers\PermissionServiceProvider::class,     # 权限 李小同 2018-7-4 11:23:07
+		App\Providers\WechatServiceProvider::class,         # 微信 李小同 2018-7-8 11:10:27
+		App\Providers\ContentTypeServiceProvider::class,    # 文档类型 李小同 2018-7-10 23:59:16
+		App\Providers\ArticleServiceProvider::class,        # 文章 李小同 2018-7-11 21:43:25
 	],
 	
 	/*
@@ -238,13 +238,14 @@ return [
 		'View'               => Illuminate\Support\Facades\View::class,
 		
 		# 自定义服务
-		'UserService'        => App\Facades\UserServiceFacade::class, # 用户 李小同 2018-6-28 14:28:08
-		'ToolService'        => App\Facades\ToolServiceFacade::class, # 工具 李小同 2018-6-29 16:39:59
-		'ManagerService'     => App\Facades\ManagerServiceFacade::class, # 管理员 李小同 2018-7-3 08:26:27
-		'RoleService'        => App\Facades\RoleServiceFacade::class, # 角色 李小同 2018-7-3 15:14:34
-		'PermissionService'  => App\Facades\PermissionServiceFacade::class, # 权限 李小同 2018-7-4 11:23:21
-		'WechatService'      => App\Facades\WechatServiceFacade::class, # 微信 李小同 2018-7-8 11:10:14
-		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class, # 文档类型 李小同 2018-7-10 23:58:55
+		'UserService'        => App\Facades\UserServiceFacade::class,           # 用户 李小同 2018-6-28 14:28:08
+		'ToolService'        => App\Facades\ToolServiceFacade::class,           # 工具 李小同 2018-6-29 16:39:59
+		'ManagerService'     => App\Facades\ManagerServiceFacade::class,        # 管理员 李小同 2018-7-3 08:26:27
+		'RoleService'        => App\Facades\RoleServiceFacade::class,           # 角色 李小同 2018-7-3 15:14:34
+		'PermissionService'  => App\Facades\PermissionServiceFacade::class,     # 权限 李小同 2018-7-4 11:23:21
+		'WechatService'      => App\Facades\WechatServiceFacade::class,         # 微信 李小同 2018-7-8 11:10:14
+		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class,    # 文档类型 李小同 2018-7-10 23:58:55
+		'ArticleService'     => App\Facades\ArticleServiceFacade::class,        # 文章 李小同 2018-7-11 21:43:49
 	],
 
 ];

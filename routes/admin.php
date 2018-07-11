@@ -68,6 +68,19 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 增改
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ContentTypeController@form', 'as' => 'contentTypeForm']);
 		# 修改状态
-		Route::post('changeStatus', ['uses' => 'ContentTypeController@changeStatus', 'as' => 'contentTypeChangeStatus']);
+		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ContentTypeController@changeStatus', 'as' => 'contentTypeChangeStatus']);
 	});
+	
+	# 文章
+	Route::group(['prefix' => 'article'], function () {
+		
+		# 列表
+		Route::get('list', ['uses' => 'ArticleController@articleList', 'as' => 'articleList']);
+		# 增改
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ArticleController@form', 'as' => 'articleForm']);
+		# 修改状态
+		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ArticleController@changeStatus', 'as' => 'articleChangeStatus']);
+	});
+	
+	
 });

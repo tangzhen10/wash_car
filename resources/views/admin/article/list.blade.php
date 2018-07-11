@@ -7,8 +7,8 @@
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
 						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-						<a href="javascript:;" onclick="layer_show('添加文档类型','{{route('contentTypeForm')}}','1000','600')" class="btn btn-primary radius">
-							<i class="Hui-iconfont">&#xe600;</i> 添加文档类型
+						<a href="javascript:;" onclick="layer_show('添加文章','{{route('articleForm')}}','1200','600')" class="btn btn-primary radius">
+							<i class="Hui-iconfont">&#xe600;</i> 添加文章
 						</a>
 					</span>
 					<span class="r">共有数据：<strong>{{count($typeList)}}</strong> 条</span>
@@ -16,7 +16,7 @@
 				<table class="table table-border table-bordered table-bg">
 					<thead>
 					<tr>
-						<th scope="col" colspan="9">文档类型列表</th>
+						<th scope="col" colspan="9">文章列表</th>
 					</tr>
 					<tr class="text-c">
 						<th width="25"><input type="checkbox" name="" value=""></th>
