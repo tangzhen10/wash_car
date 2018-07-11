@@ -76,10 +76,7 @@ class PermissionService extends BaseService {
 		
 		$list = $list->orderBy('level', 'asc')->orderBy('sort', 'asc')->get()->toArray();
 		
-		foreach ($list as &$item) {
-			$item['status_text'] = trans('common.'.($item['status'] ? 'enable' : 'disable'));
-		}
-		unset($item);
+		$this->addStatusText($list);
 		
 		$treeList = [];
 		foreach ($list as $item) {

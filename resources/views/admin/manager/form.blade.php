@@ -76,23 +76,7 @@
 				onkeyup       : false,
 //				focusCleanup  : true,
 				success       : "valid",
-				submitHandler : function (form) {
-					$(form).ajaxSubmit({
-						type       : 'post',
-						dataType   : 'json',
-						beforeSend : function () {layer.load(3)},
-						success    : function (data) {
-							layer.close(layer.load());
-							if (data.code == 0 && data.msg == 'ok') {
-								var index = parent.layer.getFrameIndex(window.name);
-								window.parent.location.reload();
-								parent.layer.close(index);
-							} else {
-								layer.msg(data.error, function () {});
-							}
-						}
-					});
-				}
+				submitHandler : function (form) {handleAjaxForm(form)}
 			});
 		});
 	</script>

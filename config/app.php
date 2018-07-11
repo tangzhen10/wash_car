@@ -186,7 +186,7 @@ return [
 		App\Providers\RoleServiceProvider::class, # 角色 李小同 2018-7-3 15:14:54
 		App\Providers\PermissionServiceProvider::class, # 权限 李小同 2018-7-4 11:23:07
 		App\Providers\WechatServiceProvider::class, # 微信 李小同 2018-7-8 11:10:27
-		App\Providers\ContentServiceProvider::class, # 内容 李小同 2018-7-10 23:59:16
+		App\Providers\ContentTypeServiceProvider::class, # 文档类型 李小同 2018-7-10 23:59:16
 	
 	],
 	
@@ -203,49 +203,48 @@ return [
 	
 	'aliases' => [
 		
-		'App'               => Illuminate\Support\Facades\App::class,
-		'Artisan'           => Illuminate\Support\Facades\Artisan::class,
-		'Auth'              => Illuminate\Support\Facades\Auth::class,
-		'Blade'             => Illuminate\Support\Facades\Blade::class,
-		'Broadcast'         => Illuminate\Support\Facades\Broadcast::class,
-		'Bus'               => Illuminate\Support\Facades\Bus::class,
-		'Cache'             => Illuminate\Support\Facades\Cache::class,
-		'Config'            => Illuminate\Support\Facades\Config::class,
-		'Cookie'            => Illuminate\Support\Facades\Cookie::class,
-		'Crypt'             => Illuminate\Support\Facades\Crypt::class,
-		'DB'                => Illuminate\Support\Facades\DB::class,
-		'Eloquent'          => Illuminate\Database\Eloquent\Model::class,
-		'Event'             => Illuminate\Support\Facades\Event::class,
-		'File'              => Illuminate\Support\Facades\File::class,
-		'Gate'              => Illuminate\Support\Facades\Gate::class,
-		'Hash'              => Illuminate\Support\Facades\Hash::class,
-		'Lang'              => Illuminate\Support\Facades\Lang::class,
-		'Log'               => Illuminate\Support\Facades\Log::class,
-		'Mail'              => Illuminate\Support\Facades\Mail::class,
-		'Notification'      => Illuminate\Support\Facades\Notification::class,
-		'Password'          => Illuminate\Support\Facades\Password::class,
-		'Queue'             => Illuminate\Support\Facades\Queue::class,
-		'Redirect'          => Illuminate\Support\Facades\Redirect::class,
-		'Redis'             => Illuminate\Support\Facades\Redis::class,
-		'Request'           => Illuminate\Support\Facades\Request::class,
-		'Response'          => Illuminate\Support\Facades\Response::class,
-		'Route'             => Illuminate\Support\Facades\Route::class,
-		'Schema'            => Illuminate\Support\Facades\Schema::class,
-		'Session'           => Illuminate\Support\Facades\Session::class,
-		'Storage'           => Illuminate\Support\Facades\Storage::class,
-		'URL'               => Illuminate\Support\Facades\URL::class,
-		'Validator'         => Illuminate\Support\Facades\Validator::class,
-		'View'              => Illuminate\Support\Facades\View::class,
+		'App'                => Illuminate\Support\Facades\App::class,
+		'Artisan'            => Illuminate\Support\Facades\Artisan::class,
+		'Auth'               => Illuminate\Support\Facades\Auth::class,
+		'Blade'              => Illuminate\Support\Facades\Blade::class,
+		'Broadcast'          => Illuminate\Support\Facades\Broadcast::class,
+		'Bus'                => Illuminate\Support\Facades\Bus::class,
+		'Cache'              => Illuminate\Support\Facades\Cache::class,
+		'Config'             => Illuminate\Support\Facades\Config::class,
+		'Cookie'             => Illuminate\Support\Facades\Cookie::class,
+		'Crypt'              => Illuminate\Support\Facades\Crypt::class,
+		'DB'                 => Illuminate\Support\Facades\DB::class,
+		'Eloquent'           => Illuminate\Database\Eloquent\Model::class,
+		'Event'              => Illuminate\Support\Facades\Event::class,
+		'File'               => Illuminate\Support\Facades\File::class,
+		'Gate'               => Illuminate\Support\Facades\Gate::class,
+		'Hash'               => Illuminate\Support\Facades\Hash::class,
+		'Lang'               => Illuminate\Support\Facades\Lang::class,
+		'Log'                => Illuminate\Support\Facades\Log::class,
+		'Mail'               => Illuminate\Support\Facades\Mail::class,
+		'Notification'       => Illuminate\Support\Facades\Notification::class,
+		'Password'           => Illuminate\Support\Facades\Password::class,
+		'Queue'              => Illuminate\Support\Facades\Queue::class,
+		'Redirect'           => Illuminate\Support\Facades\Redirect::class,
+		'Redis'              => Illuminate\Support\Facades\Redis::class,
+		'Request'            => Illuminate\Support\Facades\Request::class,
+		'Response'           => Illuminate\Support\Facades\Response::class,
+		'Route'              => Illuminate\Support\Facades\Route::class,
+		'Schema'             => Illuminate\Support\Facades\Schema::class,
+		'Session'            => Illuminate\Support\Facades\Session::class,
+		'Storage'            => Illuminate\Support\Facades\Storage::class,
+		'URL'                => Illuminate\Support\Facades\URL::class,
+		'Validator'          => Illuminate\Support\Facades\Validator::class,
+		'View'               => Illuminate\Support\Facades\View::class,
 		
 		# 自定义服务
-		'UserService'       => App\Facades\UserServiceFacade::class, # 用户 李小同 2018-6-28 14:28:08
-		'ToolService'       => App\Facades\ToolServiceFacade::class, # 工具 李小同 2018-6-29 16:39:59
-		'ManagerService'    => App\Facades\ManagerServiceFacade::class, # 管理员 李小同 2018-7-3 08:26:27
-		'RoleService'       => App\Facades\RoleServiceFacade::class, # 角色 李小同 2018-7-3 15:14:34
-		'PermissionService' => App\Facades\PermissionServiceFacade::class, # 权限 李小同 2018-7-4 11:23:21
-		'WechatService'     => App\Facades\WechatServiceFacade::class, # 微信 李小同 2018-7-8 11:10:14
-		'ContentService'    => App\Facades\ContentServiceFacade::class, # 内容 李小同 2018-7-10 23:58:55
-	
+		'UserService'        => App\Facades\UserServiceFacade::class, # 用户 李小同 2018-6-28 14:28:08
+		'ToolService'        => App\Facades\ToolServiceFacade::class, # 工具 李小同 2018-6-29 16:39:59
+		'ManagerService'     => App\Facades\ManagerServiceFacade::class, # 管理员 李小同 2018-7-3 08:26:27
+		'RoleService'        => App\Facades\RoleServiceFacade::class, # 角色 李小同 2018-7-3 15:14:34
+		'PermissionService'  => App\Facades\PermissionServiceFacade::class, # 权限 李小同 2018-7-4 11:23:21
+		'WechatService'      => App\Facades\WechatServiceFacade::class, # 微信 李小同 2018-7-8 11:10:14
+		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class, # 文档类型 李小同 2018-7-10 23:58:55
 	],
 
 ];

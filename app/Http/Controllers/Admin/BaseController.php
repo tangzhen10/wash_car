@@ -12,13 +12,21 @@ use App\Http\Controllers\Controller;
 
 class BaseController extends Controller {
 	
-	protected $data = []; # 模板渲染用的数据
-	protected $service = null;
+	protected $data        = []; # 模板渲染用的数据
+	protected $service     = null;
 	protected $baseService = null;
 	
 	public function __construct() {
 		
-		$serviceName               = 'App\Services\\'.ucfirst(static::MODULE).'Service';
+		$serviceNameStr = ucfirst(static::MODULE);
+		if (strpos(static::MODULE, '_') > -1) {
+			$module         = explode('_', static::MODULE);
+			$serviceNameStr = '';
+			foreach ($module as $item) {
+				$serviceNameStr .= ucfirst($item);
+			}
+		}
+		$serviceName               = 'App\Services\\'.$serviceNameStr.'Service';
 		$this->service             = new $serviceName();
 		$this->data['manager']     = \ManagerService::getManagerInfoByManagerId();
 		$this->data['menus']       = \PermissionService::getMenuList();

@@ -10,10 +10,10 @@ namespace App\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class ContentServiceFacade extends Facade {
+class ContentTypeServiceFacade extends Facade {
 	
 	protected static function getFacadeAccessor() {
 		
-		return 'ContentService';
+		return 'ContentTypeService';
 	}
 }

@@ -91,7 +91,7 @@ class ManagerController extends BaseController {
 	public function assocDataForForm($data = null) {
 		
 		# 获取管理员拥有的角色
-		$managerRoles = $this->service->getRolesByManagerId();
+		$managerRoles = $this->service->getRolesByManagerId($data['detail']['id']);
 		
 		# 所有启用的角色列表
 		$roles = \RoleService::getList('1');

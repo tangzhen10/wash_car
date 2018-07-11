@@ -171,6 +171,12 @@ class ManagerService extends BaseService {
 			$data['password']  = easy_encrypt($data['password'], $data['salt']);
 			$data['create_at'] = date('Y-m-d H:i:s');
 		}
+		# 权限不得为空
+		if (empty($data['roles'])) {
+			$error = trans('validation.required', ['attr' => trans('common.permission')]);
+			json_msg($error, 40001);
+		}
+		
 		unset($data['password_repeat']);
 	}
 	
@@ -247,19 +253,16 @@ class ManagerService extends BaseService {
 		
 		$fields   = ['a.id', 'a.name', 'a.create_at', 'a.last_login_at', 'a.last_login_ip', 'a.status'];
 		$fields[] = \DB::raw('GROUP_CONCAT(t_c.name) AS role');
-		$rows     = \DB::table('manager AS a')
+		$list     = \DB::table('manager AS a')
 		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')
 		               ->leftJoin('role AS c', 'c.id', '=', 'b.role_id')
 		               ->where('a.status', '!=', '-1')
 		               ->groupBy('a.id')
 		               ->get($fields)
 		               ->toArray();
-		foreach ($rows as &$row) {
-			$row['status_text'] = $row['status'] == '1' ? trans('common.enable') : trans('common.disable');
-		}
-		unset($row);
+		$this->addStatusText($list);
 		
-		return $rows;
+		return $list;
 	}
 	
 	/**
@@ -344,9 +347,9 @@ class ManagerService extends BaseService {
 				
 				\DB::table($this->module)->where('id', $data['id'])->update($data);
 				$managerId = $data['id'];
+				
+				\DB::table('manager_role')->where('manager_id', $managerId)->delete();
 			}
-			
-			\DB::table('manager_role')->where('manager_id', $managerId)->delete();
 			
 			$sql = 'INSERT INTO `t_manager_role` (manager_id, role_id) VALUES ';
 			if (count($roles)) {

@@ -60,12 +60,14 @@ Route::group(['namespace' => 'Admin'], function () {
 		
 	});
 	
-	# 内容
-	Route::group(['prefix' => 'content'], function () {
+	# 文档类型
+	Route::group(['prefix' => 'content_type'], function () {
 		
-		# 文档类型结构
-		Route::get('structure', ['uses' => 'ContentController@structure', 'as' => 'contentStructure']);
-		# 文档类型结构表单
-		Route::get('structureForm/{id?}', ['uses' => 'ContentController@structureForm', 'as' => 'contentStructureForm']);
+		# 列表
+		Route::get('list', ['uses' => 'ContentTypeController@typeList', 'as' => 'contentTypeList']);
+		# 增改
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ContentTypeController@form', 'as' => 'contentTypeForm']);
+		# 修改状态
+		Route::post('changeStatus', ['uses' => 'ContentTypeController@changeStatus', 'as' => 'contentTypeChangeStatus']);
 	});
 });

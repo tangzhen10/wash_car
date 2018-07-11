@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class ContentServiceProvider extends ServiceProvider {
+class ContentTypeServiceProvider extends ServiceProvider {
 	
 	/**
 	 * Bootstrap the application services.
@@ -20,9 +20,9 @@ class ContentServiceProvider extends ServiceProvider {
 	 */
 	public function register() {
 		
-		$this->app->singleton('ContentService', function () {
+		$this->app->singleton('ContentTypeService', function () {
 			
-			return new \App\Services\ContentService();
+			return new \App\Services\ContentTypeService();
 		});
 	}
 }

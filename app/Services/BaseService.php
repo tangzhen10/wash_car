@@ -86,4 +86,18 @@ class BaseService {
 			json_msg(trans('error.illegal_param'), 40003);
 		}
 	}
+	
+	/**
+	 * 为数组里的每一行追加状态文本字段
+	 * @param array $list
+	 * @author 李小同
+	 * @date   2018-7-11 15:54:45
+	 */
+	protected function addStatusText(array &$list = []) {
+		
+		foreach ($list as &$item) {
+			$item['status_text'] = trans('common.'.($item['status'] ? 'enable' : 'disable'));
+		}
+		unset($item);
+	}
 }

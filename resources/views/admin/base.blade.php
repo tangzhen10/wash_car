@@ -17,6 +17,27 @@
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/layer/2.4/layer.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui/js/H-ui.min.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui.admin/js/H-ui.admin.page.js')}}"></script>
+<script>
+	// ajax提交表单 李小同 2018-7-11 14:49:54
+	function handleAjaxForm(form) {
+		$(form).ajaxSubmit({
+			type       : 'post',
+			dataType   : 'json',
+			beforeSend : function () {layer.load(3)},
+			success    : function (data) {
+				layer.close(layer.load());
+				if (data.code == 0 && data.msg == 'ok') {
+					var index = parent.layer.getFrameIndex(window.name);
+					window.parent.location.reload();
+					layer.msg('{{trans('common.action_success')}}');
+//					parent.layer.close(index);
+				} else {
+					layer.msg(data.error, function () {});
+				}
+			}
+		});
+	}
+</script>
 @yield('js')
 </body>
 </html>
