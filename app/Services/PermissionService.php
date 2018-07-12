@@ -159,7 +159,8 @@ class PermissionService extends BaseService {
 		}
 		
 		foreach ($list as $item) {
-			if ($item['level'] == '2') $sortList[$item['pid']]['sub'][] = $item;
+			# 父级菜单被禁用，则下面所有的子菜单都不显示
+			if ($item['level'] == '2' && !empty($sortList[$item['pid']])) $sortList[$item['pid']]['sub'][] = $item;
 		}
 		
 		return $sortList;

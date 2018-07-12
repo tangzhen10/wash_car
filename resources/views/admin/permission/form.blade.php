@@ -1,7 +1,7 @@
 @extends('admin.base')
 @section('body')
 	<article class="cl pd-20">
-		<form class="form form-horizontal" id="form-permission">
+		<form class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
@@ -75,19 +75,11 @@
 	</article>
 @endsection
 @section('js')
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/validate-methods.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
 	<script>
 		
 		$(function () {
-			$('.skin-minimal input').iCheck({
-				checkboxClass : 'icheckbox-blue',
-				radioClass    : 'iradio-blue',
-				increaseArea  : '20%'
-			});
 			
-			$("#form-permission").validate({
+			$("#form").validate({
 				rules         : {
 					name   : {
 						required  : true,

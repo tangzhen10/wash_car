@@ -34,7 +34,7 @@
 @section('body')
 	<div class="login-form">
 		<h2 class="text-c c-white pt-5 pb-20">{{env('PROJECT_NAME')}}后台管理系统</h2>
-		<form id="form-login">
+		<form id="form">
 			<div class="cl mb-10">
 				<label class="form-label"><strong>ACCOUNT</strong></label>
 				<div class="formControls">
@@ -56,7 +56,7 @@
 	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
 	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
 	<script>
-		$('#form-login').validate({
+		$('#form').validate({
 			
 			rules         : {
 				name     : {

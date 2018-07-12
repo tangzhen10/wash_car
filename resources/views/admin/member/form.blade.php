@@ -1,7 +1,7 @@
 @extends('admin.base')
 @section('body')
 	<article class="cl pd-20">
-		<form action="" method="post" enctype="multipart/form-data" class="form form-horizontal" id="form-member">
+		<form action="" method="post" enctype="multipart/form-data" class="form form-horizontal" id="form">
 			<input type="hidden" name="user_id" value="{{$detail['user_id']}}" />
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
@@ -98,20 +98,11 @@
 	</article>
 @endsection
 @section('js')
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/validate-methods.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/My97DatePicker/4.8/WdatePicker.js')}}"></script>
 	<script>
 		
 		$(function () {
-			$('.skin-minimal input').iCheck({
-				checkboxClass : 'icheckbox-blue',
-				radioClass    : 'iradio-blue',
-				increaseArea  : '20%'
-			});
 			
-			$("#form-member").validate({
+			$("#form").validate({
 				rules         : {
 					nickname : {
 						required  : true,

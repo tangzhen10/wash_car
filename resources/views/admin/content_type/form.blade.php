@@ -67,9 +67,6 @@
 	</article>
 @endsection
 @section('js')
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/validate-methods.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
 	<script>
 		
 		$(function () {
@@ -89,12 +86,12 @@
 					@endforeach
 						'</select>'+
 					'<span>name：</span>'+
-					'<input name="field_name[]" class="input-text short_length mr-10" ' +
-					'title="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]" ' +
+					'<input name="field_name[]" class="input-text short_length mr-10" '+
+					'title="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]" '+
 					'placeholder="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]">'+
 					'<span>备选值：</span>'+
-					'<input name="field_value[]" class="input-text mr-10 middle_length"' +
-					'placeholder="单选框和复选框的值，以英文逗号隔开" ' +
+					'<input name="field_value[]" class="input-text mr-10 middle_length"'+
+					'placeholder="单选框和复选框的值，以英文逗号隔开" '+
 					'title="单选框和复选框的值，以英文逗号隔开">'+
 					'<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>'+
 					'<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>'+
@@ -121,12 +118,6 @@
 			$(document).on('click', '.J_down_row', function () {
 				var row = $(this).parents('.field_row');
 				row.next('.field_row').after(row);
-			});
-			
-			$('.skin-minimal input').iCheck({
-				checkboxClass : 'icheckbox-blue',
-				radioClass    : 'iradio-blue',
-				increaseArea  : '20%'
 			});
 			
 			$("#form").validate({

@@ -1,7 +1,7 @@
 @extends('admin.base')
 @section('body')
 	<article class="cl pd-20">
-		<form action="" method="post" class="form form-horizontal" id="form-role">
+		<form action="" method="post" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>角色名称：</label>
@@ -63,9 +63,6 @@
 	</article>
 @endsection
 @section('js')
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/validate-methods.js')}}"></script>
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
 	<script>
 		
 		$(function () {
@@ -89,7 +86,7 @@
 				}
 			});
 			
-			$("#form-role").validate({
+			$("#form").validate({
 				rules         : {
 					name : {
 						required : true,

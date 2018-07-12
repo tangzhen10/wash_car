@@ -69,6 +69,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ContentTypeController@form', 'as' => 'contentTypeForm']);
 		# 修改状态
 		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ContentTypeController@changeStatus', 'as' => 'contentTypeChangeStatus']);
+		# 文档类型的表单html
+		Route::get('formHtml/{id?}', ['uses' => 'ContentTypeController@formHtml', 'as' => 'contentTypeFormHtml']);
 	});
 	
 	# 文章

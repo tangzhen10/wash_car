@@ -16,6 +16,8 @@ return [
 	'create_at'           => '创建时间',
 	'home_page'           => '首页',
 	'value_check_element' => '单选框和复选框的值',
+	'start_time'          => '开始时间',
+	'end_time'            => '结束时间',
 	
 	# 性别
 	'gender_0'            => '',
