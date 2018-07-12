@@ -86,7 +86,7 @@ class ContentTypeService extends BaseService {
 				
 				$typeId = $data['id'];
 				\DB::table($this->module)->where('id', $typeId)->update($typeData);
-				\DB::table('content_type_structure')->delete('content_type_id', $typeId);
+				\DB::table('content_type_structure')->where('content_type_id', $typeId)->delete();
 			}
 			
 			$sql    = 'INSERT INTO 
@@ -140,5 +140,123 @@ class ContentTypeService extends BaseService {
 		return $list;
 	}
 	
+	public function getFormHtml($id) {
+		
+		$html        = '';
+		$contentType = $this->getDetailById($id);
+		if (!empty($contentType['structure'])) {
+			foreach ($contentType['structure'] as $field) {
+				
+				$funcName = $field['type'].'FormElement';
+				if (method_exists($this, $funcName)) $html .= $this->$funcName($field);
+			}
+		}
+		
+		return $html;
+	}
+	
+	/**
+	 * input表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-12 22:02:46
+	 * @return string
+	 */
+	public function inputFormElement(array $field) {
+		
+		$html = '<p>
+					<span>'.$field['name_text'].'：</span>
+					<input class="input-text radius" name="'.$field['name'].'" value="'.$field['value'].'" />
+				</p>';
+		
+		return $html;
+	}
+	
+	/**
+	 * textarea表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-12 22:02:46
+	 * @return string
+	 */
+	public function textareaFormElement(array $field) {
+		
+		$html = '<p>
+					<span>'.$field['name_text'].'：</span>
+					<textarea class="textarea radius" name="'.$field['name'].'">'.$field['value'].'</textarea>
+				</p>';
+		
+		return $html;
+	}
+	
+	/**
+	 * radio表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-12 22:02:46
+	 * @return string
+	 */
+	public function radioFormElement(array $field) {
+		
+		$html   = '<p><span>'.$field['name_text'].'：</span><span class="skin-minimal form_value">';
+		$groups = explode('|', $field['value']);
+		foreach ($groups as $group) {
+			$pos   = strpos($group, ',');
+			$text  = substr($group, 0, $pos);
+			$value = substr($group, $pos);
+			$html .= '<span class="radio-box">
+						<label><input type="radio" name="'.$field['name'].'" value="'.$value.'" >'.$text.'</label>
+					</span>';
+		}
+		$html .= '</span></p>';
+		
+		return $html;
+	}
+	
+	/**
+	 * checkbox表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-12 22:33:34
+	 * @return string
+	 */
+	public function checkboxFormElement(array $field) {
+		
+		$html   = '<p><span>'.$field['name_text'].'：</span><span class="skin-minimal form_value">';
+		$groups = explode('|', $field['value']);
+		foreach ($groups as $group) {
+			$pos   = strpos($group, ',');
+			$text  = substr($group, 0, $pos);
+			$value = substr($group, $pos);
+			$html .= '<span class="check-box">
+						<label><input type="checkbox" name="'.$field['name'].'" value="'.$value.'" >'.$text.'</label>
+					</span>';
+		}
+		$html .= '</span></p>';
+		
+		return $html;
+	}
+	
+	/**
+	 * select表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-12 22:39:55
+	 * @return string
+	 */
+	public function selectFormElement(array $field) {
+		
+		$html   = '<p><span>'.$field['name_text'].'：</span><select name="'.$field['name'].'" class="select-box">';
+		$groups = explode('|', $field['value']);
+		foreach ($groups as $group) {
+			$pos   = strpos($group, ',');
+			$text  = substr($group, 0, $pos);
+			$value = substr($group, $pos);
+			$html .= '<option value="'.$value.'" >'.$text.'</option>';
+		}
+		$html .= '</select></p>';
+		
+		return $html;
+	}
 	
 }

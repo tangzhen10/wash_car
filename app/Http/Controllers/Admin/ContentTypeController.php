@@ -45,9 +45,10 @@ class ContentTypeController extends BaseController {
 		
 		if (empty($id)) die;
 		
-		$fields = $this->service->getDetailById($id);
+		$fields = $this->service->getFormHtml($id);
 		
-		print_r($fields);die;
+		echo $fields;
+		die;
 	}
 	
 }

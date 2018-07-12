@@ -14,10 +14,26 @@
 		.field_row:hover {
 			background: #e0ebf1;
 		}
+		.note {
+			color: #f00;
+			font-style: italic;
+			margin-left: 20px;
+			font-size:12px;
+		}
+		.note li em {
+			font-style: normal;
+			color: green;
+			
+		}
 	</style>
 @endsection
 @section('body')
 	<article class="cl pd-20">
+		<ul class="note">
+			<li>name：英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]</li>
+			<li>name：公共属性<em>（包括name,sub_name,start_time,end_time,status,content_type）</em>不可以使用</li>
+			<li>value：单选框和复选框的值，格式为【名1,值1|名2,值2|名3,值3...】</li>
+		</ul>
 		<form action="" method="post" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
@@ -42,13 +58,9 @@
 									@endforeach
 								</select>
 								<span>name：</span>
-								<input name="field_name[]" class="input-text short_length mr-10" value="{{$field['name']}}"
-									   placeholder="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]"
-									   title="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]">
+								<input name="field_name[]" class="input-text short_length mr-10" value="{{$field['name']}}">
 								<span>备选值：</span>
-								<input name="field_value[]" class="input-text mr-10 middle_length" value="{{$field['value']}}"
-									   placeholder="单选框和复选框的值，以英文逗号隔开"
-									   title="单选框和复选框的值，以英文逗号隔开">
+								<input name="field_value[]" class="input-text mr-10 middle_length" value="{{$field['value']}}">
 								<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>
 								<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>
 								<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>
