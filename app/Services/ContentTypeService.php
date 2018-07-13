@@ -22,12 +22,18 @@ class ContentTypeService extends BaseService {
 	public function getDetailById($id = 0) {
 		
 		if ($id) {
-			$detail = \DB::table($this->module)->where('id', $id)->first(['id', 'name']);
 			
-			$detail['structure'] = \DB::table('content_type_structure')
-			                          ->where('content_type_id', $id)
-			                          ->get()
-			                          ->toArray();
+			$cacheKey = sprintf(config('cache.CONTENT_TYPE'), $id);
+			$detail   = redisGet($cacheKey);
+			if (false === $detail) {
+				$detail = \DB::table($this->module)->where('id', $id)->first(['id', 'name']);
+				
+				$detail['structure'] = \DB::table('content_type_structure')
+				                          ->where('content_type_id', $id)
+				                          ->get()
+				                          ->toArray();
+				redisSet($cacheKey, $detail);
+			}
 		} else {
 			$detail = [
 				'id'        => '0',
@@ -185,7 +191,7 @@ class ContentTypeService extends BaseService {
 		
 		$html = '<p>
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
-					<input class="input-text radius form_value_row" name="'.$field['name'].'" value="'.$field['value'].'" />
+					<input type="text" class="input-text radius form_value_row" name="'.$field['name'].'" value="'.$field['value'].'" />
 				</p>';
 		
 		return $html;
@@ -203,7 +209,7 @@ class ContentTypeService extends BaseService {
 		if (empty($field['value'])) $field['value'] = 'yyyy-MM-dd HH:mm:ss';
 		$html = '<p>
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
-					<input class="input-text radius form_value_row Wdate" name="'.$field['name'].'" value=""
+					<input type="text" class="input-text radius form_value_row Wdate" name="'.$field['name'].'" value=""
 					        onfocus="WdatePicker({dateFmt:\''.$field['value'].'\',skin:\'whyGreen\'})" />
 				</p>';
 		

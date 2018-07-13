@@ -34,27 +34,27 @@ class MemberController extends BaseController {
 	
 	/**
 	 * 增改表单所需相关数据
-	 * @param $data
+	 * @param array $detail
 	 * @author 李小同
 	 * @date   2018-7-6 21:12:08
 	 * @return array
 	 */
-	public function assocDataForForm($data = null) {
+	public function assocDataForForm($detail = []) {
 		
 		$check    = [];
-		$userId   = $data['detail']['user_id'];
+		$userId   = $detail['user_id'];
 		$authList = $this->service->getUserAuthList($userId);
 		
 		foreach ($authList as $auth) {
 			
 			switch ($auth['identity_type']) {
 				case 'email':
-					if ($data['detail']['email'] == $auth['identity']) {
+					if ($detail['email'] == $auth['identity']) {
 						$check['email'] = true;
 					}
 					break;
 				case 'phone':
-					if ($data['detail']['phone'] == $auth['identity']) {
+					if ($detail['phone'] == $auth['identity']) {
 						$check['phone'] = true;
 					}
 					break;

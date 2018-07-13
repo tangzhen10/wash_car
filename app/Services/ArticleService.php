@@ -37,6 +37,16 @@ class ArticleService extends BaseService {
 			foreach ($options as $option) {
 				$detail[$option['name']] = $option['value'];
 			}
+
+			# 复选框的值炸开成数组
+			$contentTypeId  = $detail['content_type'];
+			$contentType    = \ContentTypeService::getDetailById($contentTypeId);
+			foreach ($contentType['structure'] as $field) {
+				if ($field['type'] == 'checkbox' && strpos($field['name'], '[]') > -1) {
+					$name = substr($field['name'], 0, -2);
+					$detail[$name] = explode(',', $detail[$name]);
+				}
+			}
 			
 		} else {
 			$detail = [

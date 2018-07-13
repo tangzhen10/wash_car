@@ -20,12 +20,12 @@ class ContentTypeController extends BaseController {
 	
 	/**
 	 * 增改表单所需相关数据
-	 * @param $data
+	 * @param array $detail
 	 * @author 李小同
 	 * @date   2018-7-11 17:13:02
 	 * @return array
 	 */
-	public function assocDataForForm($data = null) {
+	public function assocDataForForm($detail = []) {
 		
 		# 自定义的表单类型
 		$formElements = $this->service->getFormElements();

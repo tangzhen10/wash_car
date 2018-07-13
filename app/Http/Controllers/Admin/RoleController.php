@@ -26,15 +26,15 @@ class RoleController extends BaseController {
 	
 	/**
 	 * 增改表单所需相关数据
-	 * @param $data
+	 * @param array $detail
 	 * @author 李小同
 	 * @date   2018-7-5 14:55:33
 	 * @return array
 	 */
-	public function assocDataForForm($data = null) {
+	public function assocDataForForm($detail = []) {
 		
 		# 获取指定角色的权限
-		$rolePermissions = $this->service->getPermissionsByRoleId($data['detail']['id']);
+		$rolePermissions = $this->service->getPermissionsByRoleId($detail['id']);
 		
 		# 所有启用的权限，树状结构
 		$permissions = \PermissionService::getTreeList('1');

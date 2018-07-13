@@ -12,8 +12,8 @@ use App\Http\Controllers\Controller;
 
 class BaseController extends Controller {
 	
-	protected $data        = []; # 模板渲染用的数据
-	protected $service     = null;
+	protected $data = []; # 模板渲染用的数据
+	protected $service = null;
 	protected $baseService = null;
 	
 	public function __construct() {
@@ -45,7 +45,9 @@ class BaseController extends Controller {
 		if (\Request::getMethod() == 'GET') {
 			
 			$this->data['detail'] = $this->service->getDetailById($id);
-			if (method_exists(static::class, 'assocDataForForm')) $this->data += static::assocDataForForm($this->data);
+			if (method_exists(static::class, 'assocDataForForm')) {
+				$this->data += static::assocDataForForm($this->data['detail']);
+			}
 			
 			return view('admin/'.static::MODULE.'/form', $this->data);
 			

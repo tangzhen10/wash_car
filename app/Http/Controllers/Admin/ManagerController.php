@@ -83,15 +83,15 @@ class ManagerController extends BaseController {
 	
 	/**
 	 * 增改表单所需相关数据
-	 * @param $data
+	 * @param array $detail
 	 * @author 李小同
 	 * @date   2018-7-5 14:55:15
 	 * @return array
 	 */
-	public function assocDataForForm($data = null) {
+	public function assocDataForForm($detail = []) {
 		
 		# 获取管理员拥有的角色
-		$managerRoles = $this->service->getRolesByManagerId($data['detail']['id']);
+		$managerRoles = $this->service->getRolesByManagerId($detail['id']);
 		
 		# 所有启用的角色列表
 		$roles = \RoleService::getList('1');

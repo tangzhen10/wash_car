@@ -97,5 +97,6 @@ return [
 		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
 	],
 	'TABLE_COLUMN'         => env('APP_NAME').':TABLE_COLUMN:%s@604800', # 表结构字段
+	'CONTENT_TYPE'         => env('APP_NAME').':CONTENT_TYPE:%s@604800', # 文档类型结构
 
 ];

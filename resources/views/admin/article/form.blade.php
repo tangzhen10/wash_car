@@ -95,18 +95,25 @@
 						layer.close(layer.load());
 						$('#J_private_attr_area').html(data);
 						
+						@foreach($detail as $name => $value)
+						@if (is_array($value))
+						@foreach($value as $checkboxValue)
+							$('input[name="{{$name}}[]"][type="checkbox"][value="{{$checkboxValue}}"]').attr('checked', 'checked');
+						@endforeach
+						@else
+						$('select[name="{{$name}}"],textarea[name="{{$name}}"]').val('{{$value}}');
+						$('input[name="{{$name}}"][type="text"]').val('{{$value}}');
+						$('input[name="{{$name}}"][type="radio"][value="{{$value}}"]').attr('checked', 'checked');
+						@endif
+						
+						@endforeach
+						
 						// iCkeck 单选框
 						$('.skin-minimal input').iCheck({
 							checkboxClass : 'icheckbox-blue',
 							radioClass    : 'iradio-blue',
 							increaseArea  : '20%'
 						});
-						
-						@foreach($detail as $name => $value)
-						$('input[name="{{$name}}"]').val('{{$value}}');
-						$('select[name="{{$name}}"]').val('{{$value}}');
-						$('textarea[name="{{$name}}"]').val('{{$value}}');
-						@endforeach
 					}
 				});
 			});
