@@ -140,6 +140,24 @@ class ContentTypeService extends BaseService {
 		return $list;
 	}
 	
+	/**
+	 * 获取文章公共属性表字段
+	 * @author 李小同
+	 * @date   2018-7-13 21:16:55
+	 * @return array
+	 */
+	public function getArticleBaseFields() {
+		
+		$cacheKey = sprintf(config('cache.TABLE_COLUMN'), 't_article_base');
+		$fields   = redisGet($cacheKey);
+		if (false === $fields) {
+			$fields = $this->getTableColumns('t_article_base');
+			redisSet($cacheKey, $fields);
+		}
+		
+		return $fields;
+	}
+	
 	# region formElement
 	public function getFormHtml($id) {
 		
@@ -224,7 +242,7 @@ class ContentTypeService extends BaseService {
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
 			$text  = substr($group, 0, $pos);
-			$value = substr($group, $pos);
+			$value = substr($group, $pos + 1);
 			$html .= '<span class="radio-box">
 						<label><input type="radio" name="'.$field['name'].'" value="'.$value.'" >'.$text.'</label>
 					</span>';
@@ -249,7 +267,7 @@ class ContentTypeService extends BaseService {
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
 			$text  = substr($group, 0, $pos);
-			$value = substr($group, $pos);
+			$value = substr($group, $pos + 1);
 			$html .= '<span class="check-box">
 						<label><input type="checkbox" name="'.$field['name'].'" value="'.$value.'" >'.$text.'</label>
 					</span>';
@@ -274,7 +292,7 @@ class ContentTypeService extends BaseService {
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
 			$text  = substr($group, 0, $pos);
-			$value = substr($group, $pos);
+			$value = substr($group, $pos + 1);
 			$html .= '<option value="'.$value.'" >'.$text.'</option>';
 		}
 		$html .= '</select></p>';

@@ -8,7 +8,10 @@ class ArticleController extends BaseController {
 	
 	public function articleList() {
 		
-		$this->data['typeList'] = \ContentTypeService::getList();
+		$list                     = $this->service->getList();
+		$this->data['list']       = $list['list'];
+		$this->data['pagination'] = $list['listPage'];
+		$this->data['typeList']   = \ContentTypeService::getList();
 		
 		return view('admin/article/list', $this->data);
 	}

@@ -20,7 +20,7 @@
     line-height: 25px;
     text-decoration: none;
 }
-.pagination li a:hover {
+.pagination li a:hover,.pagination li.active {
     background: #5a98de;
     color: #fff;
 }

@@ -200,54 +200,28 @@ function redisDel($key, $database = 'default') {
 	}
 }
 
-function httpGet($url) {
-	
-	//初始化
-	$curl = curl_init();
-	//设置抓取的url
-	curl_setopt($curl, CURLOPT_URL, $url);
-	//设置头文件的信息作为数据流输出
-	curl_setopt($curl, CURLOPT_HEADER, 1);
-	//设置获取的信息以文件流的形式返回，而不是直接输出。
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	//执行命令
-	$data = curl_exec($curl);
-	//关闭URL请求
-	curl_close($curl);
-	//显示获得的数据
-//	print_r($data);
-	
-	return $data;
-}
-
-function httpPost($url, $query = []) {
-	
-	//初始化
-	$curl = curl_init();
-	//设置抓取的url
-	curl_setopt($curl, CURLOPT_URL, $url);
-	//设置头文件的信息作为数据流输出
-	curl_setopt($curl, CURLOPT_HEADER, 1);
-	//设置获取的信息以文件流的形式返回，而不是直接输出。
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	//设置post方式提交
-	curl_setopt($curl, CURLOPT_POST, 1);
-	//设置post数据
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $query);
-	//执行命令
-	$data = curl_exec($curl);
-	//关闭URL请求
-	curl_close($curl);
-	//显示获得的数据
-//	print_r($data);
-	
-	return $data;
-}
-
+/**
+ * 判断是否是微信浏览器
+ * @author 李小同
+ * @date   2018-7-13 22:29:49
+ * @return bool
+ */
 function is_weixin() {
 	
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * 时间戳转时间
+ * @param int $timestamp
+ * @author 李小同
+ * @date   2018-7-13 22:31:22
+ * @return string
+ */
+function intToTime($timestamp = 0) {
+	
+	return $timestamp > 0 ? date('Y-m-d H:i:s', $timestamp) : '';
 }

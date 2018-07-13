@@ -96,5 +96,6 @@ return [
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
 		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
 	],
+	'TABLE_COLUMN'         => env('APP_NAME').':TABLE_COLUMN:%s@604800', # 表结构字段
 
 ];

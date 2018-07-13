@@ -18,7 +18,7 @@
 			color: #f00;
 			font-style: italic;
 			margin-left: 40px;
-			font-size:12px;
+			font-size: 12px;
 			list-style: decimal;
 		}
 		.note li em {
@@ -26,13 +26,29 @@
 			color: green;
 			
 		}
+		.note_nav {
+			border: 1px solid #a49293;
+			border-radius: 5px;
+			padding: 5px 10px;
+			background: #ffe3e6;
+		}
+		.note_nav i.c-black {
+			cursor: pointer;
+			font-size: 24px;
+			position: relative;
+			top: -8px;
+		}
 	</style>
 @endsection
 @section('body')
 	<article class="cl pd-20">
-		<ul class="note">
-			<span>注意事项</span><i class="Hui-iconfont"></i>
-			<li>name：英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]</li>
+		<p class="note_nav">
+			<i class="Hui-iconfont">&#xe6e0;</i> 注意事项
+			<i class="Hui-iconfont c-black r J_show_note">&#xe698;</i>
+			<i class="Hui-iconfont c-black r J_hide_note" style="display: none">&#xe699;</i>
+		</p>
+		<ul class="note" style="display: none;">
+			<li>name：英文字母、数字和下划线组成，不能以纯数字开头，复选框在后面加[]</li>
 			<li>name：公共属性<em>【{{$keyFields}}】</em>不可以使用</li>
 			<li>备选值：单选框和复选框的值，格式为【名1,值1|名2,值2|名3,值3...】</li>
 			<li>类型：类型为时间时，备选值为【yyyy-MM-dd HH:mm:ss】表示时间格式，不填表示使用该值作为默认值</li>
@@ -86,6 +102,20 @@
 		
 		$(function () {
 			
+			// 展示注意事项
+			$('.J_show_note').click(function () {
+				$(this).hide();
+				$('.J_hide_note').show();
+				$('.note').slideDown();
+			});
+			
+			// 隐藏注意事项
+			$('.J_hide_note').click(function () {
+				$(this).hide();
+				$('.J_show_note').show();
+				$('.note').slideUp();
+			});
+			
 			// 增加
 			$('.J_add_row').click(function () {
 				var row_html = '<div class="cl field_row">'+
@@ -96,10 +126,10 @@
 					''+
 					'<span>类型：</span>'+
 					'<select name="field_type[]" class="select-box radius middle_length mr-10">'+
-					@foreach($formElements as $item)
-						'<option value="{{$item['type']}}">{{$item['name']}}</option>'+
-					@endforeach
-						'</select>'+
+						@foreach($formElements as $item)
+							'<option value="{{$item['type']}}">{{$item['name']}}</option>'+
+						@endforeach
+							'</select>'+
 					'<span>name：</span>'+
 					'<input name="field_name[]" class="input-text radius short_length mr-10">'+
 					'<span>备选值：</span>'+

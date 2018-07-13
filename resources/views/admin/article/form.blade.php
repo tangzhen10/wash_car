@@ -59,7 +59,7 @@
 					</span>
 					
 					<span class="form_filed fv_up">文档类型：</span>
-					<select class="select-box radius mb-20 form_value J_content_type">
+					<select class="select-box radius mb-20 form_value J_content_type" name="content_type">
 						<option></option>
 						@foreach($typeList as $type)
 							<option value="{{$type['id']}}">{{$type['name']}}</option>
@@ -101,9 +101,17 @@
 							radioClass    : 'iradio-blue',
 							increaseArea  : '20%'
 						});
+						
+						@foreach($detail as $name => $value)
+						$('input[name="{{$name}}"]').val('{{$value}}');
+						$('select[name="{{$name}}"]').val('{{$value}}');
+						$('textarea[name="{{$name}}"]').val('{{$value}}');
+						@endforeach
 					}
 				});
 			});
+			
+			$('.J_content_type').val('{{$detail['content_type']}}').trigger('change');
 			
 			$("#form").validate({
 				rules         : {

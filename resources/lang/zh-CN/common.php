@@ -2,6 +2,7 @@
 
 return [
 	# 名词
+	'list'                => '列表',
 	'account'             => '账户',
 	'password'            => '密码',
 	'phone'               => '手机号码',
@@ -14,10 +15,15 @@ return [
 	'status'              => '状态',
 	'route'               => '路由',
 	'create_at'           => '创建时间',
+	'create_by'           => '创建人',
+	'update_at'           => '更新时间',
 	'home_page'           => '首页',
 	'value_check_element' => '单选框和复选框的值',
 	'start_time'          => '开始时间',
 	'end_time'            => '结束时间',
+	'content_type'        => '文档类型',
+	'article'             => '文章',
+	'article_name'        => '标题',
 	
 	# 性别
 	'gender_0'            => '',
