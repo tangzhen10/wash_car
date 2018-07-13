@@ -2,7 +2,7 @@
 @section('css')
 	<style>
 		.short_length {
-			width: 10%;
+			width: 12%;
 		}
 		.middle_length {
 			width: 15%;
@@ -17,8 +17,9 @@
 		.note {
 			color: #f00;
 			font-style: italic;
-			margin-left: 20px;
+			margin-left: 40px;
 			font-size:12px;
+			list-style: decimal;
 		}
 		.note li em {
 			font-style: normal;
@@ -30,16 +31,18 @@
 @section('body')
 	<article class="cl pd-20">
 		<ul class="note">
+			<span>注意事项</span><i class="Hui-iconfont"></i>
 			<li>name：英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]</li>
-			<li>name：公共属性<em>（包括name,sub_name,start_time,end_time,status,content_type）</em>不可以使用</li>
-			<li>value：单选框和复选框的值，格式为【名1,值1|名2,值2|名3,值3...】</li>
+			<li>name：公共属性<em>【{{$keyFields}}】</em>不可以使用</li>
+			<li>备选值：单选框和复选框的值，格式为【名1,值1|名2,值2|名3,值3...】</li>
+			<li>类型：类型为时间时，备选值为【yyyy-MM-dd HH:mm:ss】表示时间格式，不填表示使用该值作为默认值</li>
 		</ul>
 		<form action="" method="post" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
 				<strong class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文档类型名称：</strong>
 				<div class="formControls col-xs-8 col-sm-10">
-					<input type="text" class="input-text" value="{{$detail['name']}}" placeholder="" id="adminName" name="type_name">
+					<input type="text" class="input-text radius" value="{{$detail['name']}}" placeholder="" id="adminName" name="type_name">
 				</div>
 			</div>
 			<div class="row cl">
@@ -50,17 +53,17 @@
 							<label class="form-label col-xs-4 col-sm-2"></label>
 							<div class="formControls col-xs-8 col-sm-10">
 								<span>名称：</span>
-								<input name="field_name_text[]" class="input-text short_length mr-10" value="{{$field['name_text']}}">
+								<input name="field_name_text[]" class="input-text radius short_length mr-10" value="{{$field['name_text']}}">
 								<span>类型：</span>
-								<select name="field_type[]" class="select-box middle_length mr-10">
+								<select name="field_type[]" class="select-box radius short_length mr-10">
 									@foreach($formElements as $item)
 										<option value="{{$item['type']}}" @if ($item['type'] == $field['type']) selected @endif>{{$item['name']}}</option>
 									@endforeach
 								</select>
 								<span>name：</span>
-								<input name="field_name[]" class="input-text short_length mr-10" value="{{$field['name']}}">
+								<input name="field_name[]" class="input-text radius short_length mr-10" value="{{$field['name']}}">
 								<span>备选值：</span>
-								<input name="field_value[]" class="input-text mr-10 middle_length" value="{{$field['value']}}">
+								<input name="field_value[]" class="input-text radius mr-10 middle_length" value="{{$field['value']}}">
 								<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>
 								<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>
 								<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>
@@ -89,22 +92,18 @@
 					'<label class="form-label col-xs-4 col-sm-2"></label>'+
 					'<div class="formControls col-xs-8 col-sm-10">'+
 					'<span>名称：</span>'+
-					'<input name="field_name_text[]" class="input-text short_length mr-10">'+
+					'<input name="field_name_text[]" class="input-text radius short_length mr-10">'+
 					''+
 					'<span>类型：</span>'+
-					'<select name="field_type[]" class="select-box middle_length mr-10">'+
+					'<select name="field_type[]" class="select-box radius middle_length mr-10">'+
 					@foreach($formElements as $item)
 						'<option value="{{$item['type']}}">{{$item['name']}}</option>'+
 					@endforeach
 						'</select>'+
 					'<span>name：</span>'+
-					'<input name="field_name[]" class="input-text short_length mr-10" '+
-					'title="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]" '+
-					'placeholder="英文字母、数字和下划线组成，不能以纯数字开头，数组在后面加[]">'+
+					'<input name="field_name[]" class="input-text radius short_length mr-10">'+
 					'<span>备选值：</span>'+
-					'<input name="field_value[]" class="input-text mr-10 middle_length"'+
-					'placeholder="单选框和复选框的值，以英文逗号隔开" '+
-					'title="单选框和复选框的值，以英文逗号隔开">'+
+					'<input name="field_value[]" class="input-text radius mr-10 middle_length">'+
 					'<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>'+
 					'<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>'+
 					'<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>'+

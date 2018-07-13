@@ -100,4 +100,27 @@ class BaseService {
 		}
 		unset($item);
 	}
+	
+	/**
+	 * 获取表的相关信息
+	 * @param string $table    表名
+	 * @param array  $fields   要查询的表结构
+	 * @param string $database 数据库
+	 * @author 李小同
+	 * @date   2018-7-13 15:53:02
+	 * @return array
+	 */
+	public function getTableColumns($table, $fields = ['column_name'], $database = '') {
+		
+		if (empty($database)) $database = env('DB_DATABASE');
+		$fields = implode(',', $fields);
+		
+		$sql     = 'SELECT %s FROM information_schema.COLUMNS WHERE table_schema = \'%s\' AND table_name = \'%s\'';
+		$sql     = sprintf($sql, $fields, $database, $table);
+		$columns = \DB::select($sql);
+		$columns = array_column($columns, 'column_name');
+		
+		return $columns;
+	}
+	
 }

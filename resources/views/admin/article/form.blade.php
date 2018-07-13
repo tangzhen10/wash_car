@@ -10,6 +10,15 @@
 			display: inline-block;
 			width: 35%;
 		}
+		.form_filed_row {
+			display: inline-block;
+			text-align: right;
+			width: 10%;
+		}
+		.form_value_row {
+			display: inline-block;
+			width: 80%;
+		}
 		.select-box {
 			position: relative;
 			top: 8px;

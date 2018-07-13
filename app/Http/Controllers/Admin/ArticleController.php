@@ -8,7 +8,7 @@ class ArticleController extends BaseController {
 	
 	public function articleList() {
 		
-		$this->data['typeList'] = \ContentTypeService::getTypeList();
+		$this->data['typeList'] = \ContentTypeService::getList();
 		
 		return view('admin/article/list', $this->data);
 	}
@@ -22,7 +22,7 @@ class ArticleController extends BaseController {
 	 */
 	public function assocDataForForm($data = null) {
 		
-		$typeList = \ContentTypeService::getTypeList();
+		$typeList = \ContentTypeService::getList();
 		
 		return compact('typeList');
 	}

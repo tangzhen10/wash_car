@@ -14,7 +14,7 @@ class ContentTypeController extends BaseController {
 	 */
 	public function typeList() {
 		
-		$this->data['typeList'] = $this->service->getTypeList();
+		$this->data['typeList'] = $this->service->getList();
 		return view('admin/content_type/list', $this->data);
 	}
 	
@@ -29,8 +29,10 @@ class ContentTypeController extends BaseController {
 		
 		# 自定义的表单类型
 		$formElements = $this->service->getFormElements();
+		$fields       = $this->service->getTableColumns('t_article_base');
+		$keyFields    = implode(',', $fields);
 		
-		return compact('formElements');
+		return compact('formElements', 'keyFields');
 	}
 	
 	/**

@@ -131,7 +131,7 @@ class ContentTypeService extends BaseService {
 	 * @date   2018-7-11 15:46:58
 	 * @return array
 	 */
-	public function getTypeList() {
+	public function getList() {
 		
 		$list = \DB::table($this->module)->where('status', '!=', '-1')->get(['id', 'name', 'status'])->toArray();
 		
@@ -140,6 +140,7 @@ class ContentTypeService extends BaseService {
 		return $list;
 	}
 	
+	# region formElement
 	public function getFormHtml($id) {
 		
 		$html        = '';
@@ -165,8 +166,27 @@ class ContentTypeService extends BaseService {
 	public function inputFormElement(array $field) {
 		
 		$html = '<p>
-					<span>'.$field['name_text'].'：</span>
-					<input class="input-text radius" name="'.$field['name'].'" value="'.$field['value'].'" />
+					<span class="form_filed_row">'.$field['name_text'].'：</span>
+					<input class="input-text radius form_value_row" name="'.$field['name'].'" value="'.$field['value'].'" />
+				</p>';
+		
+		return $html;
+	}
+	
+	/**
+	 * 时间表单
+	 * @param array $field
+	 * @author 李小同
+	 * @date   2018-7-13 15:24:32
+	 * @return string
+	 */
+	public function datetimeFormElement(array $field) {
+		
+		if (empty($field['value'])) $field['value'] = 'yyyy-MM-dd HH:mm:ss';
+		$html = '<p>
+					<span class="form_filed_row">'.$field['name_text'].'：</span>
+					<input class="input-text radius form_value_row Wdate" name="'.$field['name'].'" value=""
+					        onfocus="WdatePicker({dateFmt:\''.$field['value'].'\',skin:\'whyGreen\'})" />
 				</p>';
 		
 		return $html;
@@ -182,8 +202,8 @@ class ContentTypeService extends BaseService {
 	public function textareaFormElement(array $field) {
 		
 		$html = '<p>
-					<span>'.$field['name_text'].'：</span>
-					<textarea class="textarea radius" name="'.$field['name'].'">'.$field['value'].'</textarea>
+					<span class="form_filed_row" style="position: relative;top: -45px;">'.$field['name_text'].'：</span>
+					<textarea class="textarea radius form_value_row" name="'.$field['name'].'">'.$field['value'].'</textarea>
 				</p>';
 		
 		return $html;
@@ -198,7 +218,8 @@ class ContentTypeService extends BaseService {
 	 */
 	public function radioFormElement(array $field) {
 		
-		$html   = '<p><span>'.$field['name_text'].'：</span><span class="skin-minimal form_value">';
+		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
+		<span class="skin-minimal form_value_row">';
 		$groups = explode('|', $field['value']);
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
@@ -222,7 +243,8 @@ class ContentTypeService extends BaseService {
 	 */
 	public function checkboxFormElement(array $field) {
 		
-		$html   = '<p><span>'.$field['name_text'].'：</span><span class="skin-minimal form_value">';
+		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
+		<span class="skin-minimal  form_value_row">';
 		$groups = explode('|', $field['value']);
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
@@ -246,7 +268,8 @@ class ContentTypeService extends BaseService {
 	 */
 	public function selectFormElement(array $field) {
 		
-		$html   = '<p><span>'.$field['name_text'].'：</span><select name="'.$field['name'].'" class="select-box">';
+		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
+		<select name="'.$field['name'].'" class="select-box radius form_value_row">';
 		$groups = explode('|', $field['value']);
 		foreach ($groups as $group) {
 			$pos   = strpos($group, ',');
@@ -258,5 +281,6 @@ class ContentTypeService extends BaseService {
 		
 		return $html;
 	}
+	# endregion
 	
 }
