@@ -37,13 +37,14 @@ class ArticleService extends BaseService {
 			foreach ($options as $option) {
 				$detail[$option['name']] = $option['value'];
 			}
-
+			
 			# 复选框的值炸开成数组
-			$contentTypeId  = $detail['content_type'];
-			$contentType    = \ContentTypeService::getDetailById($contentTypeId);
+			$contentTypeId = $detail['content_type'];
+			$contentType   = \ContentTypeService::getDetailById($contentTypeId);
 			foreach ($contentType['structure'] as $field) {
 				if ($field['type'] == 'checkbox' && strpos($field['name'], '[]') > -1) {
 					$name = substr($field['name'], 0, -2);
+					if (empty($detail[$name])) $detail[$name] = '';
 					$detail[$name] = explode(',', $detail[$name]);
 				}
 			}
@@ -72,6 +73,17 @@ class ArticleService extends BaseService {
 	 */
 	public function create() {
 		
+		return $this->update();
+	}
+	
+	/**
+	 * 修改
+	 * @author 李小同
+	 * @date   2018-7-14 08:25:29
+	 * @return mixed
+	 */
+	public function update() {
+		
 		$data = request_all();
 		
 		\DB::beginTransaction();
@@ -88,13 +100,20 @@ class ArticleService extends BaseService {
 				'create_by'    => \ManagerService::getManagerId(),
 			
 			];
-			$articleId       = \DB::table($this->module)->insertGetId($articleBaseData);
+			if ($data['id']) {
+				\DB::table($this->module)->where('id', $data['id'])->update($articleBaseData);
+				$articleId = $data['id'];
+			} else {
+				$articleId = \DB::table($this->module)->insertGetId($articleBaseData);
+			}
 			
 			# 私有属性
 			$baseFields = \ContentTypeService::getArticleBaseFields();
 			foreach ($baseFields as $field) {
 				if (isset($data[$field])) unset($data[$field]);
 			}
+			
+			\DB::table('article_detail')->where('article_id', $articleId)->delete();
 			
 			if (count($data)) {
 				

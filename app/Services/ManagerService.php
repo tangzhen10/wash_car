@@ -304,7 +304,7 @@ class ManagerService extends BaseService {
 	 */
 	public function create() {
 		
-		return $this->_saveManagerRole();
+		return $this->update();
 		
 	}
 	
@@ -315,17 +315,6 @@ class ManagerService extends BaseService {
 	 * @return mixed
 	 */
 	public function update() {
-		
-		return $this->_saveManagerRole();
-	}
-	
-	/**
-	 * 保存管理员的角色信息
-	 * @author 李小同
-	 * @date   2018-7-5 15:19:13
-	 * @return bool
-	 */
-	private function _saveManagerRole() {
 		
 		$data = request_all();
 		
