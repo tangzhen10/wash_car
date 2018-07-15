@@ -105,33 +105,29 @@ class ArticleService extends BaseService {
 				'start_time'   => empty($data['start_time']) ? 0 : strtotime($data['start_time']),
 				'end_time'     => empty($data['end_time']) ? 0 : strtotime($data['end_time']),
 				'content_type' => $data['content_type'],
-				'create_at'    => time(),
-				'create_by'    => \ManagerService::getManagerId(),
-			
 			];
 			if ($data['id']) {
+				$baseData['update_at'] = time();
+				$baseData['update_by'] = \ManagerService::getManagerId();
 				\DB::table($this->module)->where('id', $data['id'])->update($baseData);
 				$articleId = $data['id'];
 			} else {
+				$baseData['create_at'] = time();
+				$baseData['create_by'] = \ManagerService::getManagerId();
+				
 				$articleId = \DB::table($this->module)->insertGetId($baseData);
 			}
 			
 			# 私有属性
-			$contentType = \ContentTypeService::getDetailById($data['content_type']);
+			$fields = \ContentTypeService::getDetailById($data['content_type'], true);
 			
 			\DB::table('article_detail')->where('article_id', $articleId)->delete();
 			
-			$sqlDetail = 'INSERT INTO 
-								`t_article_detail` 
-							(
-								`article_id`,
-								`name`,
-								`value`
-							) VALUES ';
 			$sqlFields = '';
-			foreach ($contentType['structure'] as $field) {
+			foreach ($fields as $field) {
 				
-				$name  = $field['name'];
+				$name = $field['name'];
+				if (!isset($data[$name]) && empty($data['uploadfile_'.$name])) continue;
 				$value = $data[$name];
 				
 				switch ($field['type']) {
@@ -140,7 +136,7 @@ class ArticleService extends BaseService {
 						break;
 					case 'image':
 						if (empty($value)) {
-							$value = \Request::input(config('project.UPLOAD_URL_INPUT_NAME'));
+							$value = $data['uploadfile_'.$name];
 						} else {
 							$files = \Request::file($name);
 							$value = ToolService::uploadFiles($files);
@@ -150,8 +146,10 @@ class ArticleService extends BaseService {
 				
 				$sqlFields .= sprintf('(\'%s\', \'%s\', \'%s\'),', $articleId, addslashes($name), addslashes($value));
 			}
+			
 			if ($sqlFields) {
-				$sqlDetail = substr($sqlDetail.$sqlFields, 0, -1);
+				$sqlDetail = 'INSERT INTO `t_article_detail` (`article_id`,`name`,`value`) VALUES '.$sqlFields;
+				$sqlDetail = substr($sqlDetail, 0, -1);
 				\DB::insert($sqlDetail);
 			}
 			
@@ -211,4 +209,56 @@ class ArticleService extends BaseService {
 		return compact('list', 'listPage');
 	}
 	
+	# region 前台
+	public function getArticleList(array $filter = []) {
+		
+		$where = ['a.status' => '1'];
+		if (!empty($filter['content_type'])) {
+			$where['a.content_type'] = intval($filter['content_type']);
+		} else {
+			json_msg('必须指定一种文档类型', 40001);
+		}
+		
+		# 公共属性
+		$articles = \DB::table('article AS a')->where($where)->orderBy('a.id', 'desc')->get()->toArray();
+		
+		# 私有属性
+		$privateFields = \ContentTypeService::getDetailById($filter['content_type'], true);
+		$detailFields  = [];
+		foreach ($privateFields as $item) $detailFields[$item['name']] = $item;
+		
+		$articleIds = array_column($articles, 'id');
+		$fields     = ['article_id', 'name', 'value'];
+		$detailRows = \DB::table('article_detail')->whereIn('article_id', $articleIds)->get($fields)->toArray();
+		
+		$details = [];
+		foreach ($detailRows as $item) {
+			
+			if (!isset($detailFields[$item['name']])) continue;
+			
+			$field = $detailFields[$item['name']];
+			
+			switch ($field['type']) {
+				case 'image':
+					$item['value'] = \URL::asset($item['value']);
+					break;
+				case 'checkbox':
+					$item['value'] = explode(',', $item['value']);
+					break;
+			}
+			
+			$details[$item['article_id']][$item['name']] = [
+				'text'  => $field['name_text'],
+				'value' => $item['value'],
+			];
+		}
+		
+		foreach ($articles as &$item) {
+			$item['detail'] = $details[$item['id']];
+		}
+		unset($item);
+		
+		return $articles;
+	}
+	# endregion
 }

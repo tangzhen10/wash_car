@@ -15,11 +15,11 @@ Route::get('/', function () {
 	
 	if (env('APP_ENV') == 'local') {
 		
-		return redirect('/admin');
+//		return redirect('/admin');
 	}
 	
 	return view('welcome');
-});
+})->name('home');
 
 Route::group(['namespace' => 'Web'], function () {
 	
@@ -28,6 +28,16 @@ Route::group(['namespace' => 'Web'], function () {
 		
 		# 个人信息
 		Route::match(['get', 'post'], 'info', ['uses' => 'UserController@info', 'as' => 'webUserInfo']);
+	});
+	
+	# 理财
+	Route::group(['prefix' => 'invest'], function () {
+		
+		# 理财列表
+		Route::get('list', ['uses' => 'InvestController@investList', 'as' => 'webInvestList']);
+		
+		# 理财详情
+		Route::get('detail/{id}', ['uses' => 'InvestController@detail', 'as' => 'webInvestDetail']);
 	});
 	
 });

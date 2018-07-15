@@ -14,12 +14,13 @@ class ContentTypeService extends BaseService {
 	
 	/**
 	 * 获取文档类型详情
-	 * @param int $id
+	 * @param int  $id
+	 * @param bool $flag 是否只返回字段结构
 	 * @author 李小同
 	 * @date   2018-7-11 15:43:54
 	 * @return array
 	 */
-	public function getDetailById($id = 0) {
+	public function getDetailById($id = 0, $flag = false) {
 		
 		if ($id) {
 			
@@ -42,7 +43,7 @@ class ContentTypeService extends BaseService {
 			];
 		}
 		
-		return $detail;
+		return $flag ? $detail['structure'] : $detail;
 	}
 	
 	/**
@@ -419,42 +420,39 @@ class ContentTypeService extends BaseService {
 	 */
 	public function imageFormElement(array $field, $value = '') {
 		
-		$html   = '<p>
+		$html = '<p class="J_image">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<span class="btn-upload form-group">
 						<input class="input-text upload-url radius" type="text" style="width: 600px" 
-						name="'.config('project.UPLOAD_URL_INPUT_NAME').'" id="uploadfile-1" readonly value="'.$value.'">
+						name="uploadfile_'.$field['name'].'" readonly value="'.$value.'">
 						<a href="javascript:void();" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
 						</a>
 						<input type="file" name="'.$field['name'].'" class="input-file">
 					</span>
-					<div class="J_image_preview" style="padding-left: 15%"></div>
-				</p>';
-		$imgCss = '{
-				\'max-width\' : \'400px\', 
-				\'max-height\' : \'300px\',
-				\'box-shadow\': \'#ccc 1px 1px 5px\',
-				\'margin\' : \'0 5px\',
-			}';
+					<span class="J_image_preview" style="padding: 5px 0 0 15%;display: block;">';
 		if ($value) {
-			$html .= '<script>
-						var img = new Image();
-						$(img).attr(\'src\', \''.\URL::asset($value).'\').css('.$imgCss.');
-						$(\'.J_image_preview\').html(img);
-						</script>';
+			$html .= '<img src="'.\URL::asset($value).'" style="max-width: 400px;max-height: 300px;box-shadow: #ccc 1px 1px 5px;margin : 0 5px" />';
 		}
+		
+		$html .= '</span></p>';
+		$imgCss = '{
+						\'max-width\' : \'400px\', 
+						\'max-height\' : \'300px\',
+						\'box-shadow\': \'#ccc 1px 1px 5px\',
+						\'margin\' : \'0 5px\',
+					}';
 		$html .= '<script>
 						$(\'input[name="'.$field['name'].'"]\').change(function () {
 				
 						var files = this.files   // 获取input上传的图片数据;						
-						$(\'.J_image_preview\').html(\'\');
+						$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(\'\');
 						for(var i = 0; i < files.length; i++) {
 							var img = new Image();						
 							url = window.URL.createObjectURL(files[i])  // 得到bolb对象路径，可当成普通的文件路径一样使用，赋值给src;
 							img.src = url;						
 							$(img).css('.$imgCss.');
-							$(\'.J_image_preview\').append(img);
+							$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(img);
 						}
 					});
 				</script>';

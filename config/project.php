@@ -15,7 +15,6 @@ return [
 	'UPLOAD_STORAGE_PATH'   => 'src/upload/image', # 图片上传目录
 	'ALLOW_PICTURE_TYPE'    => ['jpg', 'jpeg', 'png', 'gif'], # 允许上传文件格式
 	'MAX_SIZE_UPLOAD_FILE'  => 10240 * 1024, # 10M
-	'UPLOAD_URL_INPUT_NAME' => 'uploadfile', # 显示上传图片路径的表单元素的name
 	'THUMB_WIDTH'           => '200', # 缩略图长度最大值
 	'THUMB_HEIGHT'          => '200', # 缩略图高度最大值
 	'THUMB_PREFIX'          => 'thumb_', # 缩略图前缀

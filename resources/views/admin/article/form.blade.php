@@ -28,6 +28,7 @@
 @section('body')
 	<article class="cl pd-20">
 		<form method="post" enctype="multipart/form-data" class="form form-horizontal" id="form">
+			<input class="btn btn-success radius" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="public_attr">
 				<h3>公共属性</h3>
@@ -73,7 +74,6 @@
 				
 				<div id="J_private_attr_area"></div>
 			</div>
-			<input class="btn btn-success radius r" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
 		</form>
 	</article>
 @endsection
