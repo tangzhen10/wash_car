@@ -225,3 +225,94 @@ function intToTime($timestamp = 0) {
 	
 	return $timestamp > 0 ? date('Y-m-d H:i:s', $timestamp) : '';
 }
+
+/**
+ * 制作缩略图
+ * @param $srcPath  string 原图路径
+ * @param $flag     bool 是否是等比缩略图
+ * @return string
+ */
+function create_thumb($srcPath, $flag = true) {
+	
+	$prefix = config('project.THUMB_PREFIX'); # 缩略图的前缀
+	
+	//获取文件的后缀
+	$ext = strtolower(strrchr($srcPath, '.'));
+	
+	//判断文件格式
+	switch ($ext) {
+		case '.jpg':
+			$type = 'jpeg';
+			break;
+		case '.gif':
+			$type = 'gif';
+			break;
+		case '.png':
+			$type = 'png';
+			break;
+		default:
+			json_msg('文件格式不正确', 40003);
+			return false;
+	}
+	
+	//拼接打开图片的函数
+	$open_fn = 'imagecreatefrom'.$type;
+	//打开源图
+	$src = $open_fn($srcPath);
+	//创建目标图
+	$maxW = config('project.THUMB_WIDTH'); # 画布的宽度
+	$maxH = config('project.THUMB_HEIGHT'); # 画布的高度
+	$dst  = imagecreatetruecolor($maxW, $maxH);
+	
+	//源图的宽
+	$srcW = imagesx($src);
+	//源图的高
+	$srcH = imagesy($src);
+	
+	//是否等比缩放
+	if ($flag) { //等比
+		
+		//求目标图片的宽高
+		if ($maxW / $maxH < $srcW / $srcH) {
+			
+			//横屏图片以宽为标准
+			$dstW = $maxW;
+			$dstH = $maxW * $srcH / $srcW;
+		} else {
+			
+			//竖屏图片以高为标准
+			$dstH = $maxH;
+			$dstW = $maxH * $srcW / $srcH;
+		}
+		//在目标图上显示的位置
+		$dstX = (int)(($maxW - $dstW) / 2);
+		$dstY = (int)(($maxH - $dstH) / 2);
+	} else {    //不等比
+		
+		$dstX = 0;
+		$dstY = 0;
+		$dstW = $maxW;
+		$dstH = $maxH;
+	}
+	
+	//生成缩略图
+	imagecopyresampled($dst, $src, $dstX, $dstY, 0, 0, $dstW, $dstH, $srcW, $srcH);
+	
+	//文件名
+	$filename = basename($srcPath);
+	//文件夹名
+	$folderName = substr(dirname($srcPath), 0);
+	//缩略图存放路径
+	$thumbPath = $folderName.'/'.$prefix.$filename;
+	
+	//把缩略图上传到指定的文件夹
+	imagepng($dst, $thumbPath);
+	//销毁图片资源
+	imagedestroy($dst);
+	imagedestroy($src);
+	
+	//返回新的缩略图的文件名
+	return $prefix.$filename;
+}
+
+

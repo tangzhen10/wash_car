@@ -13,11 +13,11 @@
 		.form_filed_row {
 			display: inline-block;
 			text-align: right;
-			width: 10%;
+			width: 15%;
 		}
 		.form_value_row {
 			display: inline-block;
-			width: 80%;
+			width: 75%;
 		}
 		.select-box {
 			position: relative;
@@ -27,12 +27,12 @@
 @endsection
 @section('body')
 	<article class="cl pd-20">
-		<form action="" method="post" class="form form-horizontal" id="form">
+		<form method="post" enctype="multipart/form-data" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="public_attr">
 				<h3>公共属性</h3>
 				<p>
-					<span class="form_filed"><span class="c-red">*</span>标题：</span>
+					<span class="form_filed">{{trans('common.article_name')}}：</span>
 					<input class="input-text radius form_value" value="{{$detail['name']}}" name="name">
 					
 					<span class="form_filed">副标题：</span>
@@ -58,7 +58,7 @@
 						</span>
 					</span>
 					
-					<span class="form_filed fv_up">文档类型：</span>
+					<span class="form_filed fv_up"><span class="c-red">*</span>{{trans('common.content_type')}}：</span>
 					<select class="select-box radius mb-20 form_value J_content_type" name="content_type">
 						<option></option>
 						@foreach($typeList as $type)
@@ -73,11 +73,16 @@
 				
 				<div id="J_private_attr_area"></div>
 			</div>
-			<input class="btn btn-success radius" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
+			<input class="btn btn-success radius r" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
 		</form>
 	</article>
 @endsection
 @section('js')
+	
+	<!-- 配置文件 remind lxt 必须放在编辑器源码文件之前 -->
+	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.config.js')}}"></script>
+	<!-- 编辑器源码文件 -->
+	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.all.js')}}"></script>
 	<script>
 		
 		$(function () {
@@ -85,35 +90,17 @@
 			// 切换文档类型时，自动展现对应的文档结构
 			$('.J_content_type').change(function () {
 				var content_type = $(this).val();
+				if (!content_type) return false;
 				$.ajax({
 					url        : '{{route('contentTypeFormHtml')}}',
 					data       : {
-						content_type : content_type
+						content_type : content_type,
+						article_id   : $('input[name="id"]').val(),
 					},
 					beforeSend : function () {layer.load(3)},
 					success    : function (data) {
 						layer.close(layer.load());
 						$('#J_private_attr_area').html(data);
-						
-						@foreach($detail as $name => $value)
-						@if (is_array($value))
-						@foreach($value as $checkboxValue)
-							$('input[name="{{$name}}[]"][type="checkbox"][value="{{$checkboxValue}}"]').attr('checked', 'checked');
-						@endforeach
-						@else
-						$('select[name="{{$name}}"],textarea[name="{{$name}}"]').val('{{$value}}');
-						$('input[name="{{$name}}"][type="text"]').val('{{$value}}');
-						$('input[name="{{$name}}"][type="radio"][value="{{$value}}"]').attr('checked', 'checked');
-						@endif
-						
-						@endforeach
-						
-						// iCkeck 单选框
-						$('.skin-minimal input').iCheck({
-							checkboxClass : 'icheckbox-blue',
-							radioClass    : 'iradio-blue',
-							increaseArea  : '20%'
-						});
 					}
 				});
 			});
@@ -122,10 +109,13 @@
 			
 			$("#form").validate({
 				rules         : {
-					name : {
+					name         : {
 						required  : true,
 						minlength : 1,
 						maxlength : 16
+					},
+					content_type : {
+						required : true,
 					}
 				},
 				onkeyup       : false,

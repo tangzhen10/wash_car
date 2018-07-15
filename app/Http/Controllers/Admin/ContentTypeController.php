@@ -37,19 +37,19 @@ class ContentTypeController extends BaseController {
 	
 	/**
 	 * 文档类型的表单html，用于编辑文章时的私有属性部分
-	 * @param int $id
 	 * @author 李小同
 	 * @date   2018-7-12 18:16:32
 	 */
-	public function formHtml($id = 0) {
+	public function formHtml() {
 		
-		if (empty($id)) $id = \Request::input('content_type', 0);
+		$id        = \Request::input('content_type', 0);
+		$articleId = \Request::input('article_id', 0);
 		
 		if (empty($id)) die;
 		
-		$fields = $this->service->getFormHtml($id);
+		$formHtml = $this->service->getFormHtml($id, $articleId);
 		
-		echo $fields;
+		echo $formHtml;
 		die;
 	}
 	

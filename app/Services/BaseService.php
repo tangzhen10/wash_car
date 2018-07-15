@@ -80,9 +80,15 @@ class BaseService {
 		
 		$source = \DB::table($module)->where('id', $id)->count();
 		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {
+			
 			\DB::table($module)->where('id', $id)->update(['status' => $status]);
+			
+			if (method_exists(static::class, 'handleAfterChangeStatus')) static::handleAfterChangeStatus($id);
+			
 			return true;
+			
 		} else {
+			
 			json_msg(trans('error.illegal_param'), 40003);
 		}
 	}

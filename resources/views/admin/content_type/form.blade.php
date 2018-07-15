@@ -48,9 +48,10 @@
 			<i class="Hui-iconfont c-black r J_hide_note" style="display: none">&#xe699;</i>
 		</p>
 		<ul class="note" style="display: none;">
-			<li>name：英文字母、数字和下划线组成，不能以纯数字开头，复选框在后面加[]</li>
+			<li>name：英文字母、数字和下划线组成，不能以纯数字开头</li>
 			<li>name：公共属性<em>【{{$keyFields}}】</em>不可以使用</li>
 			<li>备选值：单选框和复选框的值，格式为【名1,值1|名2,值2|名3,值3...】</li>
+			<li>备选值：若类型不是单选框和复选框，则作为提示语显示在输入框里</li>
 			<li>类型：类型为时间时，备选值为【yyyy-MM-dd HH:mm:ss】表示时间格式，不填表示使用该值作为默认值</li>
 		</ul>
 		<form action="" method="post" class="form form-horizontal" id="form">
@@ -58,7 +59,7 @@
 			<div class="row cl">
 				<strong class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文档类型名称：</strong>
 				<div class="formControls col-xs-8 col-sm-10">
-					<input type="text" class="input-text radius" value="{{$detail['name']}}" placeholder="" id="adminName" name="type_name">
+					<input type="text" class="input-text radius" value="{{$detail['name']}}" name="name">
 				</div>
 			</div>
 			<div class="row cl">
@@ -92,6 +93,7 @@
 				<div class="col-xs-8 col-sm-10 col-xs-offset-4 col-sm-offset-2">
 					<span class="btn btn-success radius J_add_row">添加字段</span>
 					<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+					{{--<input class="btn btn-primary radius J_submit" value="提交">--}}
 				</div>
 			</div>
 		</form>
@@ -161,13 +163,16 @@
 				row.next('.field_row').after(row);
 			});
 			
+			
+			
 			$("#form").validate({
 				rules         : {
-					name : {
+					"name"              : {
 						required  : true,
-						minlength : 1,
 						maxlength : 16
-					}
+					},
+					"field_name_text[]" : {required : true},
+					"field_name[]"      : {required : true},
 				},
 				onkeyup       : false,
 //				focusCleanup  : true,

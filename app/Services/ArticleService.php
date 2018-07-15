@@ -34,18 +34,18 @@ class ArticleService extends BaseService {
 			$detail['end_time']   = intToTime($detail['end_time']);
 			
 			$options = \DB::table('article_detail')->where('article_id', $id)->get(['name', 'value'])->toArray();
+			
 			foreach ($options as $option) {
-				$detail[$option['name']] = $option['value'];
+				$detail['detail'][$option['name']] = $option['value'];
 			}
 			
 			# 复选框的值炸开成数组
 			$contentTypeId = $detail['content_type'];
 			$contentType   = \ContentTypeService::getDetailById($contentTypeId);
 			foreach ($contentType['structure'] as $field) {
-				if ($field['type'] == 'checkbox' && strpos($field['name'], '[]') > -1) {
-					$name = substr($field['name'], 0, -2);
-					if (empty($detail[$name])) $detail[$name] = '';
-					$detail[$name] = explode(',', $detail[$name]);
+				if ($field['type'] == 'checkbox') {
+					if (empty($detail['detail'][$field['name']])) $detail['detail'][$field['name']] = '';
+					$detail['detail'][$field['name']] = explode(',', $detail['detail'][$field['name']]);
 				}
 			}
 			
@@ -59,6 +59,7 @@ class ArticleService extends BaseService {
 				'end_time'     => '',
 				'image'        => '',
 				'status'       => '1',
+				'detail'       => [],
 			];
 		}
 		
@@ -86,11 +87,19 @@ class ArticleService extends BaseService {
 		
 		$data = request_all();
 		
+		# validate
+		if (empty(trim($data['name']))) {
+			json_msg(trans('validation.required', ['attr' => trans('common.article_name')]), 40001);
+		}
+		if (empty($data['content_type'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.content_type')]), 40001);
+		}
+		
 		\DB::beginTransaction();
 		try {
 			
 			# 公共属性
-			$articleBaseData = [
+			$baseData = [
 				'name'         => $data['name'],
 				'sub_name'     => $data['sub_name'],
 				'start_time'   => empty($data['start_time']) ? 0 : strtotime($data['start_time']),
@@ -101,35 +110,48 @@ class ArticleService extends BaseService {
 			
 			];
 			if ($data['id']) {
-				\DB::table($this->module)->where('id', $data['id'])->update($articleBaseData);
+				\DB::table($this->module)->where('id', $data['id'])->update($baseData);
 				$articleId = $data['id'];
 			} else {
-				$articleId = \DB::table($this->module)->insertGetId($articleBaseData);
+				$articleId = \DB::table($this->module)->insertGetId($baseData);
 			}
 			
 			# 私有属性
-			$baseFields = \ContentTypeService::getArticleBaseFields();
-			foreach ($baseFields as $field) {
-				if (isset($data[$field])) unset($data[$field]);
-			}
+			$contentType = \ContentTypeService::getDetailById($data['content_type']);
 			
 			\DB::table('article_detail')->where('article_id', $articleId)->delete();
 			
-			if (count($data)) {
-				
-				$sqlDetail = 'INSERT INTO 
+			$sqlDetail = 'INSERT INTO 
 								`t_article_detail` 
 							(
 								`article_id`,
 								`name`,
 								`value`
 							) VALUES ';
-				foreach ($data as $name => $value) {
-					if (is_array($value)) $value = implode(',', $value);
-					$sqlDetail .= sprintf('(\'%s\', \'%s\', \'%s\'),', $articleId, addslashes($name), addslashes($value));
-				}
-				$sqlDetail = substr($sqlDetail, 0, -1);
+			$sqlFields = '';
+			foreach ($contentType['structure'] as $field) {
 				
+				$name  = $field['name'];
+				$value = $data[$name];
+				
+				switch ($field['type']) {
+					case 'checkbox':
+						$value = implode(',', $value);
+						break;
+					case 'image':
+						if (empty($value)) {
+							$value = \Request::input(config('project.UPLOAD_URL_INPUT_NAME'));
+						} else {
+							$files = \Request::file($name);
+							$value = ToolService::uploadFiles($files);
+						}
+						break;
+				}
+				
+				$sqlFields .= sprintf('(\'%s\', \'%s\', \'%s\'),', $articleId, addslashes($name), addslashes($value));
+			}
+			if ($sqlFields) {
+				$sqlDetail = substr($sqlDetail.$sqlFields, 0, -1);
 				\DB::insert($sqlDetail);
 			}
 			
@@ -173,6 +195,7 @@ class ArticleService extends BaseService {
 		               ->join('manager AS c', 'c.id', 'a.create_by')
 		               ->where('a.status', '!=', '-1')
 		               ->select($fields)
+		               ->orderBy('a.id', 'desc')
 		               ->paginate($filter['perPage']);
 		$list     = json_decode(json_encode($listPage), 1)['data'];
 		

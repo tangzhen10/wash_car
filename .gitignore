@@ -12,3 +12,4 @@ yarn-error.log
 .env
 .git/
 access_token
+public/src/upload

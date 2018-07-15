@@ -23,6 +23,36 @@ class ToolService {
 		# todo lxt 发送验证码 & 根据使用用途，在redis里生成有效期的验证码
 	}
 	
+	public static function uploadFiles($files) {
+		
+		$file = $files;
+		
+		# 判断文件上传过程中是否出错
+		if (!$file->isValid()) die(json_encode(['error' => '文件上传出错！']));
+		
+		$type    = $file->getClientOriginalExtension();
+		$typeArr = config('project.ALLOW_PICTURE_TYPE');
+		if (!in_array($type, $typeArr)) die(json_encode(['error' => '请上传jpg,jpeg,png或gif类型的图片！']));
+		
+		$size = $file->getClientSize();
+		if ($size > config('project.MAX_SIZE_UPLOAD_FILE')) die(json_encode(['error' => '图片大小已超过限制！']));
+		
+		# 存盘目录
+		$uploadPath        = config('project.UPLOAD_STORAGE_PATH').date('/Ymd/'); # 上传目录
+		$uploadStoragePath = public_path($uploadPath); # 上传目录绝对路径
+		if (!file_exists($uploadStoragePath)) @mkdir($uploadStoragePath, 0755, true);
+		
+		# 转移临时文件到存盘目录
+		# $originalName = $file->getClientOriginalName();
+		$fileName     = time().rand(11392, 92192).'.'.$type;
+		if (!$file->move($uploadStoragePath, $fileName)) die(json_encode(['error' => '保存文件失败！']));
+		
+		# 缩略图
+		create_thumb($uploadStoragePath.$fileName, false);
+		
+		return $uploadPath.$fileName;
+	}
+	
 	/**
 	 * 验证手机号是否可用
 	 * @author 李小同

@@ -10,7 +10,10 @@ include "Uploader.class.php";
 /* 上传配置 */
 $base64 = "upload";
 switch (htmlspecialchars($_GET['action'])) {
-    case 'uploadimage':
+	case 'uploadimage':
+    	# 修改保存地址 李小同 2018-7-14 09:45:18
+//	    $CONFIG['imagePathFormat'] = '/src/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}';
+	    $CONFIG['imagePathFormat'] = '/'.config('project.UPLOAD_STORAGE_PATH').'/{yyyy}{mm}{dd}/{time}{rand:6}';
         $config = array(
             "pathFormat" => $CONFIG['imagePathFormat'],
             "maxSize" => $CONFIG['imageMaxSize'],

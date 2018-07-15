@@ -41,10 +41,8 @@
 			success    : function (data) {
 				layer.close(layer.load());
 				if (data.code == 0 && data.msg == 'ok') {
-					var index = parent.layer.getFrameIndex(window.name);
 					window.parent.location.reload();
 					layer.msg('{{trans('common.action_success')}}');
-//					parent.layer.close(index);
 				} else {
 					layer.msg(data.error, function () {});
 				}

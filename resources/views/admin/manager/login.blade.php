@@ -10,7 +10,7 @@
 			min-width: 1000px;
 			z-index: -10;
 			zoom: 1;
-			background: #fff url("{{URL::asset('src/wallpaper.jpg')}}") no-repeat center 0;
+			background: #fff url("{{URL::asset('src/image/admin_login_bg.jpg')}}") no-repeat center 0;
 			background-size: cover;
 			-webkit-background-size: cover;
 			-o-background-size: cover;
@@ -19,7 +19,7 @@
 		.login-form {
 			border: 1px solid #53aad2;
 			width: 400px;
-			margin: 120px 60%;
+			margin: 120px auto;
 			padding: 20px;
 			border-radius: 5px;
 			box-shadow: 0 0 15px #333;

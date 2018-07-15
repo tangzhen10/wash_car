@@ -6,6 +6,12 @@ class ArticleController extends BaseController {
 	
 	const MODULE = 'article';
 	
+	/**
+	 * 文章列表
+	 * @author 李小同
+	 * @date   2018-7-14 09:03:12
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
 	public function articleList() {
 		
 		$list                     = $this->service->getList();
@@ -30,4 +36,9 @@ class ArticleController extends BaseController {
 		return compact('typeList');
 	}
 	
+	public function uploadFile() {
+		
+		$data = request_all();
+		print_r($data);
+	}
 }

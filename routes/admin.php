@@ -82,6 +82,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ArticleController@form', 'as' => 'articleForm']);
 		# 修改状态
 		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ArticleController@changeStatus', 'as' => 'articleChangeStatus']);
+		# 上传文件
+		Route::match(['get', 'post'], 'upload', ['uses' => 'ArticleController@uploadFile', 'as' => 'articleUploadFile']);
 	});
 	
 	
