@@ -113,19 +113,19 @@ body {
 	background-size:100%;
 }
 .fixed-top{
-	padding-top:4rem;
+	padding-top:5rem;
 }
 .top{
 	width: 100%;
 	max-width: 640px;
-	height:4rem;
+	height:5rem;
 	position: fixed;
 	top:0;
 	border-bottom: 1px solid #ccc;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	padding-top:0.5rem;
+	padding-top:1.2rem;
 	font-size: 1.4rem;
 	background: #fff;
 }
@@ -226,6 +226,9 @@ body {
 .banner img{
 	width: 100%;
 	height: auto;
+}
+.content{
+	margin-bottom:6rem;
 }
 .info-block{
 	width: 90%;
