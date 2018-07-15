@@ -29,7 +29,7 @@ class ContentTypeController extends BaseController {
 		
 		# 自定义的表单类型
 		$formElements = $this->service->getFormElements();
-		$fields       = $this->service->getArticleBaseFields();
+		$fields       = $this->service->getArticlePublicFields();
 		$keyFields    = implode(',', $fields);
 		
 		return compact('formElements', 'keyFields');

@@ -173,12 +173,12 @@ class ContentTypeService extends BaseService {
 	 * @date   2018-7-13 21:16:55
 	 * @return array
 	 */
-	public function getArticleBaseFields() {
+	public function getArticlePublicFields() {
 		
-		$cacheKey = sprintf(config('cache.TABLE_COLUMN'), 't_article_base');
+		$cacheKey = sprintf(config('cache.TABLE_COLUMN'), 't_article');
 		$fields   = redisGet($cacheKey);
 		if (false === $fields) {
-			$fields = $this->getTableColumns('t_article_base');
+			$fields = $this->getTableColumns('t_article');
 			redisSet($cacheKey, $fields);
 		}
 		
