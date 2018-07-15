@@ -14,10 +14,16 @@ class ArticleController extends BaseController {
 	 */
 	public function articleList() {
 		
-		$list                     = $this->service->getList();
+		$filter                   = [
+			'filter_content_type' => \Request::input('filter_content_type', ''),
+			'filter_article_name' => \Request::input('filter_article_name', ''),
+		];
+		$list                     = $this->service->getList($filter);
 		$this->data['list']       = $list['list'];
 		$this->data['pagination'] = $list['listPage'];
+		$this->data['total']      = $list['total'];
 		$this->data['typeList']   = \ContentTypeService::getList();
+		$this->data += $filter;
 		
 		return view('admin/article/list', $this->data);
 	}

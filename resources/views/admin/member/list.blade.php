@@ -73,7 +73,7 @@
 				
 				location.href = '{{route('memberList')}}?'+query_string.join('&');
 			} else {
-				location.reload();
+				location.href = '{{route('memberList')}}';
 			}
 		});
 	</script>

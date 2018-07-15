@@ -38,7 +38,11 @@ function get_http_headers() {
 function json_msg($data = '', $code = 0) {
 	
 	header('charset:utf-8');
-	header('X-power-by:ahulxt');
+	header('X-power-by:ahulxt/wm');
+	if ($code > 0 && $_SERVER['REQUEST_METHOD'] == 'GET') {
+		die('<script>alert(\''.(string)$data.'\');history.back();</script>');
+	}
+	
 	header('Content-Type:text/json');
 	
 	$result = ['code' => $code];

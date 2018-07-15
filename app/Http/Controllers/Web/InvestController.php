@@ -17,11 +17,19 @@ class InvestController extends Controller {
 	 */
 	public function investList() {
 		
-		$filter             = [
+		$filter       = [
 			'content_type' => '21',
 			'status'       => 1,
 		];
-		$this->data['list'] = \ArticleService::getArticleList($filter);
+		$articleList  = \ArticleService::getArticleList($filter);
+		$articleGroup = [];
+		foreach ($articleList as $article) {
+			$module = $article['detail']['module'];
+			$articleGroup[$module['value']]['group_title'] = $module['value'];
+			$articleGroup[$module['value']]['list'][]      = $article;
+		}
+		sort($articleGroup);
+		$this->data['article_group'] = $articleGroup;
 		
 		return view('web/invest/list', $this->data);
 	}

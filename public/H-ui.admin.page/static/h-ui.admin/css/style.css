@@ -24,3 +24,9 @@
     background: #5a98de;
     color: #fff;
 }
+
+/*列表页筛选器*/
+.filter_input {
+    width: 200px;
+    border-radius: 4px;
+}

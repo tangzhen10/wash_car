@@ -30,6 +30,8 @@ class ArticleService extends BaseService {
 			
 			$detail = \DB::table($this->module)->where('id', $id)->first();
 			
+			if (empty($detail)) json_msg(trans('error.illegal_param'), 40003);
+			
 			$detail['start_time'] = intToTime($detail['start_time']);
 			$detail['end_time']   = intToTime($detail['end_time']);
 			
@@ -191,12 +193,22 @@ class ArticleService extends BaseService {
 		$listPage = \DB::table('article AS a')
 		               ->join('content_type AS b', 'b.id', 'a.content_type')
 		               ->join('manager AS c', 'c.id', 'a.create_by')
-		               ->where('a.status', '!=', '-1')
-		               ->select($fields)
-		               ->orderBy('a.id', 'desc')
-		               ->paginate($filter['perPage']);
-		$list     = json_decode(json_encode($listPage), 1)['data'];
+		               ->where('a.status', '!=', '-1');
 		
+		# 按文章标题筛选
+		if (!empty($filter['filter_article_name'])) {
+			$listPage = $listPage->where('a.name', 'LIKE', '%'.$filter['filter_article_name'].'%');
+		}
+		
+		# 精确筛选
+		$where = [];
+		# 按类型筛选
+		if (!empty($filter['filter_content_type'])) $where['a.content_type'] = $filter['filter_content_type'];
+		
+		$listPage = $listPage->where($where)->select($fields)->orderBy('a.id', 'desc')->paginate($filter['perPage']);
+		$listArr  = json_decode(json_encode($listPage), 1);
+		$total    = $listArr['total'];
+		$list     = $listArr['data'];
 		foreach ($list as &$item) {
 			$item['start_time']  = intToTime($item['start_time']);
 			$item['end_time']    = intToTime($item['end_time']);
@@ -206,10 +218,17 @@ class ArticleService extends BaseService {
 		}
 		unset($item);
 		
-		return compact('list', 'listPage');
+		return compact('list', 'listPage', 'total');
 	}
 	
 	# region 前台
+	/**
+	 * 获取文章列表
+	 * @param array $filter
+	 * @author 李小同
+	 * @date   2018-7-15 23:02:17
+	 * @return array
+	 */
 	public function getArticleList(array $filter = []) {
 		
 		$where = ['a.status' => '1'];

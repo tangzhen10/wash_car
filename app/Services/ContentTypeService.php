@@ -266,16 +266,12 @@ class ContentTypeService extends BaseService {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
 		<span class="skin-minimal form_value_row">';
-		$groups = explode('|', $field['value']);
+		$groups = explode(',', $field['value']);
 		foreach ($groups as $group) {
-			$pos       = strpos($group, ',');
-			$itemText  = substr($group, 0, $pos);
-			$itemValue = substr($group, $pos + 1);
-			$checked   = $itemValue == $value ? 'checked' : '';
-			
+			$checked = $group == $value ? 'checked' : '';
 			$html .= '<span class="radio-box">
 						<label>
-							<input type="radio" name="'.$field['name'].'" value="'.$itemValue.'" '.$checked.' >'.$itemText.'
+							<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$group.'
 						</label>
 					</span>';
 		}
@@ -303,15 +299,12 @@ class ContentTypeService extends BaseService {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
 		<span class="skin-minimal  form_value_row">';
-		$groups = explode('|', $field['value']);
+		$groups = explode(',', $field['value']);
 		foreach ($groups as $group) {
-			$pos       = strpos($group, ',');
-			$itemText  = substr($group, 0, $pos);
-			$itemValue = substr($group, $pos + 1);
-			$checked   = in_array($itemValue, $value) ? 'checked' : '';
+			$checked = in_array($group, $value) ? 'checked' : '';
 			$html .= '<span class="check-box">
 						<label>
-							<input type="checkbox" name="'.$field['name'].'[]" value="'.$itemValue.'" '.$checked.' >'.$itemText.'
+							<input type="checkbox" name="'.$field['name'].'[]" value="'.$group.'" '.$checked.' >'.$group.'
 						</label>
 					</span>';
 		}
@@ -338,14 +331,11 @@ class ContentTypeService extends BaseService {
 	public function selectFormElement(array $field, $value = '') {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
-		<select name="'.$field['name'].'" class="select-box radius form_value_row">';
-		$groups = explode('|', $field['value']);
+		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;">';
+		$groups = explode(',', $field['value']);
 		foreach ($groups as $group) {
-			$pos       = strpos($group, ',');
-			$itemText  = substr($group, 0, $pos);
-			$itemValue = substr($group, $pos + 1);
-			$selected  = $itemValue == $value ? 'selected' : '';
-			$html .= '<option value="'.$itemValue.'" '.$selected.' >'.$itemText.'</option>';
+			$selected = $group == $value ? 'selected' : '';
+			$html .= '<option value="'.$group.'" '.$selected.' >'.$group.'</option>';
 		}
 		$html .= '</select></p>';
 		

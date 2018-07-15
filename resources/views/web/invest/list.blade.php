@@ -4,16 +4,17 @@
 	<div class="container fixed-top">
 		<div class="top">
 			<ul class="tab-title">
-				<li class="active">福利</li>
-				<li>超级返</li>
-				<li>送600</li>
+				@foreach($article_group as $group)
+					<li class="active">{{$group['group_title']}}</li>
+				@endforeach
 			</ul>
 		</div>
 		<div class="content">
 			<ul class="tab-content">
-				<li class="queryContent">
+				@foreach($article_group as $group)
+					<li class="queryContent">
 					<div class="ad-list">
-						@foreach($list as $item)
+						@foreach($group['list'] as $item)
 							<div class="col" onclick="window.location.href = '{{route('webInvestDetail', ['id' => $item['id']])}}'">
 								<div class="ad-row1 ">
 									<div class="ad-name flex">
@@ -22,7 +23,7 @@
 										</div>
 										
 										<div class="ad-icon flex flex-item">
-											<span class="level levelA">{{$item['detail']['level']['value']}}级</span>
+											<span class="level levelA">{{$item['detail']['level']['value']}}</span>
 											@if (!empty($item['detail']['label']))
 												@foreach($item['detail']['label']['value'] as $label)
 													<span class="label">{{$label}}</span>
@@ -63,12 +64,7 @@
 						@endforeach
 					</div>
 				</li>
-				<li class="queryContent">
-					超级返内容
-				</li>
-				<li class="queryContent">
-					送600内容
-				</li>
+				@endforeach
 			</ul>
 		</div>
 	</div>

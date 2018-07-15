@@ -4,6 +4,23 @@
 		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
+				<div class="text-c mb-20">
+					<span>{{trans('common.article_name')}}：
+						<input class="input-text filter_input" name="filter_article_name" value="{{$filter_article_name}}" />
+					</span>
+					<span>{{trans('common.content_type')}}：
+						<select class="select-box filter_input" name="filter_content_type">
+							<option></option>
+							@foreach($typeList as $contentType)
+								<option value="{{$contentType['id']}}" @if ($filter_content_type == $contentType['id']) selected @endif>
+									{{$contentType['name']}}</option>
+							@endforeach
+						</select>
+					</span>
+					<button type="submit" class="btn btn-success radius J_filter" name="">
+						<i class="Hui-iconfont">&#xe665;</i> 筛选
+					</button>
+				</div>
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
 						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
@@ -11,7 +28,7 @@
 							<i class="Hui-iconfont">&#xe600;</i> 添加文章
 						</a>
 					</span>
-					<span class="r">共有数据：<strong>{{count($typeList)}}</strong> 条</span>
+					<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 				</div>
 				<table class="table table-border table-bordered table-bg">
 					<thead>
@@ -78,4 +95,23 @@
 			</article>
 		</div>
 	</section>
+@endsection
+@section('js')
+	<script>
+		
+		// 筛选
+		$('.J_filter').click(function () {
+			var content_type = $('select[name="filter_content_type"]').val(),
+			    article_name = $('input[name="filter_article_name"]').val();
+			if (content_type || article_name) {
+				
+				var query_string = [];
+				if (content_type) query_string.push('filter_content_type='+content_type);
+				if (article_name) query_string.push('filter_article_name='+article_name);
+				location.href = '{{route('articleList')}}?'+query_string.join('&');
+			} else {
+				location.href = '{{route('articleList')}}';
+			}
+		});
+	</script>
 @endsection

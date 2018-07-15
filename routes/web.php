@@ -13,9 +13,9 @@
 
 Route::get('/', function () {
 	
-	if (env('APP_ENV') == 'local') {
+	if (1||env('APP_ENV') == 'local') {
 		
-//		return redirect('/admin');
+		return redirect('/invest/list');
 	}
 	
 	return view('welcome');
