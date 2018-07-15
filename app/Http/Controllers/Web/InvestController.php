@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class investController extends Controller {
+class InvestController extends Controller {
 	
 	public $data = [];
 	
