@@ -64,11 +64,14 @@
 					<span class="btn-upload form-group">
 						<input class="input-text upload-url" type="text" name="uploadfile" value="{{$detail['avatar']}}"
 						       id="uploadfile" readonly nullmsg="请添加附件！" style="width:200px">
-						<a href="javascript:void();" class="btn btn-primary radius upload-btn">
+						<a href="javascript:;" class="btn btn-primary radius upload-btn">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
 						</a>
 						<input type="file" multiple name="file" class="input-file">
 					</span>
+					@if ($detail['avatar'])
+						<img src="{{$detail['avatar']}}" class="avatar" style="cursor: pointer;" />
+					@endif
 				</div>
 			</div>
 			<div class="row cl">
@@ -115,6 +118,17 @@
 //				focusCleanup  : true,
 				success       : "valid",
 				submitHandler : function (form) {handleAjaxForm(form)}
+			});
+			
+			// 点击查看头像
+			$('.avatar').click(function () {
+				layer.open({
+					type: 1,
+					title: false,
+					closeBtn: 0,
+					shadeClose: true,
+					content: '<img src="{{$detail['avatar']}}" />'
+				});
 			});
 		});
 	</script>
