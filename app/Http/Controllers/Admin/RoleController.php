@@ -59,4 +59,20 @@ class RoleController extends BaseController {
 		
 		return compact('permissions', 'rolePermissions');
 	}
+	
+	/**
+	 * 查看拥有指定角色的管理员
+	 * @param $id int 角色id
+	 * @author 李小同
+	 * @date   2018-7-16 22:33:08
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function roleManager($id) {
+		
+		$this->data['detail']   = $this->service->getDetailById($id);
+		$managerIds             = $this->service->getManagersById($id);
+		$this->data['managers'] = \ManagerService::getListByIds($managerIds);
+		
+		return view('admin/role/manager', $this->data);
+	}
 }

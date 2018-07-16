@@ -3,6 +3,7 @@
 	<article class="cl pd-20">
 		<form class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
+			<input type="hidden" id="J_level" value="{{$detail['level']}}" />
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>权限名称：</label>
 				<div class="formControls col-xs-8 col-sm-9">
@@ -13,12 +14,16 @@
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>父节点：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<select class="select-box" name="pid">
-						<option value="0">Top</option>
+						<option value="0" data-level="0" data-sort="0">Top</option>
 						@foreach($permissions as $permission)
-							<option style="font-weight: bold;" {{$permission['id'] == $detail['pid'] ? 'selected' : ''}} value="{{$permission['id']}}">{{$permission['name']}}</option>
+							<option style="font-weight: bold;" value="{{$permission['id']}}" data-sort="{{$permission['sort']}}"
+							        data-level="{{$permission['level']}}" {{$permission['id'] == $detail['pid'] ? 'selected' : ''}}>
+								{{$permission['name']}}
+							</option>
 							@if (!empty($permission['sub']))
 								@foreach($permission['sub'] as $item)
-									<option value="{{$item['id']}}" {{$item['id'] == $detail['pid'] ? 'selected' : ''}}>
+									<option value="{{$item['id']}}" data-sort="{{$item['sort']}}"
+									        data-level="{{$item['level']}}" {{$item['id'] == $detail['pid'] ? 'selected' : ''}}>
 										@for($i = 1; $i < $item['level']; ++$i) &nbsp;&nbsp;&nbsp;&nbsp; @endfor
 										{{$item['name']}}
 									</option>
@@ -79,6 +84,11 @@
 		
 		$(function () {
 			
+			// 切换父目录，自动将父目录的sort值赋给该节点
+			$('select[name="pid"]').change(function () {
+				$('input[name="sort"]').val($('select[name="pid"] option:selected').attr('data-sort'));
+			});
+			
 			$("#form").validate({
 				rules         : {
 					name   : {
@@ -96,7 +106,15 @@
 				onkeyup       : false,
 //				focusCleanup  : true,
 				success       : "valid",
-				submitHandler : function (form) {handleAjaxForm(form)}
+				submitHandler : function (form) {
+					var level = parseInt($('#J_level').val()),
+					    p_level = parseInt($('select[name="pid"] option:selected').attr('data-level'));
+					if (level > 0 && p_level - level != 1) {
+						layer.msg('当前权限节点只能位于' + (level - 1) + '级菜单下');
+						return false;
+					}
+					handleAjaxForm(form)
+				}
 			});
 		});
 	</script>

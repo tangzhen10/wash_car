@@ -104,7 +104,9 @@ class RoleService extends BaseService {
 	 */
 	public function getPermissionsByRoleId($roleId) {
 		
-		$res = \DB::table('role_permission');
+		$res = \DB::table('role_permission AS a')
+		          ->join('permission AS b', 'b.id', '=', 'a.permission_id')
+		          ->where('b.status', '1');
 		
 		if (is_array($roleId)) {
 			$res = $res->whereIn('role_id', $roleId);
@@ -150,7 +152,8 @@ class RoleService extends BaseService {
 	 */
 	public function getManagersById($id) {
 		
-		$managers = \DB::table('manager_role')->where('role_id', $id)->pluck('manager_id');
+		$managers = \DB::table('manager_role')->where('role_id', $id)->pluck('manager_id')->toArray();
+		
 		return $managers;
 	}
 	
@@ -168,7 +171,9 @@ class RoleService extends BaseService {
 		if ($status == '-1') {
 			
 			$managers = $this->getManagersById($id);
-			if (count($managers)) json_msg(trans('error.can_not_delete').', '.trans('error.role_have_mangers'), 50001);
+			if (count($managers)) {
+				json_msg(trans('error.can_not_delete', ['reason' => trans('error.role_have_mangers')]), 50001);
+			}
 		}
 	}
 }

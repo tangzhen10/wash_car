@@ -35,6 +35,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'RoleController@form', 'as' => 'roleForm']);
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'RoleController@changeStatus', 'as' => 'roleChangeStatus']);
+		# 查看拥有该角色的管理员
+		Route::get('manager/{id}', ['uses' => 'RoleController@roleManager', 'as' => 'roleManager']);
 		
 	});
 	

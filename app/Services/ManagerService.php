@@ -17,7 +17,7 @@ namespace App\Services;
 class ManagerService extends BaseService {
 	
 	public $managerId = 0;
-	public $module    = 'manager';
+	public $module = 'manager';
 	
 	public function __construct() {
 		
@@ -266,6 +266,20 @@ class ManagerService extends BaseService {
 	}
 	
 	/**
+	 * 获取管理员
+	 * @param array $ids 管理员id数组
+	 * @author 李小同
+	 * @date   2018-7-16 22:22:59
+	 * @return array
+	 */
+	public function getListByIds(array $ids = []) {
+		
+		$list = \DB::table($this->module)->whereIn('id', $ids)->pluck('name')->toArray();
+		
+		return $list;
+	}
+	
+	/**
 	 * 检查是否允许修改状态
 	 * @param $id     int
 	 * @param $status int 新状态 1启用 0停用 -1删除
@@ -275,9 +289,19 @@ class ManagerService extends BaseService {
 	 */
 	public function checkChangeStatus($id, $status) {
 		
-		# 不能删除自己
-		if ($status == '-1' && $id == $this->managerId) {
-			json_msg(trans('error.can_not_delete').', '.trans('error.can_not_delete_self'), 40003);
+		if ($id == $this->managerId) {
+			
+			$error = '';
+			switch ($status) {
+				case '-1' :
+					# 不能删除自己
+					$error = trans('error.can_not_delete', ['reason' => trans('error.can_not_delete_self')]);
+					break;
+				case '0' :
+					$error = trans('error.can_not_stop_self');
+					break;
+			}
+			if ($error) json_msg($error, 40003);
 		}
 	}
 	
@@ -291,7 +315,12 @@ class ManagerService extends BaseService {
 	public function getRolesByManagerId($managerId = 0) {
 		
 		if (empty($managerId)) $managerId = $this->managerId;
-		$managerRoles = \DB::table('manager_role')->where('manager_id', $managerId)->pluck('role_id')->toArray();
+		$managerRoles = \DB::table('manager_role AS a')
+		                   ->join('role AS b', 'b.id', '=', 'a.role_id')
+		                   ->where('a.manager_id', $managerId)
+		                   ->where('b.status', '1')
+		                   ->pluck('a.role_id')
+		                   ->toArray();
 		
 		return $managerRoles;
 	}

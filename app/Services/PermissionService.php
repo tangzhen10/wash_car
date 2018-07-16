@@ -33,6 +33,7 @@ class PermissionService extends BaseService {
 			'sort'   => 1,
 			'status' => '1',
 			'show'   => '1',
+			'level'  => '0',
 		];
 		
 		return $detail;

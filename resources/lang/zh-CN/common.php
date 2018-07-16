@@ -9,6 +9,7 @@ return [
 	'email'               => '邮箱',
 	'username'            => '用户名',
 	'wechat'              => '微信',
+	'manager'             => '管理员',
 	'manager_name'        => '管理员名称',
 	'permission'          => '权限',
 	'name'                => '名称',
@@ -36,6 +37,7 @@ return [
 	'enable'              => '启用',
 	'disable'             => '停用',
 	'delete'              => '删除',
+	'view'                => '查看',
 	
 	# 结果
 	'action_success'      => '操作成功！',
