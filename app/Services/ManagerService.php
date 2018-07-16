@@ -277,7 +277,7 @@ class ManagerService extends BaseService {
 		
 		# 不能删除自己
 		if ($status == '-1' && $id == $this->managerId) {
-			json_msg(trans('error.can_not_delete_self'), 40003);
+			json_msg(trans('error.can_not_delete').', '.trans('error.can_not_delete_self'), 40003);
 		}
 	}
 	

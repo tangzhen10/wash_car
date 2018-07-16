@@ -9,5 +9,7 @@ return [
 	'access_denied'        => '权限不足！',
 	'not_found_page'       => '不存在的页面！',
 	'different_twice_pwd'  => '两次密码不一致！',
+	'can_not_delete'       => '无法删除',
 	'can_not_delete_self'  => '你不能删除自己！',
+	'role_have_mangers'    => '还有管理员属于该角色！',
 ];

@@ -5,7 +5,7 @@
 		<div class="top">
 			<ul class="tab-title">
 				@foreach($article_group as $group)
-					<li class="active">{{$group['group_title']}}</li>
+					<li>{{$group['group_title']}}</li>
 				@endforeach
 			</ul>
 		</div>
@@ -75,6 +75,7 @@
 			$(this).addClass('active').siblings().removeClass('active');
 			$('.tab-content').children().eq($(this).index()).show().siblings('.queryContent').hide();
 		});
+		$('.tab-title li:first').click();
 	
 	</script>
 	</body>

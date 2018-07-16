@@ -140,4 +140,35 @@ class RoleService extends BaseService {
 		
 		return $list;
 	}
+	
+	/**
+	 * 获取指定角色下的管理员
+	 * @param $id int 角色id
+	 * @author 李小同
+	 * @date   2018-7-16 18:13:03
+	 * @return mixed
+	 */
+	public function getManagersById($id) {
+		
+		$managers = \DB::table('manager_role')->where('role_id', $id)->pluck('manager_id');
+		return $managers;
+	}
+	
+	/**
+	 * 检查是否允许修改状态
+	 * @param $id     int
+	 * @param $status int 新状态 1启用 0停用 -1删除
+	 * @author 李小同
+	 * @date   2018-7-5 14:45:13
+	 * @return bool
+	 */
+	public function checkChangeStatus($id, $status) {
+		
+		# 该角色下还有管理员时，不可以删除
+		if ($status == '-1') {
+			
+			$managers = $this->getManagersById($id);
+			if (count($managers)) json_msg(trans('error.can_not_delete').', '.trans('error.role_have_mangers'), 50001);
+		}
+	}
 }
