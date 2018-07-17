@@ -1,4 +1,11 @@
 @extends('admin.base')
+@section('css')
+	<style>
+		.width-400 {
+			width: 400px;
+		}
+	</style>
+@endsection
 @section('body')
 	<article class="cl pd-20">
 		<form action="" method="post" enctype="multipart/form-data" class="form form-horizontal" id="form">
@@ -6,7 +13,11 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>用户名：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" value="{{$detail['nickname']}}" placeholder="" id="nickname" name="nickname">
+					<input class="input-text width-400" value="{{$detail['nickname']}}" name="nickname">
+					@if (!empty($detail['avatar']))
+						<img src="{{$detail['avatar']}}" style="width: 132px;height: 132px;position: absolute;left: 440px;" />
+					@endif
+				
 				</div>
 			</div>
 			<div class="row cl">
@@ -25,13 +36,13 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">手机：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['phone']}}"
+					<input type="text" class="input-text width-400" value="{{$detail['phone']}}"
 					       id="phone" name="phone" @if (!empty($check['phone'])) disabled @endif>
 					@if ($detail['phone'])
 						@if (empty($check['phone']))
-							<span><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i> 此手机尚未验证，不可用于登录</span>
+							<span title="此手机尚未验证，不可用于登录"><i class="Hui-iconfont c-warning" style="font-size: 20px;">&#xe6e0;</i></span>
 						@else
-							<span><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i> 此手机已通过验证，可用于登录</span>
+							<span title="此手机已通过验证，可用于登录"><i class="Hui-iconfont c-success" style="font-size: 20px;">&#xe6a8;</i></span>
 						@endif
 					@endif
 				</div>
@@ -39,7 +50,7 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3">邮箱：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text" style="width: 300px;" value="{{$detail['email']}}"
+					<input type="text" class="input-text width-400" value="{{$detail['email']}}"
 					       placeholder="@" name="email" id="email" @if (!empty($check['email'])) disabled @endif>
 					@if ($detail['email'])
 						@if (empty($check['email']))
@@ -56,22 +67,6 @@
 					<input type="text" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d'})"
 					       id="birthday" name="birthday" class="input-text Wdate" style="width:120px;"
 					       value="{{$detail['birthday']}}">
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">头像：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<span class="btn-upload form-group">
-						<input class="input-text upload-url" type="text" name="uploadfile" value="{{$detail['avatar']}}"
-						       id="uploadfile" readonly nullmsg="请添加附件！" style="width:200px">
-						<a href="javascript:;" class="btn btn-primary radius upload-btn">
-							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
-						</a>
-						<input type="file" multiple name="file" class="input-file">
-					</span>
-					@if ($detail['avatar'])
-						<img src="{{$detail['avatar']}}" class="avatar" style="cursor: pointer;" />
-					@endif
 				</div>
 			</div>
 			<div class="row cl">
@@ -111,9 +106,22 @@
 						required  : true,
 						minlength : 1,
 						maxlength : 16
-					}
+					}/*,
+					phone    : {
+						required  : false,
+						number    : true,
+						minlength : 11,
+						maxlength : 11
+					},
+					email    : {
+						required : false,
+						email    : true
+					},
+					birthday : {
+						required : false,
+						data     : true
+					}*/
 				},
-				// todo lxt 表单验证
 				onkeyup       : false,
 //				focusCleanup  : true,
 				success       : "valid",
@@ -123,11 +131,11 @@
 			// 点击查看头像
 			$('.avatar').click(function () {
 				layer.open({
-					type: 1,
-					title: false,
-					closeBtn: 0,
-					shadeClose: true,
-					content: '<img src="{{$detail['avatar']}}" />'
+					type       : 1,
+					title      : false,
+					closeBtn   : 0,
+					shadeClose : true,
+					content    : '<img src="{{$detail['avatar']}}" />'
 				});
 			});
 		});
