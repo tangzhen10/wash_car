@@ -7,7 +7,7 @@
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
 						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-						<a href="javascript:;" onclick="layer_show('添加文档类型','{{route('contentTypeForm')}}','1000','600')" class="btn btn-primary radius">
+						<a href="javascript:;" onclick="layer_show('添加文档类型','{{route('contentTypeForm')}}','1200','600')" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe600;</i> 添加文档类型
 						</a>
 					</span>
@@ -49,7 +49,7 @@
 									</a>
 								@endif
 								
-								<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'), '{{route('contentTypeForm', $row['id'])}}','1000','600')"
+								<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'), '{{route('contentTypeForm', $row['id'])}}','1200','600')"
 								   href="javascript:;" class="ml-5" style="text-decoration:none">
 									<i class="Hui-iconfont">&#xe6df;</i>
 								</a>

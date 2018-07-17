@@ -4,14 +4,14 @@
 	<div class="container fixed-top">
 		<div class="top">
 			<ul class="tab-title">
-				@foreach($article_group as $group)
-					<li>{{$group['group_title']}}</li>
+				@foreach($groups as $group)
+					<li>{{$group['title']}}</li>
 				@endforeach
 			</ul>
 		</div>
 		<div class="content">
 			<ul class="tab-content">
-				@foreach($article_group as $group)
+				@foreach($groups as $group)
 					<li class="queryContent">
 					<div class="ad-list">
 						@foreach($group['list'] as $item)

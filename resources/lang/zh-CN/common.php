@@ -13,6 +13,7 @@ return [
 	'manager_name'        => '管理员名称',
 	'permission'          => '权限',
 	'name'                => '名称',
+	'type'                => '类型',
 	'status'              => '状态',
 	'route'               => '路由',
 	'create_at'           => '创建时间',
@@ -38,6 +39,8 @@ return [
 	'disable'             => '停用',
 	'delete'              => '删除',
 	'view'                => '查看',
+	'lock'                => '锁定',
+	'unlock'              => '解锁',
 	
 	# 结果
 	'action_success'      => '操作成功！',

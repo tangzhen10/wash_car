@@ -17,19 +17,43 @@ class InvestController extends Controller {
 	 */
 	public function investList() {
 		
-		$filter       = [
-			'content_type' => '21',
-			'status'       => 1,
+		$contentTypeIds = [
+			'nav'     => '20', # 首页栏目
+			'product' => '21', # 理财产品
 		];
-		$articleList  = \ArticleService::getArticleList($filter);
-		$articleGroup = [];
-		foreach ($articleList as $article) {
-			$module = $article['detail']['module'];
-			$articleGroup[$module['value']]['group_title'] = $module['value'];
-			$articleGroup[$module['value']]['list'][]      = $article;
+		
+		$filter     = [
+			'content_type' => $contentTypeIds['nav'],
+			'status'       => '1',
+		];
+		$navList    = \ArticleService::getArticleList($filter);
+		$articleIds = [];
+		foreach ($navList as $item) {
+			$articleIdsGroup = explode(',', $item['detail']['article_list']['value']);
+			$articleIds      = array_merge($articleIds, $articleIdsGroup);
 		}
-		sort($articleGroup);
-		$this->data['article_group'] = $articleGroup;
+		$articleIds         = array_unique($articleIds);
+		$filter             = [
+			'article_id_arr' => $articleIds,
+			'content_type'   => $contentTypeIds['product'],
+			'status'         => '1',
+		];
+		$articleList        = \ArticleService::getArticleList($filter);
+		$articleListWithKey = [];
+		foreach ($articleList as $item) $articleListWithKey[$item['id']] = $item;
+		
+		$groups = [];
+		foreach ($navList as $item) {
+			
+			$list            = ['title' => $item['name']];
+			$groupArticleIds = explode(',', $item['detail']['article_list']['value']);
+			foreach ($groupArticleIds as $articleId) {
+				if (isset($articleListWithKey[$articleId])) $list['list'][] = $articleListWithKey[$articleId];
+			}
+			$groups[$item['id']] = $list;
+		}
+		sort($groups);
+		$this->data['groups'] = $groups;
 		
 		return view('web/invest/list', $this->data);
 	}

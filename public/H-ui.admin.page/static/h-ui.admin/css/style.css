@@ -30,3 +30,11 @@
     width: 200px;
     border-radius: 4px;
 }
+
+/*列表操作栏*/
+.td-manage {
+    width: 20%;
+}
+.td-manage i.Hui-iconfont {
+    font-size: 16px;
+}

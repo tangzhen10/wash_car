@@ -33,7 +33,7 @@
 								<td>{{$row['id']}}</td>
 								<td>{{$row['name']}}</td>
 								<td>{{$row['description']}}</td>
-								<td class="f-14">
+								<td class="f-14 td-manage">
 									<a title="{{trans('common.view').trans('common.manager')}}" href="javascript:;" style="text-decoration:none"
 									   onclick="layer_show($(this).attr('title'),'{{route('roleManager', ['id' => $row['id']])}}')">
 										<i class="Hui-iconfont">&#xe725;</i></a>

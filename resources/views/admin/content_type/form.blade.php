@@ -27,10 +27,10 @@
 			
 		}
 		.note_nav {
-			border: 1px solid #a49293;
+			border: 1px solid #ccc;
 			border-radius: 5px;
 			padding: 5px 10px;
-			background: #ffe3e6;
+			background: #FFEEBC;
 		}
 		.note_nav i.c-black {
 			cursor: pointer;
@@ -64,29 +64,45 @@
 			</div>
 			<div class="row cl">
 				<strong class="form-label col-xs-4 col-sm-2">结构：</strong>
-				<div class="J_structure">
-					@foreach($detail['structure'] as $field)
-						<div class="cl field_row">
-							<label class="form-label col-xs-4 col-sm-2"></label>
-							<div class="formControls col-xs-8 col-sm-10">
-								<span>名称：</span>
-								<input name="field_name_text[]" class="input-text radius short_length mr-10" value="{{$field['name_text']}}">
-								<span>类型：</span>
-								<select name="field_type[]" class="select-box radius short_length mr-10">
-									@foreach($formElements as $item)
-										<option value="{{$item['type']}}" @if ($item['type'] == $field['type']) selected @endif>{{$item['name']}}</option>
-									@endforeach
-								</select>
-								<span>name：</span>
-								<input name="field_name[]" class="input-text radius short_length mr-10" value="{{$field['name']}}">
-								<span>备选值：</span>
-								<input name="field_value[]" class="input-text radius mr-10 middle_length" value="{{$field['value']}}">
-								<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>
-								<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>
-								<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>
-							</div>
-						</div>
-					@endforeach
+				<div class="formControls col-xs-8 col-sm-10">
+					<table class="table table-border table-striped table-bordered table-bg table-hover">
+						<thead>
+						<tr class="text-c">
+							<th>{{trans('common.name')}}</th>
+							<th>{{trans('common.type')}}</th>
+							<th>name属性</th>
+							<th>备选值、提示语</th>
+							<th>{{trans('common.action')}}</th>
+						</tr>
+						</thead>
+						<tbody>
+						@foreach($detail['structure'] as $field)
+							<tr>
+								<td>
+									<input name="field_name_text[]" class="input-text radius" value="{{$field['name_text']}}">
+								</td>
+								<td>
+									<select name="field_type[]" class="select-box radius">
+										@foreach($formElements as $item)
+											<option value="{{$item['type']}}" @if ($item['type'] == $field['type']) selected @endif>{{$item['name']}}</option>
+										@endforeach
+									</select>
+								</td>
+								<td>
+									<input name="field_name[]" class="input-text radius" value="{{$field['name']}}">
+								</td>
+								<td>
+									<input name="field_value[]" class="input-text radius" value="{{$field['value']}}">
+								</td>
+								<td class="text-c">
+									<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>
+									<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>
+									<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>
+								</td>
+							</tr>
+						@endforeach
+						</tbody>
+					</table>
 				</div>
 			</div>
 			<div class="row cl">
@@ -120,50 +136,50 @@
 			
 			// 增加
 			$('.J_add_row').click(function () {
-				var row_html = '<div class="cl field_row">'+
-					'<label class="form-label col-xs-4 col-sm-2"></label>'+
-					'<div class="formControls col-xs-8 col-sm-10">'+
-					'<span>名称：</span>'+
-					'<input name="field_name_text[]" class="input-text radius short_length mr-10">'+
-					''+
-					'<span>类型：</span>'+
-					'<select name="field_type[]" class="select-box radius middle_length mr-10">'+
+				var row_html = '<tr>'+
+					'<td>'+
+					'<input name="field_name_text[]" class="input-text radius">'+
+					'</td>'+
+					'<td>'+
+					'<select name="field_type[]" class="select-box radius">'+
 						@foreach($formElements as $item)
 							'<option value="{{$item['type']}}">{{$item['name']}}</option>'+
 						@endforeach
 							'</select>'+
-					'<span>name：</span>'+
-					'<input name="field_name[]" class="input-text radius short_length mr-10">'+
-					'<span>备选值：</span>'+
-					'<input name="field_value[]" class="input-text radius mr-10 middle_length">'+
+					'</td>'+
+					'<td>'+
+					'<input name="field_name[]" class="input-text radius">'+
+					'</td>'+
+					'<td>'+
+					'<input name="field_value[]" class="input-text radius">'+
+					'</td>'+
+					'<td class="text-c">'+
 					'<i class="Hui-iconfont c-red row_operate J_del_row">&#xe631;</i>'+
 					'<i class="Hui-iconfont c-green row_operate J_up_row">&#xe699;</i>'+
 					'<i class="Hui-iconfont c-primary row_operate J_down_row">&#xe698;</i>'+
-					'</div>'+
-					'</div>';
-				$('.J_structure').append(row_html);
+					'</td>'+
+					'</tr>';
+				$('tbody').append(row_html);
 			});
 			
 			@if (!$detail['id']) $('.J_add_row').click(); @endif
 			
 			// 移除
 			$(document).on('click', '.J_del_row', function () {
-				$(this).parents('.field_row').remove();
+				$(this).parents('tr').remove();
 			});
 			
 			// 上移
 			$(document).on('click', '.J_up_row', function () {
-				var row = $(this).parents('.field_row');
-				row.prev('.field_row').before(row);
+				var row = $(this).parents('tr');
+				row.prev().before(row);
 			});
 			
 			// 下移
 			$(document).on('click', '.J_down_row', function () {
-				var row = $(this).parents('.field_row');
-				row.next('.field_row').after(row);
+				var row = $(this).parents('tr');
+				row.next().after(row);
 			});
-			
-			
 			
 			$("#form").validate({
 				rules         : {

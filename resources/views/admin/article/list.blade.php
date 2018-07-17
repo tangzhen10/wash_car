@@ -38,10 +38,10 @@
 					<tr class="text-c">
 						<th width="25"><input type="checkbox" name="" value=""></th>
 						<th width="40">ID</th>
-						<th width="100">{{trans('common.content_type')}}</th>
+						<th width="150">{{trans('common.content_type')}}</th>
 						<th width="200">{{trans('common.article_name')}}</th>
-						<th width="150">{{trans('common.start_time')}}</th>
-						<th width="150">{{trans('common.end_time')}}</th>
+						{{--<th width="150">{{trans('common.start_time')}}</th>--}}
+						{{--<th width="150">{{trans('common.end_time')}}</th>--}}
 						<th width="100">{{trans('common.create_by')}}</th>
 						<th width="150">{{trans('common.create_at')}}</th>
 						<th width="150">{{trans('common.update_at')}}</th>
@@ -56,8 +56,8 @@
 							<td>{{$row['id']}}</td>
 							<td>{{$row['content_type']}}</td>
 							<td>{{$row['name']}}</td>
-							<td>{{$row['start_time']}}</td>
-							<td>{{$row['end_time']}}</td>
+							{{--<td>{{$row['start_time']}}</td>--}}
+							{{--<td>{{$row['end_time']}}</td>--}}
 							<td>{{$row['create_by']}}</td>
 							<td>{{$row['create_at']}}</td>
 							<td>{{$row['update_at']}}</td>
