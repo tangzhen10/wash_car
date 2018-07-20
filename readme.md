@@ -273,3 +273,7 @@ $md5即是sign的参数值
 #### 角色
 
 > 多角色系统，每个角色关联多个权限
+
+#### 备注
+> \vendor\laravel\framework\src\Illuminate\Database\Connectors\MySqlConnector.php
+NO_AUTO_CREATE_USER可能不可用，在不适用的服务器上删除这个值
