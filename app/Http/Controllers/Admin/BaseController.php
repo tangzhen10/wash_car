@@ -76,6 +76,22 @@ class BaseController extends Controller {
 	}
 	
 	/**
+	 * 批量删除
+	 * @author 李小同
+	 * @date   2018-7-20 23:54:25
+	 */
+	public function batchDelete() {
+		
+		$ids = \Request::input('ids', []);
+		if (!empty($ids)) {
+			$res = $this->service->batchDelete($ids, static::MODULE);
+			$res ? json_msg('ok') : json_msg(trans('common.action_failed'), 40004);
+		} else {
+			json_msg(trans('validation.no_one_selected'), 40001);
+		}
+	}
+	
+	/**
 	 * 统一返回固定格式的json
 	 * @param $res
 	 * @author 李小同

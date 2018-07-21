@@ -94,6 +94,23 @@ class BaseService {
 	}
 	
 	/**
+	 * 批量删除
+	 * @param array  $ids
+	 * @param string $module
+	 * @author 李小同
+	 * @date   2018-7-21 00:02:37
+	 * @return bool
+	 */
+	public function batchDelete(array $ids = [], $module) {
+		
+		foreach ($ids as $id) {
+			static::changeStatus($id, '-1', $module);
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * 为数组里的每一行追加状态文本字段
 	 * @param array $list
 	 * @author 李小同

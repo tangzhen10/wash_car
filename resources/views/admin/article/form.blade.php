@@ -23,12 +23,14 @@
 			position: relative;
 			top: 8px;
 		}
+		h3 {
+			padding: 5px 0 15px 0;
+		}
 	</style>
 @endsection
 @section('body')
 	<article class="cl pd-20">
-		<form method="post" enctype="multipart/form-data" class="form form-horizontal" id="form">
-			<input class="btn btn-success radius" type="submit" value="&nbsp;&nbsp;保存&nbsp;&nbsp;">
+		<form enctype="multipart/form-data" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="public_attr">
 				<h3>公共属性</h3>
@@ -74,6 +76,7 @@
 				
 				<div id="J_private_attr_area"></div>
 			</div>
+			<input class="btn btn-success radius J_submit" value="{{trans('common.save')}}">
 		</form>
 	</article>
 @endsection
@@ -107,22 +110,6 @@
 			
 			$('.J_content_type').val('{{$detail['content_type']}}').trigger('change');
 			
-			$("#form").validate({
-				rules         : {
-					name         : {
-						required  : true,
-						minlength : 1,
-						maxlength : 16
-					},
-					content_type : {
-						required : true,
-					}
-				},
-				onkeyup       : false,
-//				focusCleanup  : true,
-				success       : "valid",
-				submitHandler : function (form) {handleAjaxForm(form)}
-			});
 		});
 	</script>
 @endsection

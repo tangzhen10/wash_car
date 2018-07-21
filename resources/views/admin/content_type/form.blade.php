@@ -108,8 +108,7 @@
 			<div class="row cl">
 				<div class="col-xs-8 col-sm-10 col-xs-offset-4 col-sm-offset-2">
 					<span class="btn btn-success radius J_add_row">添加字段</span>
-					<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
-					{{--<input class="btn btn-primary radius J_submit" value="提交">--}}
+					<span class="btn btn-primary radius J_submit">{{trans('common.submit')}}</span>
 				</div>
 			</div>
 		</form>
@@ -179,21 +178,6 @@
 			$(document).on('click', '.J_down_row', function () {
 				var row = $(this).parents('tr');
 				row.next().after(row);
-			});
-			
-			$("#form").validate({
-				rules         : {
-					"name"              : {
-						required  : true,
-						maxlength : 16
-					},
-					"field_name_text[]" : {required : true},
-					"field_name[]"      : {required : true},
-				},
-				onkeyup       : false,
-//				focusCleanup  : true,
-				success       : "valid",
-				submitHandler : function (form) {handleAjaxForm(form)}
 			});
 		});
 	</script>

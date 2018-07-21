@@ -8,4 +8,5 @@ return [
 		'string' => ':attr至少:min个字符！',
 	],
 	'invalid'             => '无效的:attr！',
+	'no_one_selected'     => '未选择任何条目！',
 ];

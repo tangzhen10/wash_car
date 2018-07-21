@@ -4,19 +4,15 @@
 		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
-				<div class="text-c"> 日期范围：
-					<input type="text" id="datemin" class="input-text Wdate" style="width:120px;"
-					       onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})">
-				                     -
-					<input type="text" id="datemax" class="input-text Wdate" style="width:120px;"
-					       onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
+				<div class="text-c">
 					<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">
-					<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜用户
+					<button type="submit" class="btn btn-success radius J_filter">
+						<i class="Hui-iconfont">&#xe665;</i> {{trans('common.filter')}}
 					</button>
 				</div>
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="l">
-						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+						<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteManager')}}')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 						<a href="javascript:;" onclick="layer_show('添加管理员','{{route('managerForm')}}','800','500')" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe600;</i> 添加管理员
 						</a>

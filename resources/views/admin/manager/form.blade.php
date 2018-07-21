@@ -18,7 +18,7 @@
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="password" class="input-text" autocomplete="off" placeholder="确认新密码" id="password_repeat" name="password_repeat">
+					<input type="password" class="input-text" autocomplete="off" placeholder="确认密码" id="password_repeat" name="password_repeat">
 				</div>
 			</div>
 			<div class="row cl">
@@ -46,7 +46,7 @@
 			</div>
 			<div class="row cl">
 				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-					<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+					<span class="btn btn-primary radius J_submit">{{trans('common.submit')}}</span>
 				</div>
 			</div>
 		</form>
@@ -55,21 +55,6 @@
 @section('js')
 	<script>
 		
-		$(function () {
-			
-			$("#form").validate({
-				rules         : {
-					name : {
-						required  : true,
-						minlength : 1,
-						maxlength : 16
-					}
-				},
-				onkeyup       : false,
-//				focusCleanup  : true,
-				success       : "valid",
-				submitHandler : function (form) {handleAjaxForm(form)}
-			});
-		});
+		
 	</script>
 @endsection

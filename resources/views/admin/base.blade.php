@@ -17,38 +17,43 @@
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/layer/2.4/layer.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui/js/H-ui.min.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui.admin/js/H-ui.admin.page.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/jquery.validate.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/validate-methods.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery.validation/1.14.0/messages_zh.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/My97DatePicker/4.8/WdatePicker.js')}}"></script>
 <script>
 	
 	$(function () {
+		
 		// iCkeck 单选框
 		$('.skin-minimal input').iCheck({
 			checkboxClass : 'icheckbox-blue',
 			radioClass    : 'iradio-blue',
 			increaseArea  : '20%'
 		});
-	});
-	
-	// ajax提交表单 李小同 2018-7-11 14:49:54
-	function handleAjaxForm(form) {
-		$(form).ajaxSubmit({
-			type       : 'post',
-			dataType   : 'json',
-			beforeSend : function () {layer.load(3)},
-			success    : function (data) {
-				layer.close(layer.load());
-				if (data.code == 0 && data.msg == 'ok') {
-					window.parent.location.reload();
-					layer.msg('{{trans('common.action_success')}}');
-				} else {
-					layer.msg(data.error, function () {});
-				}
+		
+		// ajax提交表单 李小同 2018-7-11 14:49:54
+		$(".J_submit").css({width: '100px'}).click(function () {
+			if (validate_form()) {
+				$('#form').ajaxSubmit({
+					type       : 'post',
+					dataType   : 'json',
+					beforeSend : function () {layer.load(3)},
+					success    : function (data) {
+						layer.close(layer.load());
+						if (data.code == 0 && data.msg == 'ok') {
+							window.parent.location.reload();
+							layer.msg('{{trans('common.action_success')}}');
+						} else {
+							layer.msg(data.error, function () {});
+						}
+					}
+				});
 			}
 		});
-	}
+		
+	});
+	
+	// 验证表单，form页面用真实的验证函数重写掉
+	function validate_form() { return true }
+
 </script>
 @yield('js')
 </body>

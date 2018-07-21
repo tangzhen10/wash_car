@@ -73,7 +73,7 @@
 			</div>
 			<div class="row cl">
 				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-					<input class="btn btn-primary radius" type="submit" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+					<span class="btn btn-primary radius J_submit">{{trans('common.submit')}}</span>
 				</div>
 			</div>
 		</form>
@@ -82,39 +82,24 @@
 @section('js')
 	<script>
 		
+		function validate_form() {
+			
+			var level   = parseInt($('#J_level').val()),
+			    p_level = parseInt($('select[name="pid"] option:selected').attr('data-level'));
+			console.log(p_level);
+			if (level > 0 && (level-p_level != 1)) {
+				layer.msg('当前权限节点只能位于'+(level-1)+'级菜单下');
+				return false;
+			}
+			
+			return true;
+		}
+		
 		$(function () {
 			
 			// 切换父目录，自动将父目录的sort值赋给该节点
 			$('select[name="pid"]').change(function () {
 				$('input[name="sort"]').val($('select[name="pid"] option:selected').attr('data-sort'));
-			});
-			
-			$("#form").validate({
-				rules         : {
-					name   : {
-						required  : true,
-						minlength : 4,
-						maxlength : 16
-					},
-					route  : {
-						required : false,
-					},
-					status : {
-						required : true,
-					}
-				},
-				onkeyup       : false,
-//				focusCleanup  : true,
-				success       : "valid",
-				submitHandler : function (form) {
-					var level = parseInt($('#J_level').val()),
-					    p_level = parseInt($('select[name="pid"] option:selected').attr('data-level'));
-					if (level > 0 && p_level - level != 1) {
-						layer.msg('当前权限节点只能位于' + (level - 1) + '级菜单下');
-						return false;
-					}
-					handleAjaxForm(form)
-				}
 			});
 		});
 	</script>

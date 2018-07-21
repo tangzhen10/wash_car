@@ -2,7 +2,9 @@
 
 return [
 	'wrong_account_or_pwd' => '用户名或密码不正确！',
+	'wrong_pwd'            => '密码不正确！',
 	'wrong_old_pwd'        => '原密码不正确！',
+	'not_exist_account'    => '不存在的账户！',
 	'no_login'             => '未登录，请先登录！',
 	'illegal_param'        => '非法参数！',
 	'illegal_action'       => '非法操作！',
@@ -13,4 +15,6 @@ return [
 	'can_not_delete_self'  => '你不能删除自己！',
 	'role_have_mangers'    => '还有管理员属于该角色！',
 	'can_not_stop_self'    => '你不能停用自己！',
+	'forbidden_account'    => '该账户已被禁用！',
+
 ];

@@ -75,8 +75,8 @@
 				success    : function (data) {
 					layer.close(layer.load());
 					if (data.code == 0 && data.msg == 'ok') {
-						var enable_btn = '<a onClick="handleDataStart(this,'+id+',\''+url+'\')" ' +
-							'href="javascript:;" title="{{trans('common.enable')}}" style="text-decoration:none">' +
+						var enable_btn = '<a onClick="handleDataStart(this,'+id+',\''+url+'\')" '+
+							'href="javascript:;" title="{{trans('common.enable')}}" style="text-decoration:none">'+
 							'<i class="Hui-iconfont">&#xe615;</i></a>';
 						$(obj).parents("tr").find(".td-manage").prepend(enable_btn);
 						$(obj).parents("tr").find(".td-status").html('<span class="label label-danger radius">{{trans('common.disable')}}</span>');
@@ -111,6 +111,61 @@
 						layer.msg(data.error, function () {});
 					}
 				}
+			});
+		});
+	}
+	
+	// 列表页批量删除
+	function batch_delete(url) {
+		
+		var select_items = $('tbody input[type=checkbox]:checked'),
+		    ids          = [];
+		for (var i = 0; i < select_items.length; i++) {
+			ids.push($(select_items[i]).val());
+		}
+		if (ids.length == 0) {
+			layer.msg('{{trans('validation.no_one_selected')}}', {time : 1000});
+			return;
+		}
+		
+		// 危险操作，再次确认
+		layer.confirm('{{trans('common.dangerous_action_confirm')}}', function () {
+			
+			layer.prompt({
+				title    : '{{trans('common.input_manager_password')}}',
+				formType : 1, // 密码
+			}, function (val, index) {
+				
+				// 验证密码
+				$.ajax({
+					url        : '{{route('checkManagerPwd')}}',
+					type       : 'post',
+					data       : {password : val},
+					beforeSend : function () { layer.load(3) },
+					success    : function (data) {
+						layer.close(layer.load());
+						if (data.code == 0 && data.msg == 'ok') {
+							
+							$.ajax({
+								url        : url,
+								type       : 'post',
+								data       : {ids : ids},
+								beforeSend : function () { layer.load(3) },
+								success    : function (data) {
+									layer.close(layer.load());
+									if (data.code == 0) {
+										layer.msg('{{trans('common.action_success')}}');
+										location.reload();
+									} else {
+										layer.msg(data.error, function () {});
+									}
+								}
+							});
+						} else {
+							layer.msg(data.error, function () {});
+						}
+					}
+				});
 			});
 		});
 	}

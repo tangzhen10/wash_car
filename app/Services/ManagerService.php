@@ -58,15 +58,15 @@ class ManagerService extends BaseService {
 		
 		if ($manager) {
 			
-			if ($manager['status'] == 0) json_msg('该账户已被禁用', 50001);
+			if ($manager['status'] == 0) json_msg(trans('error.forbidden_account'), 50001);
 			
 			if (easy_encrypt($password, $manager['salt']) == $manager['password']) {
 				return $manager['id'];
 			} else {
-				json_msg('密码不正确', 50001);
+				json_msg(trans('error.wrong_pwd'), 50001);
 			}
 		} else {
-			json_msg('不存在的账户', 50001);
+			json_msg(trans('error.not_exist_account'), 50001);
 		}
 	}
 	
@@ -81,6 +81,23 @@ class ManagerService extends BaseService {
 		
 		$fields  = ['id', 'name', 'password', 'salt', 'status'];
 		$manager = \DB::table('manager')->where('name', $managerName)->first($fields);
+		
+		return $manager;
+	}
+	
+	/**
+	 * 根据用户ID获取用户信息
+	 * @param $managerId
+	 * @author 李小同
+	 * @date   2018-1-12 21:56:22
+	 * @return mixed null | array
+	 */
+	public function getManagerInfoByManagerId($managerId = 0) {
+		
+		if ($managerId == 0) $managerId = $this->managerId;
+		
+		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_at'];
+		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
 		
 		return $manager;
 	}
@@ -104,23 +121,6 @@ class ManagerService extends BaseService {
 		$this->updateLoginInfo($managerId);
 		
 		return $managerInfo;
-	}
-	
-	/**
-	 * 根据用户ID获取用户信息
-	 * @param $managerId
-	 * @author 李小同
-	 * @date   2018-1-12 21:56:22
-	 * @return mixed null | array
-	 */
-	public function getManagerInfoByManagerId($managerId = 0) {
-		
-		if ($managerId == 0) $managerId = $this->managerId;
-		
-		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_at'];
-		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
-		
-		return $manager;
 	}
 	
 	/**
@@ -307,14 +307,14 @@ class ManagerService extends BaseService {
 	
 	/**
 	 * 获取管理员的角色
-	 * @param int $managerId
+	 * @param bool|int $managerId
 	 * @author 李小同
 	 * @date   2018-7-5 15:28:55
 	 * @return mixed
 	 */
-	public function getRolesByManagerId($managerId = 0) {
+	public function getRolesByManagerId($managerId = false) {
 		
-		if (empty($managerId)) $managerId = $this->managerId;
+		if ($managerId === false) $managerId = $this->managerId;
 		$managerRoles = \DB::table('manager_role AS a')
 		                   ->join('role AS b', 'b.id', '=', 'a.role_id')
 		                   ->where('a.manager_id', $managerId)

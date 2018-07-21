@@ -23,6 +23,10 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ManagerController@form', 'as' => 'managerForm']);
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'ManagerController@changeStatus', 'as' => 'managerChangeStatus']);
+		# 验证密码
+		Route::post('checkPassword', ['uses' => 'ManagerController@checkPassword', 'as' => 'checkManagerPwd']);
+		# 批量删除
+		Route::post('batchDelete', ['uses' => 'ManagerController@batchDelete', 'as' => 'batchDeleteManager']);
 		
 	});
 	
@@ -37,6 +41,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::post('changeStatus', ['uses' => 'RoleController@changeStatus', 'as' => 'roleChangeStatus']);
 		# 查看拥有该角色的管理员
 		Route::get('manager/{id}', ['uses' => 'RoleController@roleManager', 'as' => 'roleManager']);
+		# 批量删除
+		Route::post('batchDelete', ['uses' => 'RoleController@batchDelete', 'as' => 'batchDeleteRole']);
 		
 	});
 	
@@ -86,6 +92,9 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ArticleController@changeStatus', 'as' => 'articleChangeStatus']);
 		# 上传文件
 		Route::match(['get', 'post'], 'upload', ['uses' => 'ArticleController@uploadFile', 'as' => 'articleUploadFile']);
+		# 批量删除
+		Route::post('batchDelete', ['uses' => 'ArticleController@batchDelete', 'as' => 'batchDeleteArticle']);
+		
 	});
 	
 	

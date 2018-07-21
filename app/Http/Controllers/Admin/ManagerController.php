@@ -104,4 +104,17 @@ class ManagerController extends BaseController {
 		
 		return compact('roles', 'managerRoles');
 	}
+	
+	/**
+	 * 验证管理员密码
+	 * @author 李小同
+	 * @date   2018-7-21 10:26:05
+	 */
+	public function checkPassword() {
+		
+		$password  = \Request::input('password');
+		$manager   = $this->service->getManagerInfoByManagerId();
+		$managerId = $this->service->checkPwd($manager['name'], $password);
+		if ($managerId > 0) json_msg('ok');
+	}
 }

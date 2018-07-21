@@ -4,17 +4,8 @@
 		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
-				{{--<div class="text-c mb-20">
-					<form class="Huiform" method="post" action="" target="_self">
-						<input type="text" class="input-text" style="width:250px" placeholder="权限名称" id="" name="">
-						<button type="submit" class="btn btn-success" id="" name=""><i class="Hui-iconfont">&#xe665;</i>
-							搜权限节点
-						</button>
-					</form>
-				</div>--}}
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
-						<a href="javascript:;" onclick="datadel()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
 						<a href="javascript:;" onclick="layer_show('添加权限节点','{{route('permissionForm')}}','','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限节点</a>
 					</span>
 					<span class="r">共有数据：<strong>{{count($permissions)}}</strong> 条</span></div>
