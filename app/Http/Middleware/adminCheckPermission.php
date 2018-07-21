@@ -39,7 +39,7 @@ class adminCheckPermission {
 			                  ->pluck('route')
 			                  ->toArray();
 			if (!in_array($currentRoute, $list)) {
-				if ($_SERVER['HTTP_VFROM'] == 'ajax') {
+				if (\Request::header('vfrom') == 'ajax') {
 					json_msg(trans('error.access_denied'), 40006);
 				} else {
 					echo '<h2 style="color: red;">'.trans('error.access_denied'), '</h2>';

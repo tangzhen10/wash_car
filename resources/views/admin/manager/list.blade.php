@@ -19,16 +19,13 @@
 					</span>
 					<span class="r">共有数据：<strong>{{count($managers)}}</strong> 条</span>
 				</div>
-				<table class="table table-border table-bordered table-bg">
+				<table class="table table-border table-bordered table-striped table-hover table-bg">
 					<thead>
-					<tr>
-						<th scope="col" colspan="9">员工列表</th>
-					</tr>
 					<tr class="text-c">
 						<th width="25"><input type="checkbox" name="" value=""></th>
 						<th width="40">ID</th>
-						<th>登录名</th>
-						<th>角色</th>
+						<th>{{trans('common.name')}}</th>
+						<th>{{trans('common.role')}}</th>
 						<th>{{trans('common.create_at')}}</th>
 						<th>上次登录时间</th>
 						<th>上次登录ip</th>

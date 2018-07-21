@@ -30,6 +30,7 @@ return [
 	'gender'                   => '性别',
 	'reg_at'                   => '注册时间',
 	'role'                     => '角色',
+	'description'              => '描述',
 	
 	# 属性
 	'gender_0'                 => '',

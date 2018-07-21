@@ -32,13 +32,15 @@ class InvestController extends Controller {
 			$articleIdsGroup = explode(',', $item['detail']['article_list']['value']);
 			$articleIds      = array_merge($articleIds, $articleIdsGroup);
 		}
-		$articleIds         = array_unique($articleIds);
-		$filter             = [
+		$articleIds  = array_unique($articleIds);
+		$filter      = [
 			'article_id_arr' => $articleIds,
 			'content_type'   => $contentTypeIds['product'],
 			'status'         => '1',
 		];
-		$articleList        = \ArticleService::getArticleList($filter);
+		$articleList = \ArticleService::getArticleList($filter);
+		
+		# 以article_id作为key
 		$articleListWithKey = [];
 		foreach ($articleList as $item) $articleListWithKey[$item['id']] = $item;
 		
@@ -46,8 +48,8 @@ class InvestController extends Controller {
 		foreach ($navList as $item) {
 			
 			$list            = ['title' => $item['name']];
-			$groupArticleIds = explode(',', $item['detail']['article_list']['value']);
-			foreach ($groupArticleIds as $articleId) {
+			$articleIdsGroup = explode(',', $item['detail']['article_list']['value']);
+			foreach ($articleIdsGroup as $articleId) {
 				if (isset($articleListWithKey[$articleId])) $list['list'][] = $articleListWithKey[$articleId];
 			}
 			$groups[$item['id']] = $list;
@@ -67,9 +69,11 @@ class InvestController extends Controller {
 	 */
 	public function detail($id = 0) {
 		
-		$detail                        = \ArticleService::getDetailById($id);
+		$detail = \ArticleService::getDetailById($id);
+		
 		$detail['detail']['top_image'] = \URL::asset($detail['detail']['top_image']);
-		$this->data['detail']          = $detail;
+		
+		$this->data['detail'] = $detail;
 		
 		return view('web/invest/detail', $this->data);
 	}

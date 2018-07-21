@@ -90,7 +90,7 @@
 			</div>
 			<div class="row cl">
 				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-					<input class="btn btn-success radius J_submit" value="{{trans('common.save')}}">
+					<span class="btn btn-success radius J_submit">{{trans('common.save')}}</span>
 				</div>
 			</div>
 		</form>

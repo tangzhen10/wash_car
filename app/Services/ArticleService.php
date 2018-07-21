@@ -231,15 +231,20 @@ class ArticleService extends BaseService {
 	 */
 	public function getArticleList(array $filter = []) {
 		
-		$where = ['a.status' => '1'];
+		$where = ['status' => '1'];
 		if (!empty($filter['content_type'])) {
-			$where['a.content_type'] = intval($filter['content_type']);
+			$where['content_type'] = intval($filter['content_type']);
 		} else {
 			json_msg('必须指定一种文档类型', 40001);
 		}
 		
 		# 公共属性
-		$articles = \DB::table('article AS a')->where($where)->orderBy('a.id', 'desc')->get()->toArray();
+		$articles = \DB::table('article')->where($where);
+		
+		# 按article_id筛选
+		if (isset($filter['article_id_arr'])) $articles = $articles->whereIn('id', $filter['article_id_arr']);
+		
+		$articles = $articles->orderBy('id', 'desc')->get()->toArray();
 		
 		# 私有属性
 		$privateFields = \ContentTypeService::getDetailById($filter['content_type'], true);

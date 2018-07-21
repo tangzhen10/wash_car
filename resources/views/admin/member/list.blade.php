@@ -18,10 +18,9 @@
 				<div class="cl pd-5 bg-1 bk-gray mt-20">
 					<span class="r">共有数据：<strong>{{$total}}</strong> 条</span></div>
 				<div class="mt-20">
-					<table class="table table-border table-bordered table-hover table-bg table-sort">
+					<table class="table table-border table-bordered table-striped table-hover table-bg table-sort">
 						<thead>
 						<tr class="text-c">
-							<th width="25"><input type="checkbox"></th>
 							<th width="35">ID</th>
 							<th width="150">{{trans('common.username')}}</th>
 							<th width="40">{{trans('common.gender')}}</th>
@@ -34,7 +33,6 @@
 						<tbody>
 						@foreach($members as $member)
 							<tr class="text-c">
-								<td><input type="checkbox" value="{{$member['user_id']}}"></td>
 								<td>{{$member['user_id']}}</td>
 								<td>{{$member['nickname']}}</td>
 								<td>{{$member['gender_text']}}</td>

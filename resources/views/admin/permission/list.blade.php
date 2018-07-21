@@ -9,13 +9,9 @@
 						<a href="javascript:;" onclick="layer_show('添加权限节点','{{route('permissionForm')}}','','400')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限节点</a>
 					</span>
 					<span class="r">共有数据：<strong>{{count($permissions)}}</strong> 条</span></div>
-				<table class="table table-border table-bordered table-bg">
+				<table class="table table-border table-bordered table-striped table-hover table-bg">
 					<thead>
-					<tr>
-						<th scope="col" colspan="7">权限节点</th>
-					</tr>
 					<tr class="text-c">
-						<th width="25"><input type="checkbox" name="" value=""></th>
 						<th width="40">ID</th>
 						<th width="200">权限名称</th>
 						<th>路由</th>
@@ -27,7 +23,6 @@
 					<tbody>
 					@foreach($permissions as $row)
 						<tr class="text-c">
-							<td><input type="checkbox" value="{{$row['id']}}" name=""></td>
 							<td>{{$row['id']}}</td>
 							<td style="text-align: left;{{$row['level'] == '1' ? 'font-weight:bold' : ''}};text-indent: {{($row['level'] - 1) * 30}}px;">{{$row['name']}}</td>
 							<td>{{$row['route']}}</td>

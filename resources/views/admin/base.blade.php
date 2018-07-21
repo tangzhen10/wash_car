@@ -20,6 +20,8 @@
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/My97DatePicker/4.8/WdatePicker.js')}}"></script>
 <script>
 	
+	$.ajaxSetup({headers : {vfrom : 'ajax', 'X-CSRF-TOKEN' : '{{ csrf_token() }}'}});
+	
 	$(function () {
 		
 		// iCkeck 单选框

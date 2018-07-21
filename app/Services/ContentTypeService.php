@@ -228,7 +228,7 @@ class ContentTypeService extends BaseService {
 				
 				$value    = isset($article['detail'][$field['name']]) ? $article['detail'][$field['name']] : ($field['type'] == 'checkbox' ? [] : '');
 				$funcName = $field['type'].'FormElement';
-				if (method_exists($this, $funcName)) $html .= $this->$funcName($field, $value);
+				if (method_exists($this, $funcName)) $html .= $this->$funcName($field, $value, $id);
 			}
 		}
 		
@@ -331,7 +331,7 @@ class ContentTypeService extends BaseService {
 	public function selectFormElement(array $field, $value = '') {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
-		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;">';
+		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;"><option></option>';
 		$groups = explode(',', $field['value']);
 		foreach ($groups as $group) {
 			$selected = $group == $value ? 'selected' : '';
@@ -499,6 +499,37 @@ class ContentTypeService extends BaseService {
 						}
 					});
 				</script>';
+		
+		return $html;
+	}
+	
+	/**
+	 * 文档类型专用下拉菜单
+	 * @param array  $field
+	 * @param string $value
+	 * @param int    $selfId 文章自身的文档类型
+	 * @author 李小同
+	 * @date   2018-7-21 15:40:36
+	 * @return string
+	 */
+	public function contenttypeFormElement(array $field, $value = '', $selfId = 0) {
+		
+		$fields          = ['id', 'name'];
+		$contentTypeList = \DB::table($this->module)
+		                      ->where('status', '1')
+		                      ->orderBy('id', 'desc')
+		                      ->get($fields)
+		                      ->toArray();
+		
+		$html   = '<p><span class="form_filed_row article_content_type">'.$field['name_text'].'：</span>
+		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;"><option></option>';
+		foreach ($contentTypeList as $item) {
+			if ($item['id'] == $selfId) continue;
+			$selected = $item['id'] == $value ? 'selected' : '';
+			$html .= '<option value="'.$item['id'].'" '.$selected.' >'.$item['name'].'</option>';
+		}
+		$html .= '</select></p>';
+		$html .= '<script></script>';
 		
 		return $html;
 	}

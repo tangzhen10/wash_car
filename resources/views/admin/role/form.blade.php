@@ -16,7 +16,7 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">{{trans('common.permission')}}：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{{trans('common.permission')}}：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					@foreach($permissions as $item1)
 						<dl class="permission-list">
