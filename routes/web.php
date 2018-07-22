@@ -13,10 +13,10 @@
 
 Route::get('/', function () {
 	
-	if (1 || env('APP_ENV') == 'local') {
-		
-		return redirect('/invest/list/20');
-	}
+//	if (1 || env('APP_ENV') == 'local') {
+//
+//		return redirect('/invest/list/20');
+//	}
 	
 	return view('welcome');
 	
@@ -31,13 +31,6 @@ Route::group(['namespace' => 'Web'], function () {
 		Route::match(['get', 'post'], 'info', ['uses' => 'UserController@info', 'as' => 'webUserInfo']);
 	});
 	
-	# 理财
-	Route::group(['prefix' => 'invest'], function () {
-		
-		# 理财列表
-		Route::get('list/{id}', ['uses' => 'InvestController@investList', 'as' => 'webInvestList']);
-		# 理财详情
-		Route::get('detail/{id}', ['uses' => 'InvestController@detail', 'as' => 'webInvestDetail']);
-	});
+	
 	
 });
