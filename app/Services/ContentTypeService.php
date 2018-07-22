@@ -527,19 +527,17 @@ class ContentTypeService extends BaseService {
 		$html .= '<ul style="border: 1px solid #ccc;width: 40%;height: 200px; overflow-y: scroll;">';
 		$html .= '<li style="border-bottom: 1px solid #ccc;background: #e2fcee;">
 						<dl>
-			                <strong class="pl-20 pr-20">ID</strong>
-			                <strong class="text-c">'.trans('common.article_name').'</strong>
-			                <strong class="f-r pr-20">'.trans('common.status').'</strong>
+			                <strong class="text-c" style="display: inline-block;width: 15%;">ID</strong>
+			                <strong class="text-c" style="display: inline-block;width: 60%;">'.trans('common.article_name').'</strong>
+			                <strong class="text-c" style="display: inline-block;width: 20%;">'.trans('common.status').'/'.trans('common.time_status').'</strong>
 		                </dl>
 	                </li>';
 		foreach ($articleList as $key => $item) {
 			$html .= '<li style="'.($key % 2 ? '' : 'background: #eee;').'">
 						<dl>
-			                <span class="pl-20 pr-20">'.$item['id'].'</span>
-			                <span class="text-c">'.$item['name'].'</span>
-			                <span class="f-r pr-20">'
-							.($item['status'] ? '<i class="Hui-iconfont c-success">&#xe6a8;</i>' : '<i class="Hui-iconfont c-danger">&#xe706;</i>')
-			                .'</span>
+			                <span class="text-c" style="display: inline-block;width: 15%;">'.$item['id'].'</span>
+			                <span class="text-c" style="display: inline-block;width: 60%;">'.$item['name'].'</span>
+			                <span class="text-c" style="display: inline-block;width: 20%;">'.$item['status_icon'].' '.$item['time_status'].'</span>
 		                </dl>
 	                </li>';
 		}

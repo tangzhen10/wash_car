@@ -47,20 +47,19 @@ class InvestController extends Controller {
 				# 以article_id作为key
 				$articleListWithKey = [];
 				foreach ($articleList as $item) {
-					unset($item['content_type'],$item['create_at'],$item['create_by'],$item['update_at'],$item['update_by'],$item['start_time'],$item['end_time']);
+					unset($item['content_type'], $item['create_at'], $item['create_by'], $item['update_at'], $item['update_by'], $item['start_time'], $item['end_time']);
 					$articleListWithKey[$item['id']] = $item;
 				}
 				
 				foreach ($navList as $item) {
 					
-					$list            = ['title' => $item['name'], 'tab_id' => $item['id']];
+					$list            = ['title' => $item['name']];
 					$articleIdsGroup = explode(',', $item['detail']['article_list']['value']);
 					foreach ($articleIdsGroup as $articleId) {
 						if (isset($articleListWithKey[$articleId])) $list['list'][] = $articleListWithKey[$articleId];
 					}
 					$groups[$item['id']] = $list;
 				}
-				sort($groups);
 			}
 			$this->data['groups'] = $groups;
 			

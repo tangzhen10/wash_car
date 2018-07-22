@@ -32,6 +32,7 @@ return [
 	'role'                     => '角色',
 	'description'              => '描述',
 	'sort'                     => '排序',
+	'time_status'              => '生效',
 	
 	# 属性
 	'gender_0'                 => '',

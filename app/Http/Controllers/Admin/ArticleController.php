@@ -89,7 +89,7 @@ class ArticleController extends BaseController {
 	}
 	
 	/**
-	 * 显示更多
+	 * 文章池产品列表显示更多
 	 * @author 李小同
 	 * @date   2018-7-22 08:46:23
 	 */
@@ -98,16 +98,14 @@ class ArticleController extends BaseController {
 		$page        = \Request::input('page');
 		$contentType = env('ARTICLE_PRODUCT_CONTENT_TYPE');
 		$list        = $this->service->getListForArticlePond($contentType, $page);
-//		print_r($list       );die;
-		$html = '';
+		$html        = '';
 		foreach ($list as $key => $item) {
+			$icon = $item['status'] ? '<i class="Hui-iconfont c-success">&#xe6a8;</i>' : '<i class="Hui-iconfont c-danger">&#xe706;</i>';
 			$html .= '<li style="'.($key % 2 ? '' : 'background: #eee;').'">
 						<dl>
-			                <span class="pl-20 pr-20">'.$item['id'].'</span>
-			                <span class="text-c">'.$item['name'].'</span>
-			                <span class="f-r pr-20">'
-							.($item['status'] ? '<i class="Hui-iconfont c-success">&#xe6a8;</i>' : '<i class="Hui-iconfont c-danger">&#xe706;</i>')
-			                .'</span>
+			                <span class="text-c" style="display: inline-block;width: 15%;">'.$item['id'].'</span>
+			                <span class="text-c" style="display: inline-block;width: 60%;">'.$item['name'].'</span>
+			                <span class="text-c" style="display: inline-block;width: 20%;">'.$icon.$item['time_status'].'</span>
 		                </dl>
 	                </li>';
 		}

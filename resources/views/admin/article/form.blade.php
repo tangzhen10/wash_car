@@ -63,7 +63,7 @@
 					
 					<span class="form_filed">{{trans('common.sort')}}：</span>
 					<span class="form_value">
-						<input type="number" class="input-text radius" value="{{$detail['sort']}}">
+						<input type="number" class="input-text radius" name="sort" value="{{$detail['sort']}}">
 						<span>（值越大，越靠前）</span>
 					</span>
 				</p>

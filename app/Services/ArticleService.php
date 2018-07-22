@@ -105,6 +105,7 @@ class ArticleService extends BaseService {
 				'sub_name'     => $data['sub_name'],
 				'start_time'   => empty($data['start_time']) ? 0 : strtotime($data['start_time']),
 				'end_time'     => empty($data['end_time']) ? 0 : strtotime($data['end_time']),
+				'sort'         => empty($data['sort']) ? 0 : $data['sort'],
 				'content_type' => $data['content_type'],
 			];
 			if ($data['id']) {
@@ -241,8 +242,19 @@ class ArticleService extends BaseService {
 		              ->where('content_type', $contentType)
 		              ->offset(($page - 1) * $perPage)
 		              ->limit($perPage)
-		              ->get(['id', 'name', 'status'])
+		              ->get(['id', 'name', 'status', 'start_time', 'end_time'])
 		              ->toArray();
+		$now     = time();
+		foreach ($list as &$item) {
+			
+			$iconEnable          = '<i class="Hui-iconfont c-success" title="'.trans('common.enable').'">&#xe6a8;</i>';
+			$iconDisable         = '<i class="Hui-iconfont c-danger" title="'.trans('common.disable').'">&#xe706;</i>';
+			$item['status_icon'] = $item['status'] ? $iconEnable : $iconDisable;
+			$item['time_status'] = '生效中';
+			if ($item['start_time'] > 0 && $item['start_time'] > $now) $item['time_status'] = '未开始';
+			if ($item['end_time'] > 0 && $item['end_time'] < $now) $item['time_status'] = '已过期';
+		}
+		unset($item);
 		
 		return $list;
 	}
@@ -265,12 +277,20 @@ class ArticleService extends BaseService {
 		}
 		
 		# 公共属性
-		$articles = \DB::table('article')->where($where);
+		
+		$now      = time();
+		$articles = \DB::table('article')->where($where)->where(function ($query) use ($now) {
+			
+			$query->where('start_time', 0)->orWhere('start_time', '<=', $now);
+		})->where(function ($query) use ($now) {
+			
+			$query->where('end_time', 0)->orWhere('end_time', '>=', $now);
+		});
 		
 		# 按article_id筛选
 		if (isset($filter['article_id_arr'])) $articles = $articles->whereIn('id', $filter['article_id_arr']);
 		
-		$articles = $articles->orderBy('id', 'desc')->get()->toArray();
+		$articles = $articles->orderBy('sort', 'desc')->orderBy('id', 'desc')->get()->toArray();
 		
 		# 私有属性
 		$privateFields = \ContentTypeService::getDetailById($filter['content_type'], true);

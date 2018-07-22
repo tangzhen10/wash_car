@@ -115,7 +115,7 @@ class ManagerService extends BaseService {
 		$logId       = create_token();
 		$key         = sprintf(config('cache.ADMIN_LOG_INFO'), $logId);
 		redisSet($key, $managerInfo, 'admin'); # 存储在服务器端
-		setcookie(config('project.ADMIN_LOGIN_COOKIE'), $logId, time() + 86400, '/'); # 存在客户端，24h
+		setcookie(config('project.ADMIN_LOGIN_COOKIE'), $logId, time() + 86400, '/admin'); # 存在客户端，24h
 		
 		# 获取到上次登录信息存起来之后再更新
 		$this->updateLoginInfo($managerId);

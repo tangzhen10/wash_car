@@ -13,12 +13,13 @@
 
 Route::get('/', function () {
 	
-	if (1||env('APP_ENV') == 'local') {
+	if (1 || env('APP_ENV') == 'local') {
 		
-		return redirect('/invest/list');
+		return redirect('/invest/list/20');
 	}
 	
 	return view('welcome');
+	
 })->name('home');
 
 Route::group(['namespace' => 'Web'], function () {
@@ -35,7 +36,6 @@ Route::group(['namespace' => 'Web'], function () {
 		
 		# 理财列表
 		Route::get('list/{id}', ['uses' => 'InvestController@investList', 'as' => 'webInvestList']);
-		
 		# 理财详情
 		Route::get('detail/{id}', ['uses' => 'InvestController@detail', 'as' => 'webInvestDetail']);
 	});

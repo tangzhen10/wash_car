@@ -348,3 +348,9 @@ html{font-size: 62.5%}
 @media screen and (min-width:641px){
 	html{font-size:115%}
 }
+
+.J_show_more {
+	text-align: center;
+	color: #999;
+	cursor: pointer;
+}
