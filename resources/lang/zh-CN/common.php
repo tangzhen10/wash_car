@@ -35,6 +35,11 @@ return [
 	'time_status'              => '生效',
 	'value'                    => '值',
 	
+	# 车辆
+	'logo'                     => '标志',
+	'name_en'                  => '英文名称',
+	'first_letter'             => '名称首字母',
+	
 	# 属性
 	'gender_0'                 => '',
 	'gender_1'                 => '男',

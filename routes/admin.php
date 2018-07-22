@@ -8,6 +8,14 @@ Route::group(['namespace' => 'Admin'], function () {
 	# 后台首页
 	Route::get('/', ['uses' => 'ManagerController@index', 'as' => 'adminIndex']);
 	
+	# 车辆
+	Route::group(['prefix' => 'car'], function () {
+		
+		# 品牌
+		Route::get('brandList', ['uses' => 'CarController@brandList', 'as' => 'brandList']);
+		
+	});
+	
 	# 管理员
 	Route::group(['prefix' => 'manager'], function () {
 		
@@ -96,7 +104,6 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::post('batchDelete', ['uses' => 'ArticleController@batchDelete', 'as' => 'batchDeleteArticle']);
 		
 	});
-	
 	
 	# 产品
 	Route::group(['prefix' => 'product'], function () {

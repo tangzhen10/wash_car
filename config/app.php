@@ -189,6 +189,7 @@ return [
 		App\Providers\ContentTypeServiceProvider::class,    # 文档类型 李小同 2018-7-10 23:59:16
 		App\Providers\ArticleServiceProvider::class,        # 文章 李小同 2018-7-11 21:43:25
 		App\Providers\SettingServiceProvider::class,        # 设置 李小同 2018-7-22 13:02:40
+		App\Providers\CarServiceProvider::class,            # 车辆 李小同 2018-7-22 22:13:12
 	],
 	
 	/*
@@ -248,6 +249,7 @@ return [
 		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class,    # 文档类型 李小同 2018-7-10 23:58:55
 		'ArticleService'     => App\Facades\ArticleServiceFacade::class,        # 文章 李小同 2018-7-11 21:43:49
 		'SettingService'     => App\Facades\SettingServiceFacade::class,        # 设置 李小同 2018-7-22 13:02:23
+		'CarService'         => App\Facades\CarServiceFacade::class,            # 车辆 李小同 2018-7-22 22:13:40
 	],
 
 ];
