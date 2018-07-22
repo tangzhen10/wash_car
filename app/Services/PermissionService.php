@@ -229,4 +229,22 @@ class PermissionService extends BaseService {
 		
 		return $breadcrumb;
 	}
+	
+	/**
+	 * 检查是否允许修改状态
+	 * @param $id     int
+	 * @param $status int 新状态 1启用 0停用 -1删除
+	 * @author 李小同
+	 * @date   2018-7-22 21:28:35
+	 * @return bool
+	 */
+	public function checkChangeStatus($id, $status) {
+		
+		if ($status == '-1') {
+			$sub = \DB::table($this->module)->where('pid', $id)->where('status', '!=', '-1')->pluck('id')->toArray();
+			if (count($sub)) {
+				json_msg(trans('error.can_not_delete', ['reason' => trans('error.has_sub_permission')]), 50001);
+			}
+		}
+	}
 }
