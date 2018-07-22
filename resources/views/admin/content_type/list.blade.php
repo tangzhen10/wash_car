@@ -6,8 +6,8 @@
 			<article class="cl pd-20">
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
-						<a href="javascript:;" onclick="layer_show('添加文档类型','{{route('contentTypeForm')}}','1200','600')" class="btn btn-primary radius">
-							<i class="Hui-iconfont">&#xe600;</i> 添加文档类型
+						<a href="javascript:;" onclick="layer_show('添加模板','{{route('contentTypeForm')}}','1200','600')" class="btn btn-primary radius">
+							<i class="Hui-iconfont">&#xe600;</i> 添加模板
 						</a>
 					</span>
 					<span class="r">共有数据：<strong>{{count($typeList)}}</strong> 条</span>

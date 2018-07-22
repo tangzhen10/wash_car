@@ -17,6 +17,7 @@
 						<th>路由</th>
 						<th>排序</th>
 						<th>状态</th>
+						<th>显示</th>
 						<th width="100">操作</th>
 					</tr>
 					</thead>
@@ -30,6 +31,7 @@
 							<td class="td-status">
 								<span class="label label-{{$row['status'] ? 'success' : 'danger'}} radius">{{$row['status_text']}}</span>
 							</td>
+							<td style="font-size: 20px;"><?= $row['show'] ? '<i class="Hui-iconfont">&#xe725;</i>' : ''?></td>
 							<td class="td-manage">
 								
 								@if ($row['status'] == '1')

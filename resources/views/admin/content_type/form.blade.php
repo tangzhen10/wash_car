@@ -73,7 +73,7 @@
 							<label><input type="radio" id="status-0" value="2" name="type" @if ($detail['type'] == 2)  checked @endif> 产品</label>
 						</span>
 					</span>
-					<span class="note">* 类型为产品的应由开发人员配置，业务人员请选择产品分类，并在结构里选择产品池</span>
+					<span class="note">* 类型为产品的应由开发人员配置，业务人员请选择产品分类，并在结构里选择产品池，name填article_list</span>
 				</div>
 			</div>
 			<div class="row cl">
@@ -175,7 +175,15 @@
 				$('tbody').append(row_html);
 			});
 			
-			@if (!$detail['id']) $('.J_add_row').click(); @endif
+			@if (!$detail['id'])
+				$('.J_add_row').click();
+				if ($('input[name="type"]:checked').val() == '1') {
+					$('tbody tr:first input[name="field_name_text[]"]').val('产品池');
+					$('tbody tr:first select[name="field_type[]"]').val('articlepond');
+					$('tbody tr:first input[name="field_name[]"]').val('article_list');
+					$('tbody tr:first input[name="field_value[]"]').val('多篇文章用英文逗号隔开，如36,37,34,35，前台将按所填的文章id排序');
+				}
+			@endif
 			
 			// 移除
 			$(document).on('click', '.J_del_row', function () {
