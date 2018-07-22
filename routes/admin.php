@@ -72,7 +72,7 @@ Route::group(['namespace' => 'Admin'], function () {
 	Route::group(['prefix' => 'content_type'], function () {
 		
 		# 列表
-		Route::get('list', ['uses' => 'ContentTypeController@typeList', 'as' => 'contentTypeList']);
+		Route::get('list/{type?}', ['uses' => 'ContentTypeController@typeList', 'as' => 'contentTypeList']);
 		# 增改
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ContentTypeController@form', 'as' => 'contentTypeForm']);
 		# 修改状态

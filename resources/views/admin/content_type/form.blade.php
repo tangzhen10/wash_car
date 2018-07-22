@@ -73,6 +73,7 @@
 							<label><input type="radio" id="status-0" value="2" name="type" @if ($detail['type'] == 2)  checked @endif> 产品</label>
 						</span>
 					</span>
+					<span class="note">* 类型为产品的应由开发人员配置，业务人员请选择产品分类，并在结构里选择产品池</span>
 				</div>
 			</div>
 			<div class="row cl">

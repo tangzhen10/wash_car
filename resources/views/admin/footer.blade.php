@@ -20,13 +20,26 @@
 		});
 		
 		// 菜单栏
-		var current_url = '{{route(Request::route()->getName())}}';
-		for (var x in $('.menu_item')) {
-			var url = $('.menu_item').eq(x).attr('href');
-			if (url) {
-				if (current_url == url) {
+		var real_url = location.href,
+		    active   = false;
+		if (!active) { // 优先定位在与权限菜单一致的url上
+			for (var x in $('.menu_item')) {
+				var href = $('.menu_item').eq(x).attr('href');
+				if (href && href == real_url) {
 					$('.menu_item').eq(x).parent('li').addClass('current');
 					$('.menu_item').eq(x).parents('dd').show().siblings('dt').addClass('selected');
+					active = true;
+					break;
+				}
+			}
+		}
+		if (!active) { // 再匹配过滤参数的相似格式
+			for (var x in $('.menu_item')) {
+				var href = $('.menu_item').eq(x).attr('href');
+				if (href && href == real_url.substring(0, href.length)) {
+					$('.menu_item').eq(x).parent('li').addClass('current');
+					$('.menu_item').eq(x).parents('dd').show().siblings('dt').addClass('selected');
+					active = true;
 					break;
 				}
 			}

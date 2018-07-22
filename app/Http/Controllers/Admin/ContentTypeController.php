@@ -8,13 +8,18 @@ class ContentTypeController extends BaseController {
 	
 	/**
 	 * 文档类型列表
+	 * @param int $type 文档类型的类型 1产品分类 2产品
 	 * @author 李小同
 	 * @date   2018-7-11 15:46:36
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
-	public function typeList() {
+	public function typeList($type = 0) {
 		
-		$this->data['typeList'] = $this->service->getList();
+		$filter = [];
+		if ($type > 0 && in_array(strval($type), config('project.ALLOW_TYPE_OF_CONTENT_TYPE'))) {
+			$filter = ['type' => $type];
+		}
+		$this->data['typeList'] = $this->service->getList($filter);
 		return view('admin/content_type/list', $this->data);
 	}
 	
