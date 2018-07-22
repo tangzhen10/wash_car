@@ -31,6 +31,7 @@ return [
 	'reg_at'                   => '注册时间',
 	'role'                     => '角色',
 	'description'              => '描述',
+	'sort'                     => '排序',
 	
 	# 属性
 	'gender_0'                 => '',
@@ -49,6 +50,7 @@ return [
 	'save'                     => '保存',
 	'submit'                   => '提交',
 	'filter'                   => '筛选',
+	'show_more'                => '显示更多',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',
@@ -57,4 +59,6 @@ return [
 	# 结果
 	'action_success'           => '操作成功！',
 	'action_failed'            => '操作失败，请稍后重试。',
+	'no_more'                  => '没有更多了',
+	'no_data'                  => '暂无数据',
 ];

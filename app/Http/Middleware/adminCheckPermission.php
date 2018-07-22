@@ -11,6 +11,7 @@ class adminCheckPermission {
 		'managerLogin', # 登录
 		'managerLogout', # 登出
 		'checkManagerPwd', # 登出
+		'showMoreArticle', # 显示更多文章
 	];
 	
 	/**

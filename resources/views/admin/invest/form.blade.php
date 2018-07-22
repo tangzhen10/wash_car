@@ -61,27 +61,12 @@
 						</span>
 					</span>
 					
-					<span class="form_filed">{{trans('common.sort')}}：</span>
-					<span class="form_value">
-						<input type="number" class="input-text radius" value="{{$detail['sort']}}">
-						<span>（值越大，越靠前）</span>
-					</span>
-				</p>
-				<p>
 					<span class="form_filed fv_up"><span class="c-red">*</span>{{trans('common.content_type')}}：</span>
 					<select class="select-box radius mb-20 form_value J_content_type" name="content_type">
-						@if (\Request::input('content_type'))
-							@foreach($typeList as $type)
-								@if (\Request::input('content_type') == $type['id'])
-									<option value="{{$type['id']}}">{{$type['name']}}</option>
-								@endif
-							@endforeach
-						@else
-							<option></option>
-							@foreach($typeList as $type)
-								<option value="{{$type['id']}}">{{$type['name']}}</option>
-							@endforeach
-						@endif
+						<option></option>
+						@foreach($typeList as $type)
+							<option value="{{$type['id']}}">{{$type['name']}}</option>
+						@endforeach
 					</select>
 				</p>
 			</div>
@@ -91,7 +76,7 @@
 				
 				<div id="J_private_attr_area"></div>
 			</div>
-			<p class="text-c"><input class="btn btn-success radius J_submit" value="{{trans('common.save')}}"></p>
+			<input class="btn btn-success radius J_submit" value="{{trans('common.save')}}">
 		</form>
 	</article>
 @endsection

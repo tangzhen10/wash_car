@@ -4,29 +4,13 @@
 		@include('admin.breadcrumb')
 		<div class="Hui-article">
 			<article class="cl pd-20">
-				<div class="text-c mb-20">
-					<span>{{trans('common.article_name')}}：
-						<input class="input-text filter_input" name="filter_article_name" value="{{$filter_article_name}}" />
-					</span>
-					<span>{{trans('common.content_type')}}：
-						<select class="select-box filter_input" name="filter_content_type">
-							<option></option>
-							@foreach($typeList as $contentType)
-								<option value="{{$contentType['id']}}" @if ($filter_content_type == $contentType['id']) selected @endif>
-									{{$contentType['name']}}</option>
-							@endforeach
-						</select>
-					</span>
-					<button type="submit" class="btn btn-success radius J_filter" name="">
-						<i class="Hui-iconfont">&#xe665;</i> {{trans('common.filter')}}
-					</button>
-				</div>
 				<div class="cl pd-5 bg-1 bk-gray">
 					<span class="l">
 						<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteArticle')}}')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
-						<a href="javascript:;" onclick="layer_show('添加文章','{{route('articleForm')}}','1000','600')" class="btn btn-primary radius">
-							<i class="Hui-iconfont">&#xe600;</i> 添加文章
+						<a href="javascript:;" onclick="layer_show('添加产品','{{route('articleForm')}}?content_type={{$filter_content_type}}','1000','600')" class="btn btn-primary radius">
+							<i class="Hui-iconfont">&#xe600;</i> 添加产品
 						</a>
+					</span>
 					</span>
 					<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 				</div>
@@ -35,7 +19,7 @@
 					<tr class="text-c">
 						<th width="25"><input type="checkbox" name="" value=""></th>
 						<th width="40">ID</th>
-						<th width="150">{{trans('common.content_type')}}</th>
+						<th width="150">{{trans('common.type')}}</th>
 						<th width="200">{{trans('common.article_name')}}</th>
 						{{--<th width="150">{{trans('common.start_time')}}</th>--}}
 						{{--<th width="150">{{trans('common.end_time')}}</th>--}}
@@ -43,7 +27,7 @@
 						<th width="150">{{trans('common.create_at')}}</th>
 						<th width="150">{{trans('common.update_at')}}</th>
 						<th width="100">{{trans('common.sort')}}</th>
-						<th width="100">{{trans('common.action')}}</th>
+						<th width="100">{{trans('common.status')}}</th>
 						<th width="100">{{trans('common.action')}}</th>
 					</tr>
 					</thead>
@@ -77,8 +61,8 @@
 									</a>
 								@endif
 								
-								<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'), '{{route('articleForm', $row['id'])}}','1000','600')"
-								   href="javascript:;" class="ml-5" style="text-decoration:none">
+								<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5" style="text-decoration:none"
+								   onclick="layer_show($(this).attr('title'), '{{route('articleForm', $row['id'])}}?content_type={{$filter_content_type}}','1000','600')">
 									<i class="Hui-iconfont">&#xe6df;</i>
 								</a>
 								<a title="{{trans('common.delete')}}" onclick="handleDataDel(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')"
@@ -99,17 +83,12 @@
 	<script>
 		
 		// 筛选
-		$('.J_filter').click(function () {
-			var content_type = $('select[name="filter_content_type"]').val(),
-			    article_name = $('input[name="filter_article_name"]').val();
-			if (content_type || article_name) {
-				
-				var query_string = [];
-				if (content_type) query_string.push('filter_content_type='+content_type);
-				if (article_name) query_string.push('filter_article_name='+article_name);
-				location.href = '{{route('articleList')}}?'+query_string.join('&');
+		$('select[name="filter_content_type"]').change(function () {
+			var content_type = $('select[name="filter_content_type"]').val();
+			if (content_type) {
+				location.href = '{{route('productCategory')}}/?filter_content_type=' + content_type;
 			} else {
-				location.href = '{{route('articleList')}}';
+				location.href = '{{route('productCategory')}}';
 			}
 		});
 	</script>

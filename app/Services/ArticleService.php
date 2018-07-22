@@ -36,7 +36,6 @@ class ArticleService extends BaseService {
 			$detail['end_time']   = intToTime($detail['end_time']);
 			
 			$options = \DB::table('article_detail')->where('article_id', $id)->get(['name', 'value'])->toArray();
-			
 			foreach ($options as $option) {
 				$detail['detail'][$option['name']] = $option['value'];
 			}
@@ -54,12 +53,12 @@ class ArticleService extends BaseService {
 		} else {
 			$detail = [
 				'id'           => '0',
-				'content_type' => '0',
+				'content_type' => \Request::input('content_type', '0'),
 				'name'         => '',
 				'sub_name'     => '',
 				'start_time'   => '',
 				'end_time'     => '',
-				'image'        => '',
+				'sort'         => '0',
 				'status'       => '1',
 				'detail'       => [],
 			];
@@ -188,6 +187,7 @@ class ArticleService extends BaseService {
 			'c.name AS create_by',
 			'a.update_at',
 			'a.update_by',
+			'a.sort',
 			'a.status',
 		];
 		$listPage = \DB::table('article AS a')
@@ -205,7 +205,11 @@ class ArticleService extends BaseService {
 		# 按类型筛选
 		if (!empty($filter['filter_content_type'])) $where['a.content_type'] = $filter['filter_content_type'];
 		
-		$listPage = $listPage->where($where)->select($fields)->orderBy('a.id', 'desc')->paginate($filter['perPage']);
+		$listPage = $listPage->where($where)
+		                     ->select($fields)
+		                     ->orderBy('a.sort', 'desc')
+		                     ->orderBy('a.id', 'desc')
+		                     ->paginate($filter['perPage']);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		$total    = $listArr['total'];
 		$list     = $listArr['data'];
@@ -219,6 +223,28 @@ class ArticleService extends BaseService {
 		unset($item);
 		
 		return compact('list', 'listPage', 'total');
+	}
+	
+	/**
+	 * 为文章池获取列表，显示更多
+	 * @param int $contentType
+	 * @param int $page
+	 * @author 李小同
+	 * @date   2018-7-22 00:31:42
+	 * @return mixed
+	 */
+	public function getListForArticlePond($contentType, $page = 1) {
+		
+		$perPage = 20;
+		$list    = \DB::table($this->module)
+		              ->where('status', '!=', '-1')
+		              ->where('content_type', $contentType)
+		              ->offset(($page - 1) * $perPage)
+		              ->limit($perPage)
+		              ->get(['id', 'name', 'status'])
+		              ->toArray();
+		
+		return $list;
 	}
 	
 	# region 前台

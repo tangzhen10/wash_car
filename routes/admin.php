@@ -98,4 +98,20 @@ Route::group(['namespace' => 'Admin'], function () {
 	});
 	
 	
+	# 产品
+	Route::group(['prefix' => 'product'], function () {
+		
+		# 列表
+		Route::get('list', ['uses' => 'ArticleController@productList', 'as' => 'productList']);
+		# 分类
+		Route::get('category/{id?}', ['uses' => 'ArticleController@productCategory', 'as' => 'productCategory']);
+		# 显示更多
+		Route::post('showMore', ['uses' => 'ArticleController@showMore', 'as' => 'showMoreArticle']);
+		
+		
+	});
+	
+	
+	
+	
 });

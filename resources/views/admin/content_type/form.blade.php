@@ -63,6 +63,19 @@
 				</div>
 			</div>
 			<div class="row cl">
+				<strong class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>{{trans('common.type')}}：</strong>
+				<div class="formControls col-xs-8 col-sm-10">
+					<span class="skin-minimal form_value">
+						<span class="radio-box">
+							<label><input type="radio" id="status-1" value="1" name="type" @if ($detail['type'] == 1) checked @endif > 产品分类</label>
+						</span>
+						<span class="radio-box">
+							<label><input type="radio" id="status-0" value="2" name="type" @if ($detail['type'] == 2)  checked @endif> 产品</label>
+						</span>
+					</span>
+				</div>
+			</div>
+			<div class="row cl">
 				<strong class="form-label col-xs-4 col-sm-2">结构：</strong>
 				<div class="formControls col-xs-8 col-sm-10">
 					<table class="table table-border table-striped table-bordered table-bg table-hover">

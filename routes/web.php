@@ -34,7 +34,7 @@ Route::group(['namespace' => 'Web'], function () {
 	Route::group(['prefix' => 'invest'], function () {
 		
 		# 理财列表
-		Route::get('list', ['uses' => 'InvestController@investList', 'as' => 'webInvestList']);
+		Route::get('list/{id}', ['uses' => 'InvestController@investList', 'as' => 'webInvestList']);
 		
 		# 理财详情
 		Route::get('detail/{id}', ['uses' => 'InvestController@detail', 'as' => 'webInvestDetail']);

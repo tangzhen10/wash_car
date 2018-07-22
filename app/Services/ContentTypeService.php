@@ -27,7 +27,7 @@ class ContentTypeService extends BaseService {
 			$cacheKey = sprintf(config('cache.CONTENT_TYPE'), $id);
 			$detail   = redisGet($cacheKey);
 			if (false === $detail) {
-				$detail = \DB::table($this->module)->where('id', $id)->first(['id', 'name']);
+				$detail = \DB::table($this->module)->where('id', $id)->first(['id', 'name', 'type']);
 				
 				$detail['structure'] = \DB::table('content_type_structure')
 				                          ->where('content_type_id', $id)
@@ -39,6 +39,7 @@ class ContentTypeService extends BaseService {
 			$detail = [
 				'id'        => '0',
 				'name'      => '',
+				'type'      => '1', # 默认为产品分类
 				'structure' => [],
 			];
 		}
@@ -149,15 +150,17 @@ class ContentTypeService extends BaseService {
 	
 	/**
 	 * 获取文档类型列表
+	 * @param array $where
 	 * @author 李小同
 	 * @date   2018-7-11 15:46:58
 	 * @return array
 	 */
-	public function getList() {
+	public function getList(array $where = []) {
 		
 		$fields = ['id', 'name', 'status'];
 		$list   = \DB::table($this->module)
 		             ->where('status', '!=', '-1')
+		             ->where($where)
 		             ->orderBy('id', 'desc')
 		             ->get($fields)
 		             ->toArray();
@@ -504,32 +507,66 @@ class ContentTypeService extends BaseService {
 	}
 	
 	/**
-	 * 文档类型专用下拉菜单
+	 * 文章池
 	 * @param array  $field
 	 * @param string $value
-	 * @param int    $selfId 文章自身的文档类型
 	 * @author 李小同
 	 * @date   2018-7-21 15:40:36
 	 * @return string
 	 */
-	public function contenttypeFormElement(array $field, $value = '', $selfId = 0) {
+	public function articlepondFormElement(array $field, $value = '') {
 		
-		$fields          = ['id', 'name'];
-		$contentTypeList = \DB::table($this->module)
-		                      ->where('status', '1')
-		                      ->orderBy('id', 'desc')
-		                      ->get($fields)
-		                      ->toArray();
+		$articleList = \ArticleService::getListForArticlePond(env('ARTICLE_PRODUCT_CONTENT_TYPE'));
 		
-		$html   = '<p><span class="form_filed_row article_content_type">'.$field['name_text'].'：</span>
-		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;"><option></option>';
-		foreach ($contentTypeList as $item) {
-			if ($item['id'] == $selfId) continue;
-			$selected = $item['id'] == $value ? 'selected' : '';
-			$html .= '<option value="'.$item['id'].'" '.$selected.' >'.$item['name'].'</option>';
+		$html = '<div>
+					<div class="f-l" style="width: 50%;">
+						<span class="form_filed_row" style="position: relative;top: -45px;">'.$field['name_text'].'：</span>
+						<textarea class="textarea radius form_value_row" name="'.$field['name'].'" style="height: 200px;"
+								  placeholder="'.$field['value'].'">'.$value.'</textarea>
+					</div>';
+		$html .= '<ul style="border: 1px solid #ccc;width: 40%;height: 200px; overflow-y: scroll;">';
+		$html .= '<li style="border-bottom: 1px solid #ccc;background: #e2fcee;">
+						<dl>
+			                <strong class="pl-20 pr-20">ID</strong>
+			                <strong class="text-c">'.trans('common.article_name').'</strong>
+			                <strong class="f-r pr-20">'.trans('common.status').'</strong>
+		                </dl>
+	                </li>';
+		foreach ($articleList as $key => $item) {
+			$html .= '<li style="'.($key % 2 ? '' : 'background: #eee;').'">
+						<dl>
+			                <span class="pl-20 pr-20">'.$item['id'].'</span>
+			                <span class="text-c">'.$item['name'].'</span>
+			                <span class="f-r pr-20">'
+							.($item['status'] ? '<i class="Hui-iconfont c-success">&#xe6a8;</i>' : '<i class="Hui-iconfont c-danger">&#xe706;</i>')
+			                .'</span>
+		                </dl>
+	                </li>';
 		}
-		$html .= '</select></p>';
-		$html .= '<script></script>';
+		$html .= '<p style="background: #f1f8ff;color: #333;cursor: pointer;" class="J_show_more text-c" data_page="2">'.trans('common.show_more').'</p>
+					</ul><p style="clear:both"></p></div>';
+		$html .= '<script>
+					$(\'.J_show_more\').click(function() {
+						var page = $(this).attr(\'data_page\'),
+							_this = this;
+						$.ajax({
+							url: \''.route('showMoreArticle').'\',
+							type: \'post\',
+							data: {page:page},
+							beforeSend: function () {layer.load(1)},
+							success: function(data) {
+								layer.close(layer.load());
+								if (data) {
+								    $(\'.J_show_more\').before(data);
+								    $(_this).attr(\'data_page\', (parseInt(page) + 1))
+								} else {
+									layer.msg(\''.trans('common.no_more').'\', {time: 1000});
+									$(_this).remove();
+								}
+							}
+						});
+					});
+					</script>';
 		
 		return $html;
 	}
