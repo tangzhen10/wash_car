@@ -16,5 +16,6 @@ return [
 	'role_have_mangers'    => '还有管理员属于该角色！',
 	'can_not_stop_self'    => '你不能停用自己！',
 	'forbidden_account'    => '该账户已被禁用！',
+	'has_sub_permission'   => '该权限下存在子权限！',
 
 ];

@@ -13,3 +13,4 @@ yarn-error.log
 .git/
 access_token
 public/src/upload
+*.sql
