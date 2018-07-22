@@ -61,6 +61,8 @@ class BaseService {
 		
 		\DB::table($this->module)->where('id', $data['id'])->update($data);
 		
+		if (method_exists(static::class, 'handleAfterUpdate')) static::handleAfterUpdate($data);
+		
 		return $data['id'];
 	}
 	

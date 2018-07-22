@@ -20,53 +20,19 @@
 					</tr>
 					<tr class="text-c">
 						<th>统计</th>
-						<th>资讯库</th>
-						<th>图片库</th>
-						<th>产品库</th>
-						<th>用户</th>
+						<th>产品分类</th>
+						<th>产品栏目</th>
+						<th>产品</th>
 						<th>管理员</th>
 					</tr>
 					</thead>
 					<tbody>
 					<tr class="text-c">
 						<td>总数</td>
-						<td>92</td>
-						<td>9</td>
-						<td>0</td>
-						<td>8</td>
-						<td>20</td>
-					</tr>
-					<tr class="text-c">
-						<td>今日</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-					</tr>
-					<tr class="text-c">
-						<td>昨日</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-					</tr>
-					<tr class="text-c">
-						<td>本周</td>
-						<td>2</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-					</tr>
-					<tr class="text-c">
-						<td>本月</td>
-						<td>2</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
-						<td>0</td>
+						<td>{{$total['category']}}</td>
+						<td>{{$total['tab']}}</td>
+						<td>{{$total['product']}}</td>
+						<td>{{$total['manager']}}</td>
 					</tr>
 					</tbody>
 				</table>

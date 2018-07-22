@@ -28,6 +28,7 @@ class BaseController extends Controller {
 		}
 		$serviceName               = 'App\Services\\'.$serviceNameStr.'Service';
 		$this->service             = new $serviceName();
+		$this->data['pageTitle']   = \SettingService::getValue('admin_project_name');
 		$this->data['manager']     = \ManagerService::getManagerInfoByManagerId();
 		$this->data['menus']       = \PermissionService::getMenuList();
 		$this->data['breadcrumbs'] = \PermissionService::getBreadCrumbs($this->data['menus']);

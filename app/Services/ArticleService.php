@@ -176,7 +176,7 @@ class ArticleService extends BaseService {
 	 */
 	public function getList(array $filter = []) {
 		
-		if (empty($filter['perPage'])) $filter['perPage'] = config('project.DEFAULT_PER_PAGE');
+		if (empty($filter['perPage'])) $filter['perPage'] = \SettingService::getValue('per_page');
 		
 		$fields   = [
 			'a.id',
@@ -236,7 +236,7 @@ class ArticleService extends BaseService {
 	 */
 	public function getListForArticlePond($contentType, $page = 1) {
 		
-		$perPage = 20;
+		$perPage = \SettingService::getValue('article_pond_product_per_page');
 		$list    = \DB::table($this->module)
 		              ->where('status', '!=', '-1')
 		              ->where('content_type', $contentType)
@@ -250,9 +250,9 @@ class ArticleService extends BaseService {
 			$iconEnable          = '<i class="Hui-iconfont c-success" title="'.trans('common.enable').'">&#xe6a8;</i>';
 			$iconDisable         = '<i class="Hui-iconfont c-danger" title="'.trans('common.disable').'">&#xe706;</i>';
 			$item['status_icon'] = $item['status'] ? $iconEnable : $iconDisable;
-			$item['time_status'] = '生效中';
-			if ($item['start_time'] > 0 && $item['start_time'] > $now) $item['time_status'] = '未开始';
-			if ($item['end_time'] > 0 && $item['end_time'] < $now) $item['time_status'] = '已过期';
+			$item['time_status'] = '<span class="c-success">'.trans('common.time_status_1').'</span>';
+			if ($item['start_time'] > 0 && $item['start_time'] > $now) $item['time_status'] = '<span class="c-666">'.trans('common.time_status_2').'</span>';
+			if ($item['end_time'] > 0 && $item['end_time'] < $now) $item['time_status'] = '<span class="c-danger">'.trans('common.time_status_3').'</span>';
 		}
 		unset($item);
 		

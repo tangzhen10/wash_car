@@ -33,11 +33,15 @@ return [
 	'description'              => '描述',
 	'sort'                     => '排序',
 	'time_status'              => '生效',
+	'value'                    => '值',
 	
 	# 属性
 	'gender_0'                 => '',
 	'gender_1'                 => '男',
 	'gender_2'                 => '女',
+	'time_status_1'            => '生效中',
+	'time_status_2'            => '未开始',
+	'time_status_3'            => '已过期',
 	
 	# 动作
 	'action'                   => '操作',

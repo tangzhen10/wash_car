@@ -19,8 +19,8 @@ class ManagerController extends BaseController {
 	 */
 	public function index() {
 		
-		$server = $_SERVER;
-		$this->data += compact('manager', 'server');
+		$this->data['total']  = \SettingService::getTotalInfo();
+		$this->data['server'] = $_SERVER;
 		
 		return view('admin/index', $this->data);
 	}

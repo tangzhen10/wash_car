@@ -158,13 +158,7 @@ class ContentTypeService extends BaseService {
 	public function getList(array $where = []) {
 		
 		$fields = ['id', 'name', 'status'];
-		$list   = \DB::table($this->module)
-		             ->where('status', '!=', '-1')
-		             ->where($where)
-		             ->orderBy('id', 'desc')
-		             ->get($fields)
-		             ->toArray();
-		
+		$list   = \DB::table($this->module)->where('status', '!=', '-1')->where($where)->get($fields)->toArray();
 		$this->addStatusText($list);
 		
 		return $list;
@@ -516,7 +510,7 @@ class ContentTypeService extends BaseService {
 	 */
 	public function articlepondFormElement(array $field, $value = '') {
 		
-		$articleList = \ArticleService::getListForArticlePond(env('ARTICLE_PRODUCT_CONTENT_TYPE'));
+		$articleList = \ArticleService::getListForArticlePond(\SettingService::getValue('product_content_type'));
 		
 		$html = '<div>
 					<div class="f-l" style="width: 50%;">
@@ -541,8 +535,10 @@ class ContentTypeService extends BaseService {
 		                </dl>
 	                </li>';
 		}
-		$html .= '<p style="background: #f1f8ff;color: #333;cursor: pointer;" class="J_show_more text-c" data_page="2">'.trans('common.show_more').'</p>
+		if (count($articleList) >= \SettingService::getValue('article_pond_product_per_page')) {
+			$html .= '<p style="background: #f1f8ff;color: #333;cursor: pointer;" class="J_show_more text-c" data_page="2">'.trans('common.show_more').'</p>
 					</ul><p style="clear:both"></p></div>';
+		}
 		$html .= '<script>
 					$(\'.J_show_more\').click(function() {
 						var page = $(this).attr(\'data_page\'),

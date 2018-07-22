@@ -108,9 +108,19 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 显示更多
 		Route::post('showMore', ['uses' => 'ArticleController@showMore', 'as' => 'showMoreArticle']);
 		
-		
 	});
 	
+	# 设置
+	Route::group(['prefix' => 'setting'], function () {
+		
+		# 前台
+		Route::get('main', ['uses' => 'SettingController@main', 'as' => 'settingMain']);
+		# 后台
+		Route::get('admin', ['uses' => 'SettingController@admin', 'as' => 'settingAdmin']);
+		# 保存设置
+		Route::post('save/{id?}', ['uses' => 'SettingController@form', 'as' => 'saveSetting']);
+		
+	});
 	
 	
 	

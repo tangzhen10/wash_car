@@ -39,7 +39,7 @@ class InvestController extends Controller {
 				$articleIds  = array_unique($articleIds);
 				$filter      = [
 					'article_id_arr' => $articleIds,
-					'content_type'   => env('ARTICLE_PRODUCT_CONTENT_TYPE'),
+					'content_type'   => \SettingService::getValue('product_content_type'),
 					'status'         => '1',
 				];
 				$articleList = \ArticleService::getArticleList($filter);

@@ -76,7 +76,7 @@ class MemberService extends BaseService {
 			'a.last_login_at',
 			'a.last_login_ip',
 		];
-		if (empty($data['per_page'])) $data['per_page'] = config('project.DEFAULT_PER_PAGE');
+		if (empty($data['per_page'])) $data['per_page'] = \SettingService::getValue('per_page');
 		$pagination = \DB::table('user AS a')->select($fields);
 		if (!empty($data['account'])) {
 			$pagination = $pagination->where(function ($pagination) use ($data) {

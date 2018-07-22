@@ -45,17 +45,16 @@ class ArticleController extends BaseController {
 	# region 理财产品定制内容
 	/**
 	 * 产品分类
+	 * @param int $id 产品分类对应的content_type
 	 * @author 李小同
 	 * @date   2018-7-21 22:21:59
 	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
 	 */
-	public function productCategory() {
+	public function productCategory($id = 0) {
 		
-		$filter                 = [
-			'filter_content_type' => \Request::input('filter_content_type', ''),
-		];
+		$filter                 = ['filter_content_type' => $id];
 		$this->data['typeList'] = \ContentTypeService::getList(['type' => '1']);
-		if (empty($filter['filter_content_type'])) {
+		if (empty($id)) {
 			$filter['filter_content_type'] = $this->data['typeList'][0]['id'];
 		}
 		$list                     = $this->service->getList($filter);
@@ -96,7 +95,7 @@ class ArticleController extends BaseController {
 	public function showMore() {
 		
 		$page        = \Request::input('page');
-		$contentType = env('ARTICLE_PRODUCT_CONTENT_TYPE');
+		$contentType = \SettingService::getValue('product_content_type');
 		$list        = $this->service->getListForArticlePond($contentType, $page);
 		$html        = '';
 		foreach ($list as $key => $item) {

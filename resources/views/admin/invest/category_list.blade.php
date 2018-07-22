@@ -93,7 +93,7 @@
 		$('select[name="filter_content_type"]').change(function () {
 			var content_type = $('select[name="filter_content_type"]').val();
 			if (content_type) {
-				location.href = '{{route('productCategory')}}/?filter_content_type=' + content_type;
+				location.href = '{{route('productCategory')}}/' + content_type;
 			} else {
 				location.href = '{{route('productCategory')}}';
 			}
