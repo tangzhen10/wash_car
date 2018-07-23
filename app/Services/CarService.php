@@ -12,7 +12,7 @@ class CarService extends BaseService {
 	
 	public function getBrandList() {
 		
-		$list = \DB::table('car_brand')->where('status', '!=', '-1')->get()->toArray();
+		$list = \DB::table('car_brand')->where('status', '1')->get()->toArray();
 		$this->addStatusText($list);
 		
 		return $list;

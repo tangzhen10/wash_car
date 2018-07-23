@@ -6,7 +6,7 @@
  * Date: 2018-07-03 8:56
  */
 
-namespace App\Http\Controllers\Main;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\UserService;

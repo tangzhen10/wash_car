@@ -6,9 +6,7 @@
  * Date: 2018-06-27 23:01
  */
 
-namespace App\Http\Controllers\Main;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\Api;
 
 /**
  * 用户类

@@ -5,9 +5,7 @@
  * User: 李小同
  * Date: 2018-6-29 16:43:08
  */
-namespace App\Http\Controllers\Main;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\Api;
 
 /**
  * 工具类

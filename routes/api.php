@@ -15,17 +15,17 @@ use Illuminate\Http\Request;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) { return $request->user(); });
 
-Route::group(['namespace' => 'Main'], function () {
+Route::group(['namespace' => 'Api'], function () {
 	
 	# 账户系统
 	Route::group(['prefix' => 'user', 'middleware' => 'checkLogin'], function () {
 		
 		# 注册
-		Route::post('register', ['uses' => 'UserController@register', 'as' => 'register']);
+		Route::post('register', ['uses' => 'UserController@register', 'as' => 'apiRegister']);
 		# 登录
-		Route::post('login', ['uses' => 'UserController@login', 'as' => 'login']);
+		Route::post('login', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
 		# 修改密码
-		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'changePassword']);
+		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'apiChangePassword']);
 		
 	});
 	
@@ -33,7 +33,7 @@ Route::group(['namespace' => 'Main'], function () {
 	Route::group(['prefix' => 'tool'], function () {
 		
 		# 发送短信验证码
-		Route::post('sendSMSCode', ['uses' => 'ToolController@sendSMSCode', 'as' => 'sendSMSCode']);
+		Route::post('sendSMSCode', ['uses' => 'ToolController@sendSMSCode', 'as' => 'apiSendSMSCode']);
 		
 	});
 	
@@ -41,13 +41,19 @@ Route::group(['namespace' => 'Main'], function () {
 	Route::group(['prefix' => 'wechat'], function () {
 		
 		# 获取access_token
-		Route::get('baseAccessToken', ['uses' => 'WechatController@baseAccessToken', 'as' => 'wechatBaseAccessToken']);
-		
+		Route::get('baseAccessToken', ['uses' => 'WechatController@baseAccessToken', 'as' => 'apiWechatBaseAccessToken']);
 		# 获取openid
-		Route::get('openid', ['uses' => 'WechatController@getAccessTokenAndOpenId', 'as' => 'wechatOpenid']);
-		
+		Route::get('openid', ['uses' => 'WechatController@getAccessTokenAndOpenId', 'as' => 'apiWechatOpenid']);
 		# 获取用户信息
-		Route::get('userinfo', ['uses' => 'WechatController@getUserInfo', 'as' => 'wechatUserInfo']);
+		Route::get('userinfo', ['uses' => 'WechatController@getUserInfo', 'as' => 'apiWechatUserInfo']);
+	});
+	
+	# 车辆
+	Route::group(['prefix' => 'car'], function () {
+		
+		# 品牌
+		Route::match(['get', 'post'], 'brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
+	
 	});
 	
 });
