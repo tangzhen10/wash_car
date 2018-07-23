@@ -75,4 +75,18 @@ class RoleController extends BaseController {
 		
 		return view('admin/role/manager', $this->data);
 	}
+	
+	/**
+	 * 移除管理员的角色
+	 * @author 李小同
+	 * @date   2018-7-23 23:19:43
+	 */
+	public function removeManager() {
+		
+		$roleId    = \Request::input('role_id');
+		$managerId = \Request::input('manager_id');
+		
+		$res = $this->service->removeManagerRole($managerId, $roleId);
+		json_msg($res ? 'ok' : 'failed');
+	}
 }

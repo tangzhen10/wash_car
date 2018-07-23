@@ -176,4 +176,25 @@ class RoleService extends BaseService {
 			}
 		}
 	}
+	
+	/**
+	 * 移除管理员的角色
+	 * @param $managerId
+	 * @param $roleId
+	 * @author 李小同
+	 * @date   2018-7-23 23:18:46
+	 * @return mixed
+	 */
+	public function removeManagerRole($managerId, $roleId) {
+		
+		if ($roleId && $managerId) {
+			
+			$where = ['manager_id' => $managerId, 'role_id' => $roleId];
+			$res   = \DB::table('manager_role')->where($where)->delete();
+			return $res;
+			
+		} else {
+			json_msg(trans('error.illegal_param'), 40001);
+		}
+	}
 }

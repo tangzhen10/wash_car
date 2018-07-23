@@ -274,7 +274,7 @@ class ManagerService extends BaseService {
 	 */
 	public function getListByIds(array $ids = []) {
 		
-		$list = \DB::table($this->module)->whereIn('id', $ids)->pluck('name')->toArray();
+		$list = \DB::table($this->module)->whereIn('id', $ids)->get(['id', 'name'])->toArray();
 		
 		return $list;
 	}

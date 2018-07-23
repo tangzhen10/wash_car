@@ -11,8 +11,12 @@ Route::group(['namespace' => 'Admin'], function () {
 	# 车辆
 	Route::group(['prefix' => 'car'], function () {
 		
-		# 品牌
+		# 品牌列表
 		Route::get('brandList', ['uses' => 'CarController@brandList', 'as' => 'brandList']);
+		# 增改品牌
+		Route::match(['get', 'post'], 'brandForm/{id?}', ['uses' => 'CarController@brandForm', 'as' => 'brandForm']);
+		# 修改状态
+		Route::post('brandChangeStatus', ['uses' => 'CarController@brandChangeStatus', 'as' => 'brandChangeStatus']);
 		
 	});
 	
@@ -49,6 +53,8 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::post('changeStatus', ['uses' => 'RoleController@changeStatus', 'as' => 'roleChangeStatus']);
 		# 查看拥有该角色的管理员
 		Route::get('manager/{id}', ['uses' => 'RoleController@roleManager', 'as' => 'roleManager']);
+		# 从角色中移除管理员
+		Route::post('removeManager', ['uses' => 'RoleController@removeManager', 'as' => 'removeManager']);
 		# 批量删除
 		Route::post('batchDelete', ['uses' => 'RoleController@batchDelete', 'as' => 'batchDeleteRole']);
 		

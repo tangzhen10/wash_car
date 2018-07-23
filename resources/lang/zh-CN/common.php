@@ -34,6 +34,7 @@ return [
 	'sort'                     => '排序',
 	'time_status'              => '生效',
 	'value'                    => '值',
+	'hot_value'                => '热度值',
 	
 	# 车辆
 	'logo'                     => '标志',
@@ -61,6 +62,7 @@ return [
 	'submit'                   => '提交',
 	'filter'                   => '筛选',
 	'show_more'                => '显示更多',
+	'refresh'                  => '刷新',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',

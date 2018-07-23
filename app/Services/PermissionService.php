@@ -179,9 +179,14 @@ class PermissionService extends BaseService {
 		$roleIds     = \ManagerService::getRolesByManagerId();
 		$permissions = \RoleService::getPermissionsByRoleId($roleIds);
 		
-		$menus = $this->getEnableList($permissions);
-		
-		return $menus;
+		if (!empty($permissions)) {
+			
+			return $this->getEnableList($permissions);
+			
+		} else { # 无权限直接返回空
+			
+			return [];
+		}
 	}
 	
 	/**
@@ -193,7 +198,9 @@ class PermissionService extends BaseService {
 	 */
 	public function getBreadCrumbs(array $menus = []) {
 		
-		$breadcrumb = [];
+		$breadcrumb = [
+			['text' => trans('common.home_page'), 'url' => route('adminIndex')],
+		];
 		$currentUrl = \Request::getRequestUri();
 		foreach ($menus as $menu) {
 			if (!empty($menu['sub'])) {

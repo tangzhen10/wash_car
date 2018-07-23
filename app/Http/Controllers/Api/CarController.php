@@ -12,29 +12,8 @@ class CarController extends BaseController {
 	 */
 	public function brand() {
 		
-		$rows = \CarService::getBrandList();
+		$res = \CarService::getBrandGroup();
 		
-		$hot  = [];
-		$list = [];
-		foreach ($rows as $row) {
-			$row['logo'] = \URL::asset($row['logo']);
-			unset($row['status'], $row['status_text'], $row['name_en']);
-			if ($row['hot']) $hot[] = $row;
-			$list[$row['first_letter']][] = $row;
-		}
-		ksort($list);
-		
-		$groups = [];
-		foreach ($list as $key => $item) {
-			$groups[] = [
-				'title' => $key,
-				'list'  => $item,
-			];
-		}
-		$res = [
-			'hot' => $hot,
-			'all' => $groups,
-		];
 		json_msg($res);
 	}
 }
