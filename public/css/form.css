@@ -1,0 +1,25 @@
+.form_filed {
+    display: inline-block;
+    text-align: right;
+    width: 10%;
+}
+.form_value {
+    display: inline-block;
+    width: 35%;
+}
+.form_filed_row {
+    display: inline-block;
+    text-align: right;
+    width: 15%;
+}
+.form_value_row {
+    display: inline-block;
+    width: 75%;
+}
+.select-box {
+    position: relative;
+    top: 8px;
+}
+h3 {
+    padding: 5px 0 15px 0;
+}

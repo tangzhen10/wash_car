@@ -54,7 +54,7 @@
 			<li>备选值：若类型不是单选框、复选框、下拉菜单，则作为提示语显示在输入框里</li>
 			<li>类型：类型为时间时，备选值为【yyyy-MM-dd HH:mm:ss】表示时间格式，不填表示使用该值作为默认值</li>
 		</ul>
-		<form action="" method="post" class="form form-horizontal" id="form">
+		<form class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
 				<strong class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>文档类型名称：</strong>

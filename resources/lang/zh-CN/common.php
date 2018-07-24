@@ -35,6 +35,8 @@ return [
 	'time_status'              => '生效',
 	'value'                    => '值',
 	'hot_value'                => '热度值',
+	'upper_letter'             => '大写字母',
+	'int'                      => '整数',
 	
 	# 车辆
 	'logo'                     => '标志',

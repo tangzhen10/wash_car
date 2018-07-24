@@ -233,6 +233,21 @@ class ContentTypeService extends BaseService {
 	}
 	
 	/**
+	 * 隐藏域表单
+	 * @param array  $field
+	 * @param string $value
+	 * @author 李小同
+	 * @date   2018-7-24 17:03:07
+	 * @return string
+	 */
+	public function hiddenFormElement(array $field, $value = '') {
+		
+		$html = '<input type="hidden" name="'.$field['name'].'" value="'.$value.'" />';
+		
+		return $html;
+	}
+	
+	/**
 	 * 文本框表单
 	 * @param array  $field
 	 * @param string $value
@@ -252,6 +267,25 @@ class ContentTypeService extends BaseService {
 	}
 	
 	/**
+	 * 数字表单
+	 * @param array  $field
+	 * @param string $value
+	 * @author 李小同
+	 * @date   2018-7-24 17:00:46
+	 * @return string
+	 */
+	public function numberFormElement(array $field, $value = '') {
+		
+		$html = '<p>
+					<span class="form_filed_row">'.$field['name_text'].'：</span>
+					<input type="number" class="input-text radius form_value_row" placeholder="'.$field['value'].'" 
+							name="'.$field['name'].'" value="'.$value.'" />
+				</p>';
+		
+		return $html;
+	}
+	
+	/**
 	 * 单选框表单
 	 * @param array  $field
 	 * @param string $value
@@ -264,13 +298,26 @@ class ContentTypeService extends BaseService {
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
 		<span class="skin-minimal form_value_row">';
 		$groups = explode(',', $field['value']);
-		foreach ($groups as $group) {
-			$checked = $group == $value ? 'checked' : '';
-			$html .= '<span class="radio-box">
+		
+		if ($field['name'] == 'status') {
+			foreach ($groups as $group) {
+				$text    = $group == '1' ? trans('common.enable') : trans('common.disable');
+				$checked = $group == $value ? 'checked' : '';
+				$html .= '<span class="radio-box">
+						<label>
+							<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$text.'
+						</label>
+					</span>';
+			}
+		} else {
+			foreach ($groups as $group) {
+				$checked = $group == $value ? 'checked' : '';
+				$html .= '<span class="radio-box">
 						<label>
 							<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$group.'
 						</label>
 					</span>';
+			}
 		}
 		$html .= '</span></p>
 					<script>

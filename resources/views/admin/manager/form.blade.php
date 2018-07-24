@@ -1,7 +1,7 @@
 @extends('admin.base')
 @section('body')
 	<article class="cl pd-20">
-		<form action="" method="post" class="form form-horizontal" id="form">
+		<form class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="row cl">
 				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>管理员：</label>

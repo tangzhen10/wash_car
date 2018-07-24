@@ -1,32 +1,6 @@
 @extends('admin.base')
 @section('css')
-	<style>
-		.form_filed {
-			display: inline-block;
-			text-align: right;
-			width: 10%;
-		}
-		.form_value {
-			display: inline-block;
-			width: 35%;
-		}
-		.form_filed_row {
-			display: inline-block;
-			text-align: right;
-			width: 15%;
-		}
-		.form_value_row {
-			display: inline-block;
-			width: 75%;
-		}
-		.select-box {
-			position: relative;
-			top: 8px;
-		}
-		h3 {
-			padding: 5px 0 15px 0;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="{{URL::asset('css/form.css')}}" />
 @endsection
 @section('body')
 	<article class="cl pd-20">
@@ -96,11 +70,6 @@
 	</article>
 @endsection
 @section('js')
-	
-	<!-- 配置文件 remind lxt 必须放在编辑器源码文件之前 -->
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.config.js')}}"></script>
-	<!-- 编辑器源码文件 -->
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.all.js')}}"></script>
 	<script>
 		
 		function validate_form() {

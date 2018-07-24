@@ -1,5 +1,13 @@
 @extends('admin.public')
 @section('body')
+	<div class="cl pd-5 bg-1 bk-gray">
+		<span class="l">
+			<a href="javascript:;" onclick="layer_show('添加品牌','{{route('brandForm')}}','1000','600')" class="btn btn-primary radius">
+				<i class="Hui-iconfont">&#xe600;</i> 添加品牌
+			</a>
+		</span>
+		<span class="r">共有数据：<strong>{{count($list)}}</strong> 条</span>
+	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort">
 		<thead>
 		<tr class="text-c">
@@ -49,7 +57,7 @@
 						</a>
 					@endif
 					
-					<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'),'{{route('brandForm', $row['id'])}}','800','500')"
+					<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'),'{{route('brandForm', $row['id'])}}','1000','600')"
 					   href="javascript:;" class="ml-5" style="text-decoration:none">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>

@@ -96,7 +96,9 @@ class PermissionService extends BaseService {
 		foreach ($list as $item) {
 			if ($item['level'] == '2') {
 				if (isset($level3[$item['id']])) $item['sub'] = $level3[$item['id']];
-				$treeList[$item['pid']]['sub'][$item['id']] = $item;
+				if (isset($treeList[$item['pid']]) && $treeList[$item['pid']]['status'] == '1') {
+					$treeList[$item['pid']]['sub'][$item['id']] = $item;
+				}
 			}
 		}
 		
