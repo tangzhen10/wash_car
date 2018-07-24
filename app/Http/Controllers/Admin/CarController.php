@@ -9,6 +9,7 @@ class CarController extends BaseController {
 	
 	const MODULE = 'car';
 	
+	# region 品牌brand
 	/**
 	 * 品牌列表
 	 * @author 李小同
@@ -162,4 +163,15 @@ class CarController extends BaseController {
 		$res     = $this->service->brandChangeStatus($brandId, $status);
 		$this->render($res);
 	}
+	# endregion
+	
+	# region 车型model
+	public function modelList($branId) {
+		
+		$this->data['list'] = $this->service->getModelListByBrandId($branId);
+		
+		return view('admin/car/model/list', $this->data);
+	}
+	
+	# endregion
 }

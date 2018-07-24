@@ -39,9 +39,11 @@ return [
 	'int'                      => '整数',
 	
 	# 车辆
+	'brand'                    => '品牌',
 	'logo'                     => '标志',
 	'name_en'                  => '英文名称',
 	'first_letter'             => '名称首字母',
+	'model'                    => '型号',
 	
 	# 属性
 	'gender_0'                 => '',

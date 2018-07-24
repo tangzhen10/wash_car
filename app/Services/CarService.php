@@ -42,6 +42,27 @@ class CarService extends BaseService {
 		
 		return $res;
 	}
+	
+	/**
+	 * 获取指定品牌下的车型列表
+	 * @param $branId
+	 * @author 李小同
+	 * @date   2018-7-24 22:53:46
+	 * @return array
+	 */
+	public function getModelListByBrandId($branId) {
+		
+		$list = \DB::table('car_model AS a')
+		           ->join('car_brand AS b', 'b.id', '=', 'a.brand_id')
+		           ->where('a.brand_id', $branId)
+		           ->get(['a.id', 'a.name', 'a.status', 'b.name AS brand_name'])
+		           ->toArray();
+		if (empty($list)) return [];
+		
+		$this->addStatusText($list);
+		
+		return $list;
+	}
 	# endregion
 	
 	# region 前台

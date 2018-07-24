@@ -33,7 +33,7 @@
 						<img src="{{URL::asset($row['logo'])}}" class="avatar J_car_brand" alt="{{$row['name']}}">
 					@endif
 				</td>
-				<td>{{$row['name']}}</td>
+				<td><a href="{{route('modelList', ['brand_id' => $row['id']])}}">{{$row['name']}}</a></td>
 				<td>{{$row['name_en']}}</td>
 				<td>
 					@if ($row['hot'] > 0)
