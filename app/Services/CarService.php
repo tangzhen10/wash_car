@@ -35,7 +35,7 @@ class CarService extends BaseService {
 	 */
 	public function getBrandGroup() {
 		
-		$rows = \DB::table('car_brand')->where('status', '1')->get()->toArray();
+		$rows = \DB::table('car_brand')->where('status', '1')->orderBy('hot', 'desc')->get()->toArray();
 		$hot  = [];
 		$list = [];
 		foreach ($rows as $row) {
