@@ -19,10 +19,28 @@ class CarService extends BaseService {
 	 */
 	public function getBrandList() {
 		
-		$list = \DB::table('car_brand')->where('status', '1')->orderBy('first_letter', 'asc')->get()->toArray();
+		$list = \DB::table('car_brand')->where('status', '!=', '-1')->orderBy('first_letter', 'asc')->get()->toArray();
 		$this->addStatusText($list);
 		
 		return $list;
+	}
+	
+	/**
+	 * 修改品牌状态
+	 * @param $brandId
+	 * @param $status
+	 * @author 李小同
+	 * @date   2018-7-24 15:28:56
+	 * @return mixed
+	 */
+	public function brandChangeStatus($brandId, $status) {
+		
+		$brandId = intval($brandId);
+		if (!in_array($status, ['1', '0', '-1'])) json_msg(trans('error.illegal_param'), 40001);
+		
+		$res = \DB::table('car_brand')->where('id', $brandId)->update(['status' => $status]);
+		
+		return $res;
 	}
 	# endregion
 	
@@ -35,7 +53,12 @@ class CarService extends BaseService {
 	 */
 	public function getBrandGroup() {
 		
-		$rows = \DB::table('car_brand')->where('status', '1')->orderBy('hot', 'desc')->get()->toArray();
+		$rows = \DB::table('car_brand')
+		           ->where('status', '1')
+		           ->orderBy('hot', 'desc')
+		           ->orderByRaw('CONVERT(name USING gb2312) ASC')
+		           ->get()
+		           ->toArray();
 		$hot  = [];
 		$list = [];
 		foreach ($rows as $row) {
@@ -45,6 +68,7 @@ class CarService extends BaseService {
 			if (empty($row['first_letter'])) $row['first_letter'] = '#';
 			$list[$row['first_letter']][] = $row;
 		}
+		$hot = array_slice($hot, 0, 10);
 		ksort($list);
 		
 		$groups = [];

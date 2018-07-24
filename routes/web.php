@@ -13,10 +13,10 @@
 
 Route::get('/', function () {
 	
-//	if (1 || env('APP_ENV') == 'local') {
-//
-//		return redirect('/invest/list/20');
-//	}
+	if (1 || env('APP_ENV') == 'local') {
+
+		return redirect('/admin');
+	}
 	
 	return view('welcome');
 	
