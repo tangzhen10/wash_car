@@ -120,17 +120,9 @@ class CarController extends BaseController {
 					'value'     => '1,0',
 				],
 			];
-			$article   = ['detail' => $this->getBrandDetailById($id)];
+			$detail    = $this->getBrandDetailById($id);
 			
-			$html               = '';
-			$contentTypeService = new ContentTypeService();
-			foreach ($structure as $field) {
-				
-				$value    = isset($article['detail'][$field['name']]) ? $article['detail'][$field['name']] : ($field['type'] == 'checkbox' ? [] : '');
-				$funcName = $field['type'].'FormElement';
-				if (method_exists($contentTypeService, $funcName)) $html .= $contentTypeService->$funcName($field, $value);
-			}
-			$this->data['html'] = $html;
+			$this->data['html'] = $this->getFormHtml($detail, $structure);
 			
 			return view('admin/car/brand/form', $this->data);
 		}
@@ -169,6 +161,7 @@ class CarController extends BaseController {
 		$this->data['list']       = $list['list'];
 		$this->data['pagination'] = $list['listPage'];
 		$this->data['total']      = $list['total'];
+		$this->data['filter']     = $filter;
 		
 		return view('admin/car/model/list', $this->data);
 	}
@@ -208,12 +201,16 @@ class CarController extends BaseController {
 		
 		if (\Request::getMethod() == 'POST') {
 			
-			$brandId = $this->service->handleModelForm();
-			$this->render($brandId);
+			$modelId = $this->service->handleModelForm();
+			$this->render($modelId);
 			
 		} else {
 			
-			$structure = [
+			$brandId = \Request::input('brand_id');
+			$brand   = $this->getBrandDetailById($brandId);
+			if (empty($brand)) json_msg(trans('error.illegal_param'), 40001);
+			
+			$structure          = [
 				[
 					'name_text' => '',
 					'type'      => 'hidden',
@@ -227,10 +224,10 @@ class CarController extends BaseController {
 					'value'     => '',
 				],
 				[
-					'name_text' => trans('common.brand'),
-					'type'      => 'select',
+					'name_text' => '',
+					'type'      => 'hidden',
 					'name'      => 'brand_id',
-					'value'     => '',
+					'value'     => $brandId,
 				],
 				[
 					'name_text' => trans('common.status'),
@@ -239,17 +236,11 @@ class CarController extends BaseController {
 					'value'     => '1,0',
 				],
 			];
-			$article   = ['detail' => $this->getModelDetailById($id)];
+			$detail             = $this->getModelDetailById($id, $brandId);
+			$detail['brand_id'] = $brandId; # 新增型号，品牌读取当前页面的品牌值
 			
-			$html               = '';
-			$contentTypeService = new ContentTypeService();
-			foreach ($structure as $field) {
-				
-				$value    = isset($article['detail'][$field['name']]) ? $article['detail'][$field['name']] : ($field['type'] == 'checkbox' ? [] : '');
-				$funcName = $field['type'].'FormElement';
-				if (method_exists($contentTypeService, $funcName)) $html .= $contentTypeService->$funcName($field, $value);
-			}
-			$this->data['html'] = $html;
+			$this->data['html']  = $this->getFormHtml($detail, $structure);
+			$this->data['brand'] = $brand;
 			
 			return view('admin/car/model/form', $this->data);
 		}

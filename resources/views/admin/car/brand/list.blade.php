@@ -2,9 +2,9 @@
 @section('body')
 	<div class="text-c mb-15">
 		<span>ID：</span>
-		<input type="number" name="filter_id" class="input-text" style="width:120px;" value="{{$filter['filter_id']}}">
+		<input type="number" name="filter_id" class="input-text" style="width:80px;" value="{{$filter['filter_id']}}">
 		<span>{{trans('common.first_letter')}}：</span>
-		<select class="select-box" name="filter_first_letter" style="width:120px;">
+		<select class="select-box" name="filter_first_letter" style="width:60px;">
 			<option></option>
 			@foreach(explode(',', config('project.FIRST_LETTER')) as $letter)
 				<option value="{{$letter}}" @if ($letter == $filter['filter_first_letter']) selected @endif>{{$letter}}</option>
@@ -13,13 +13,13 @@
 		<span>{{trans('common.name')}}：</span>
 		<input type="text" class="input-text" style="width:250px" placeholder="中英文名皆可" name="filter_name" value="{{$filter['filter_name']}}">
 		<span>{{trans('common.per_page')}}：</span>
-		<select class="select-box" name="perPage" style="width:120px;">
+		<select class="select-box" name="perPage" style="width:60px;">
 			<option></option>
-			@foreach([15, 20, 50, 100, 500] as $perQty)
+			@foreach([25, 50, 100, 250] as $perQty)
 				<option value="{{$perQty}}" @if ($perQty == $filter['perPage']) selected @endif>{{$perQty}}</option>
 			@endforeach
 		</select>
-		<button type="submit" class="btn btn-success radius" id="J_search" name="">
+		<button type="submit" class="btn btn-success radius" id="J_search">
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.search')}}
 		</button>
 	</div>

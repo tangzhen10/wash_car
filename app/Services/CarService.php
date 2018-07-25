@@ -11,6 +11,7 @@ namespace App\Services;
 class CarService extends BaseService {
 	
 	# region 后台
+	# region 品牌
 	/**
 	 * 获取品牌列表
 	 * @param array $filter
@@ -39,6 +40,7 @@ class CarService extends BaseService {
 		
 		$listPage = $listPage->where($where)
 		                     ->select($fields)
+		                     ->orderBy('first_letter', 'asc')
 		                     ->orderByRaw('CONVERT(name USING gb2312) ASC')
 		                     ->orderBy('hot', 'desc')
 		                     ->paginate($filter['perPage']);
@@ -106,13 +108,15 @@ class CarService extends BaseService {
 	public function brandChangeStatus($brandId, $status) {
 		
 		$brandId = intval($brandId);
-		if (!in_array($status, ['1', '0', '-1'])) json_msg(trans('error.illegal_param'), 40001);
+		$this->checkStatusValue($status);
 		
 		$res = \DB::table('car_brand')->where('id', $brandId)->update(['status' => $status]);
 		
 		return $res;
 	}
+	# endregion
 	
+	# region 车型
 	/**
 	 * 获取指定品牌下的车型列表
 	 * @param array $filter
@@ -142,6 +146,60 @@ class CarService extends BaseService {
 		
 		return compact('list', 'listPage', 'total');
 	}
+	
+	/**
+	 * 增改品牌数据
+	 * @author 李小同
+	 * @date   2018-7-25 17:15:49
+	 * @return int 增改的品牌id
+	 */
+	public function handleModelForm() {
+		
+		$post = request_all();
+		
+		# validation
+		if (empty($post['name'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.name')]), 40001);
+		}
+		if (empty($post['brand_id'])) json_msg(trans('error.illegal_param'), 40001);
+		
+		$modelId = $post['id'];
+		$query   = \DB::table('car_model');
+		
+		if (!$modelId) {
+			
+			# 无id新增
+			$modelId = $query->insertGetId($post);
+			
+		} else {
+			
+			# 有id修改
+			$where = ['id' => $modelId];
+			unset($post['id']);
+			$query->where($where)->update($post);
+		}
+		
+		return $modelId;
+	}
+	
+	/**
+	 * 修改车型状态
+	 * @param $modelId
+	 * @param $status
+	 * @author 李小同
+	 * @date   2018-7-25 22:06:11
+	 * @return mixed
+	 */
+	public function modelChangeStatus($modelId, $status) {
+		
+		$modelId = intval($modelId);
+		$this->checkStatusValue($status);
+		
+		$res = \DB::table('car_model')->where('id', $modelId)->update(['status' => $status]);
+		
+		return $res;
+	}
+	# endregion
 	# endregion
 	
 	# region 前台

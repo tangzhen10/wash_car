@@ -5,9 +5,14 @@
 			<a href="javascript:history.back();" class="btn btn-secondary radius">
 				<i class="Hui-iconfont">&#xe66b;</i> 返回
 			</a>
-			<a href="javascript:;" onclick="layer_show('添加车型','{{route('modelForm')}}','1000','600')" class="btn btn-primary radius">
-				<i class="Hui-iconfont">&#xe600;</i> 添加车型
-			</a>
+			@if ($filter['brand_id'])
+				<a href="javascript:;" class="btn btn-primary radius"
+				   onclick="layer_show('添加车型','{{route('modelForm')}}?brand_id={{$filter['brand_id']}}','800','300')">
+					<i class="Hui-iconfont">&#xe600;</i> 添加车型
+				</a>
+			@else
+				<span class="note">* 新增车型请从品牌列表点击查看车型或车型名称后添加</span>
+			@endif
 		</span>
 		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 	</div>
@@ -52,7 +57,7 @@
 					@endif
 					
 					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
-					   onclick="layer_show($(this).attr('title'),'{{route('modelForm', $row['id'])}}','1000','600')">
+					   onclick="layer_show($(this).attr('title'),'{{route('modelForm', $row['id'])}}?brand_id={{$filter['brand_id']}}','800','300')">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
 					<a title="{{trans('common.delete')}}" class="ml-5" href="javascript:;"

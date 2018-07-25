@@ -1,16 +1,7 @@
-@extends('admin.base')
-@section('css')
-	<link rel="stylesheet" type="text/css" href="{{URL::asset('css/form.css')}}" />
-@endsection
-@section('body')
-	<article class="cl pd-20">
-		<form enctype="multipart/form-data" class="form form-horizontal" id="form">
-			<?= $html ?>
-			<div class="row cl">
-				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-					<span class="btn btn-primary radius J_submit">{{trans('common.submit')}}</span>
-				</div>
-			</div>
-		</form>
-	</article>
+@extends('admin.structure_form')
+@section('extra')
+	<p>
+		<span class="form_filed_row">{{trans('common.brand')}}：</span>
+		<span class="form_value_row">{{$brand['name']}}</span>
+	</p>
 @endsection

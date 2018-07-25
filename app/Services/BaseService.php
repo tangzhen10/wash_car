@@ -78,10 +78,11 @@ class BaseService {
 	 */
 	public function changeStatus($id, $status, $module) {
 		
+		$this->checkStatusValue($status);
 		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status, $module);
 		
 		$source = \DB::table($module)->where('id', $id)->count();
-		if (!empty($source) && in_array($status, ['1', '0', '-1'])) {
+		if (!empty($source)) {
 			
 			\DB::table($module)->where('id', $id)->update(['status' => $status]);
 			
@@ -93,6 +94,17 @@ class BaseService {
 			
 			json_msg(trans('error.illegal_param'), 40003);
 		}
+	}
+	
+	/**
+	 * 检测新状态值是否合法
+	 * @param $status
+	 * @author 李小同
+	 * @date   2018-7-25 22:08:44
+	 */
+	public function checkStatusValue($status) {
+		
+		if (!in_array($status, ['1', '0', '-1'])) json_msg(trans('error.illegal_param'), 40001);
 	}
 	
 	/**

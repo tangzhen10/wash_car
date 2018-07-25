@@ -14,18 +14,6 @@
 		.field_row:hover {
 			background: #e0ebf1;
 		}
-		.note {
-			color: #f00;
-			font-style: italic;
-			margin-left: 40px;
-			font-size: 12px;
-			list-style: decimal;
-		}
-		.note li em {
-			font-style: normal;
-			color: green;
-			
-		}
 		.note_nav {
 			border: 1px solid #ccc;
 			border-radius: 5px;

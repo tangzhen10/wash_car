@@ -203,11 +203,11 @@ class PermissionService extends BaseService {
 		$breadcrumb = [
 			['text' => trans('common.home_page'), 'url' => route('adminIndex')],
 		];
-		$currentUrl = \Request::getRequestUri();
+		$routeName  = \Request::route()->getName();
 		foreach ($menus as $menu) {
 			if (!empty($menu['sub'])) {
 				foreach ($menu['sub'] as $item) {
-					if ($item['level'] == '2' && '/admin/'.$item['route'] == $currentUrl) {
+					if ($item['level'] == '2' && config('app.url').'/admin/'.$item['route'] == route($routeName)) {
 						$breadcrumb = [
 							[
 								'text' => trans('common.home_page'),
