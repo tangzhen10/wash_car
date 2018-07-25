@@ -18,7 +18,7 @@
 				<td class="row_value">{{$row['value']}}</td>
 				<td class="row_description">{{$row['description']}}</td>
 				<td>
-					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5 J_edit" style="text-decoration:none">
+					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5 J_edit">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
 				</td>

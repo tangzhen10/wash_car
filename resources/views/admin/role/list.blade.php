@@ -29,13 +29,13 @@
 					<td>{{$row['name']}}</td>
 					<td>{{$row['description']}}</td>
 					<td class="f-14 td-manage">
-						<a title="{{trans('common.view').trans('common.manager')}}" href="javascript:;" style="text-decoration:none"
+						<a title="{{trans('common.view').trans('common.manager')}}" href="javascript:;"
 						   onclick="layer_show($(this).attr('title'),'{{route('roleManager', ['id' => $row['id']])}}', 600, 600)">
 							<i class="Hui-iconfont">&#xe725;</i></a>
-						<a title="{{trans('common.edit')}}" href="javascript:;" style="text-decoration:none"
+						<a title="{{trans('common.edit')}}" href="javascript:;"
 						   onclick="layer_show($(this).attr('title'),'{{route('roleForm', $row['id'])}}')">
 							<i class="Hui-iconfont">&#xe6df;</i></a>
-						<a title="{{trans('common.delete')}}" href="javascript:;" class="ml-5" style="text-decoration:none"
+						<a title="{{trans('common.delete')}}" href="javascript:;" class="ml-5"
 						   onclick="handleDataDel(this,'{{$row['id']}}','{{route('roleChangeStatus')}}')">
 							<i class="Hui-iconfont">&#xe6e2;</i></a>
 					</td>

@@ -15,12 +15,14 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::get('brandList', ['uses' => 'CarController@brandList', 'as' => 'brandList']);
 		# 增改品牌
 		Route::match(['get', 'post'], 'brandForm/{id?}', ['uses' => 'CarController@brandForm', 'as' => 'brandForm']);
-		# 修改状态
+		# 修改品牌状态
 		Route::post('brandChangeStatus', ['uses' => 'CarController@brandChangeStatus', 'as' => 'brandChangeStatus']);
 		# 车型列表
 		Route::get('modelList/{brand_id?}', ['uses' => 'CarController@modelList', 'as' => 'modelList']);
 		# 增改车型
 		Route::match(['get', 'post'], 'modelForm/{id?}', ['uses' => 'CarController@modelForm', 'as' => 'modelForm']);
+		# 修改车型状态
+		Route::post('modelChangeStatus', ['uses' => 'CarController@modelChangeStatus', 'as' => 'modelChangeStatus']);
 		
 	});
 	

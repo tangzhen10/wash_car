@@ -51,6 +51,51 @@ class CarService extends BaseService {
 	}
 	
 	/**
+	 * 增改品牌数据
+	 * @author 李小同
+	 * @date   2018-7-25 17:15:49
+	 * @return int 增改的品牌id
+	 */
+	public function handleBrandForm() {
+		
+		$post = request_all();
+		
+		# validation
+		if (empty($post['name'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.name')]), 40001);
+		}
+		if (empty($post['first_letter'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.first_letter')]), 40001);
+		}
+		
+		$brandId = $post['id'];
+		$query   = \DB::table('car_brand');
+		
+		# 图片上传，无图保持不变
+		if (empty($post['logo'])) {
+			$post['logo'] = $post['uploadfile_logo'];
+		} else {
+			$post['logo'] = ToolService::uploadFiles(\Request::file('logo'));
+		}
+		unset($post['uploadfile_logo']);
+		
+		if (!$brandId) {
+			
+			# 无id新增
+			$brandId = $query->insertGetId($post);
+			
+		} else {
+			
+			# 有id修改
+			$where = ['id' => $brandId];
+			unset($post['id']);
+			$query->where($where)->update($post);
+		}
+		
+		return $brandId;
+	}
+	
+	/**
 	 * 修改品牌状态
 	 * @param $brandId
 	 * @param $status
@@ -70,18 +115,26 @@ class CarService extends BaseService {
 	
 	/**
 	 * 获取指定品牌下的车型列表
-	 * @param $branId
+	 * @param array $filter
 	 * @author 李小同
 	 * @date   2018-7-24 22:53:46
 	 * @return array
 	 */
-	public function getModelList($branId) {
+	public function getModelList(array $filter = []) {
 		
-		$listPage = \DB::table('car_model AS a')
-		               ->join('car_brand AS b', 'b.id', '=', 'brand_id')
-		               ->where('brand_id', $branId)
-		               ->select(['id', 'name', 'status', 'b.name AS brand_name'])
-		               ->paginate();
+		$fields   = [
+			'a.id',
+			'a.name',
+			'a.status',
+			'b.name AS brand_name',
+			'b.status AS brand_status',
+		];
+		$listPage = \DB::table('car_model AS a')->join('car_brand AS b', 'b.id', '=', 'a.brand_id');
+		
+		# 过滤品牌
+		if (!empty($filter['brand_id'])) $listPage = $listPage->where('a.brand_id', $filter['brand_id']);
+		
+		$listPage = $listPage->where('a.status', '!=', '-1')->select($fields)->paginate($filter['perPage']);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		$total    = $listArr['total'];
 		$list     = $listArr['data'];

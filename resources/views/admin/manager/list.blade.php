@@ -47,23 +47,23 @@
 				<td class="td-manage">
 					
 					@if ($row['status'] == '1')
-						<a title="{{trans('common.disable')}}" style="text-decoration:none"
+						<a title="{{trans('common.disable')}}"
 						   onClick="handleDataStop(this,'{{$row['id']}}','{{route('managerChangeStatus')}}')" href="javascript:;">
 							<i class="Hui-iconfont">&#xe631;</i>
 						</a>
 					@else
-						<a title="{{trans('common.enable')}}" style="text-decoration:none"
+						<a title="{{trans('common.enable')}}"
 						   onClick="handleDataStart(this,'{{$row['id']}}','{{route('managerChangeStatus')}}')" href="javascript:;">
 							<i class="Hui-iconfont">&#xe615;</i>
 						</a>
 					@endif
 					
 					<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'),'{{route('managerForm', $row['id'])}}','800','500')"
-					   href="javascript:;" class="ml-5" style="text-decoration:none">
+					   href="javascript:;" class="ml-5">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
 					<a title="{{trans('common.delete')}}" onclick="handleDataDel(this,'{{$row['id']}}','{{route('managerChangeStatus')}}')"
-					   class="ml-5" style="text-decoration:none" href="javascript:;">
+					   class="ml-5" href="javascript:;">
 						<i class="Hui-iconfont">&#xe6e2;</i>
 					</a>
 				</td>

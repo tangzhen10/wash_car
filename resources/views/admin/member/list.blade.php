@@ -36,7 +36,7 @@
 					<td>{{$member['email']}}</td>
 					<td>{{$member['create_at']}}</td>
 					<td class="td-manage">
-						<a title="{{trans('common.edit')}}" href="javascript:;" onclick="layer_show($(this).attr('title'),'{{route('memberForm', $member['user_id'])}}','','550')" class="ml-5" style="text-decoration:none">
+						<a title="{{trans('common.edit')}}" href="javascript:;" onclick="layer_show($(this).attr('title'),'{{route('memberForm', $member['user_id'])}}','','550')" class="ml-5">
 							<i class="Hui-iconfont">&#xe6df;</i>
 						</a>
 					</td>

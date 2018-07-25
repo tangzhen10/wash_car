@@ -27,7 +27,12 @@
 			<tr class="text-c">
 				{{--<td><input type="checkbox"></td>--}}
 				<td>{{$row['id']}}</td>
-				<td>{{$row['brand_name']}}</td>
+				<td>
+					{{$row['brand_name']}}
+					@if ($row['brand_status'] == '0')
+						<span class="label label-danger' radius">{{trans('common.disable')}}</span>
+					@endif
+				</td>
 				<td>{{$row['name']}}</td>
 				<td class="td-status">
 					<span class="label label-{{$row['status'] ? 'success' : 'danger'}} radius">{{$row['status_text']}}</span>
@@ -35,23 +40,23 @@
 				<td class="td-manage">
 					
 					@if ($row['status'] == '1')
-						<a title="{{trans('common.disable')}}" style="text-decoration:none"
-						   onClick="handleDataStop(this,'{{$row['id']}}','{{route('brandChangeStatus')}}')" href="javascript:;">
+						<a title="{{trans('common.disable')}}" href="javascript:;"
+						   onClick="handleDataStop(this,'{{$row['id']}}','{{route('modelChangeStatus')}}')">
 							<i class="Hui-iconfont">&#xe631;</i>
 						</a>
 					@else
-						<a title="{{trans('common.enable')}}" style="text-decoration:none"
-						   onClick="handleDataStart(this,'{{$row['id']}}','{{route('brandChangeStatus')}}')" href="javascript:;">
+						<a title="{{trans('common.enable')}}" href="javascript:;"
+						   onClick="handleDataStart(this,'{{$row['id']}}','{{route('modelChangeStatus')}}')">
 							<i class="Hui-iconfont">&#xe615;</i>
 						</a>
 					@endif
 					
-					<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'),'{{route('brandForm', $row['id'])}}','1000','600')"
-					   href="javascript:;" class="ml-5" style="text-decoration:none">
+					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
+					   onclick="layer_show($(this).attr('title'),'{{route('modelForm', $row['id'])}}','1000','600')">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
-					<a title="{{trans('common.delete')}}" onclick="handleDataDel(this,'{{$row['id']}}','{{route('brandChangeStatus')}}')"
-					   class="ml-5" style="text-decoration:none" href="javascript:;">
+					<a title="{{trans('common.delete')}}" class="ml-5" href="javascript:;"
+					   onclick="handleDataDel(this,'{{$row['id']}}','{{route('modelChangeStatus')}}')">
 						<i class="Hui-iconfont">&#xe6e2;</i>
 					</a>
 				</td>

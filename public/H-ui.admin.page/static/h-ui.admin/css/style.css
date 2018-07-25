@@ -35,6 +35,9 @@
 .td-manage {
     width: 20%;
 }
+.td-manage a {
+    text-decoration: none;
+}
 .td-manage i.Hui-iconfont {
     font-size: 16px;
 }

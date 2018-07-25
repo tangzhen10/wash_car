@@ -62,23 +62,23 @@
 				<td class="td-manage">
 					
 					@if ($row['status'] == '1')
-						<a title="{{trans('common.disable')}}" style="text-decoration:none"
-						   onClick="handleDataStop(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')" href="javascript:;">
+						<a title="{{trans('common.disable')}}" href="javascript:;"
+						   onClick="handleDataStop(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')">
 							<i class="Hui-iconfont">&#xe631;</i>
 						</a>
 					@else
-						<a title="{{trans('common.enable')}}" style="text-decoration:none"
-						   onClick="handleDataStart(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')" href="javascript:;">
+						<a title="{{trans('common.enable')}}" href="javascript:;"
+						   onClick="handleDataStart(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')">
 							<i class="Hui-iconfont">&#xe615;</i>
 						</a>
 					@endif
 					
-					<a title="{{trans('common.edit')}}" onclick="layer_show($(this).attr('title'), '{{route('articleForm', $row['id'])}}','1000','600')"
-					   href="javascript:;" class="ml-5" style="text-decoration:none">
+					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
+					   onclick="layer_show($(this).attr('title'), '{{route('articleForm', $row['id'])}}','1000','600')">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
-					<a title="{{trans('common.delete')}}" onclick="handleDataDel(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')"
-					   class="ml-5" style="text-decoration:none" href="javascript:;">
+					<a title="{{trans('common.delete')}}" class="ml-5" href="javascript:;"
+					   onclick="handleDataDel(this,'{{$row['id']}}', '{{route('articleChangeStatus')}}')">
 						<i class="Hui-iconfont">&#xe6e2;</i>
 					</a>
 				</td>
@@ -94,7 +94,7 @@
 		// 筛选
 		$('.J_filter').click(function () {
 			var content_type = $('select[name="filter_content_type"]').val(),
-			    article_name = $('input[name="filter_article_name"]').val();
+				article_name = $('input[name="filter_article_name"]').val();
 			if (content_type || article_name) {
 				
 				var query_string = [];

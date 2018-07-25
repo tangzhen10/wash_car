@@ -45,6 +45,7 @@ return [
 	'name_en'                  => '英文名称',
 	'first_letter'             => '名称首字母',
 	'model'                    => '型号',
+	'view_car_model'           => '查看车型',
 	
 	# 属性
 	'gender_0'                 => '',
