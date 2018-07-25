@@ -39,7 +39,7 @@ function json_msg($data = '', $code = 0) {
 	
 	header('charset:utf-8');
 	header('X-powered-by:ahulxt/wm');
-	if ($code > 0 && \Request::header('vfrom') != 'ajax') {
+	if ($code > 0 && empty(\Request::header('vfrom'))) {
 		die('<script>alert(\''.(string)$data.'\');history.back();</script>');
 	}
 	
