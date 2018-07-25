@@ -16,4 +16,17 @@ class CarController extends BaseController {
 		
 		json_msg($res);
 	}
+	
+	/**
+	 * 指定品牌下的车型列表
+	 * @param $brandId
+	 * @author 李小同
+	 * @date   2018-7-25 14:56:14
+	 */
+	public function model($brandId) {
+		
+		$res = \CarService::getModelsByBrandId($brandId);
+		
+		json_msg($res);
+	}
 }

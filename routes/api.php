@@ -53,6 +53,8 @@ Route::group(['namespace' => 'Api'], function () {
 		
 		# 品牌
 		Route::match(['get', 'post'], 'brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
+		# 车型
+		Route::match(['get', 'post'], 'model/{brand_id}', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
 	
 	});
 	

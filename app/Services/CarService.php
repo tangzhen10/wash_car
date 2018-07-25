@@ -107,5 +107,24 @@ class CarService extends BaseService {
 		return $res;
 	}
 	
+	/**
+	 * 获取指定品牌下的车型
+	 * @param $brandId
+	 * @author 李小同
+	 * @date   2018-7-25 14:55:35
+	 * @return array
+	 */
+	public function getModelsByBrandId($brandId) {
+		
+		if (empty($brandId) || !is_numeric($brandId)) json_msg(trans('error.illegal_param'), 40001);
+		
+		$list = \DB::table('car_model')
+		           ->where('brand_id', intval($brandId))
+		           ->where('status', '1')
+		           ->get(['id', 'name'])
+		           ->toArray();
+		return $list;
+	}
+	
 	# endregion
 }
