@@ -27,6 +27,11 @@ class CarController extends BaseController {
 		
 		$res = \CarService::getModelsByBrandId($brandId);
 		
-		json_msg($res);
+		if (empty($res)) $res = [
+			'id'   => 0,
+			'name' => trans('common.no_data'),
+		];
+		
+		json_msg(['list' => $res]);
 	}
 }
