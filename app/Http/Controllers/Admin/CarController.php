@@ -18,7 +18,18 @@ class CarController extends BaseController {
 	 */
 	public function brandList() {
 		
-		$this->data['list'] = $this->service->getBrandList();
+		$filter = [
+			'filter_id'           => \Request::input('filter_id'),
+			'filter_first_letter' => \Request::input('filter_first_letter'),
+			'filter_name'         => \Request::input('filter_name'),
+			'perPage'             => \Request::input('perPage', \SettingService::getValue('per_page')),
+		];
+		$list   = $this->service->getBrandList($filter);
+		
+		$this->data['list']       = $list['list'];
+		$this->data['pagination'] = $list['listPage'];
+		$this->data['total']      = $list['total'];
+		$this->data['filter']     = $filter;
 		
 		return view('admin/car/brand/list', $this->data);
 	}
@@ -90,7 +101,7 @@ class CarController extends BaseController {
 				'name_text' => trans('common.first_letter'),
 				'type'      => 'select',
 				'name'      => 'first_letter',
-				'value'     => '#,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z',
+				'value'     => config('project.FIRST_LETTER'),
 			],
 			[
 				'name_text' => trans('common.hot_value'),
@@ -128,7 +139,11 @@ class CarController extends BaseController {
 	 */
 	public function handleBrandForm() {
 		
-		$post    = request_all();
+		$post = request_all();
+		
+		if (empty($post['name'])) json_msg(trans('validation.required', ['attr' => trans('common.name')]), 40001);
+		if (empty($post['first_letter'])) json_msg(trans('validation.required', ['attr' => trans('common.first_letter')]), 40001);
+		
 		$brandId = $post['id'];
 		$query   = \DB::table('car_brand');
 		
@@ -166,9 +181,17 @@ class CarController extends BaseController {
 	# endregion
 	
 	# region 车型model
-	public function modelList($branId) {
+	public function modelList() {
 		
-		$this->data['list'] = $this->service->getModelListByBrandId($branId);
+		$branId = \Request::input('brand_id', 0);
+		$filter = [
+			'brand_id' => $branId,
+		];
+		$list   = $this->service->getModelList($filter);
+		
+		$this->data['list']       = $list['list'];
+		$this->data['pagination'] = $list['listPage'];
+		$this->data['total']      = $list['total'];
 		
 		return view('admin/car/model/list', $this->data);
 	}

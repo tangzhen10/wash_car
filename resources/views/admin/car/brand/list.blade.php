@@ -1,12 +1,35 @@
 @extends('admin.public')
 @section('body')
+	<div class="text-c mb-15">
+		<span>ID：</span>
+		<input type="number" name="filter_id" class="input-text" style="width:120px;" value="{{$filter['filter_id']}}">
+		<span>{{trans('common.first_letter')}}：</span>
+		<select class="select-box" name="filter_first_letter" style="width:120px;">
+			<option></option>
+			@foreach(explode(',', config('project.FIRST_LETTER')) as $letter)
+				<option value="{{$letter}}" @if ($letter == $filter['filter_first_letter']) selected @endif>{{$letter}}</option>
+			@endforeach
+		</select>
+		<span>{{trans('common.name')}}：</span>
+		<input type="text" class="input-text" style="width:250px" placeholder="中英文名皆可" name="filter_name" value="{{$filter['filter_name']}}">
+		<span>{{trans('common.per_page')}}：</span>
+		<select class="select-box" name="perPage" style="width:120px;">
+			<option></option>
+			@foreach([15, 20, 50, 100, 500] as $perQty)
+				<option value="{{$perQty}}" @if ($perQty == $filter['perPage']) selected @endif>{{$perQty}}</option>
+			@endforeach
+		</select>
+		<button type="submit" class="btn btn-success radius" id="J_search" name="">
+			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.search')}}
+		</button>
+	</div>
 	<div class="cl pd-5 bg-1 bk-gray">
 		<span class="l">
 			<a href="javascript:;" onclick="layer_show('添加品牌','{{route('brandForm')}}','1000','600')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加品牌
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{count($list)}}</strong> 条</span>
+		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort">
 		<thead>
@@ -70,6 +93,7 @@
 		@endforeach
 		</tbody>
 	</table>
+	{{$pagination->render()}}
 @endsection
 @section('js')
 	<script>
@@ -83,6 +107,25 @@
 				shadeClose : true,
 				content    : '<img class="pd-20" src="'+$(this).attr('src')+'">'
 			});
+		});
+		
+		$('#J_search').click(function () {
+			var filter_id           = $('input[name="filter_id"]').val().trim(),
+				filter_first_letter = $('select[name="filter_first_letter"]').val(),
+				perPage             = $('select[name="perPage"]').val(),
+				filter_name         = $('input[name="filter_name"]').val().trim();
+			if (filter_id || filter_first_letter || perPage || filter_name) {
+				
+				var query_string = [];
+				if (filter_id) query_string.push('filter_id='+filter_id);
+				if (filter_first_letter) query_string.push('filter_first_letter='+filter_first_letter);
+				if (perPage) query_string.push('perPage='+perPage);
+				if (filter_name) query_string.push('filter_name='+filter_name);
+				
+				location.href = '{{route('brandList')}}?'+query_string.join('&');
+			} else {
+				location.href = '{{route('brandList')}}';
+			}
 		});
 	</script>
 @endsection

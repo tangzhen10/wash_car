@@ -18,7 +18,7 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 修改状态
 		Route::post('brandChangeStatus', ['uses' => 'CarController@brandChangeStatus', 'as' => 'brandChangeStatus']);
 		# 车型列表
-		Route::get('modelList/{brand_id}', ['uses' => 'CarController@modelList', 'as' => 'modelList']);
+		Route::get('modelList/{brand_id?}', ['uses' => 'CarController@modelList', 'as' => 'modelList']);
 		# 增改车型
 		Route::match(['get', 'post'], 'modelForm/{id?}', ['uses' => 'CarController@modelForm', 'as' => 'modelForm']);
 		

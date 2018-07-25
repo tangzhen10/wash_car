@@ -13,16 +13,41 @@ class CarService extends BaseService {
 	# region 后台
 	/**
 	 * 获取品牌列表
+	 * @param array $filter
 	 * @author 李小同
 	 * @date   2018-7-23 21:16:15
 	 * @return mixed
 	 */
-	public function getBrandList() {
+	public function getBrandList(array $filter = []) {
 		
-		$list = \DB::table('car_brand')->where('status', '!=', '-1')->orderBy('first_letter', 'asc')->get()->toArray();
+		$fields   = ['id', 'name', 'logo', 'hot', 'first_letter', 'name_en', 'status'];
+		$listPage = \DB::table('car_brand')->where('status', '!=', '-1');
+		
+		# 按名称
+		if (!empty($filter['filter_name'])) {
+			$listPage = $listPage->where(function ($query) use ($filter) {
+				
+				$query->where('name', 'LIKE', '%'.$filter['filter_name'].'%')
+				      ->orWhere('name_en', 'LIKE', '%'.$filter['filter_name'].'%');
+			});
+		}
+		
+		# 精确筛选
+		$where = [];
+		if (!empty($filter['filter_id'])) $where['id'] = $filter['filter_id'];
+		if (!empty($filter['filter_first_letter'])) $where['first_letter'] = $filter['filter_first_letter'];
+		
+		$listPage = $listPage->where($where)
+		                     ->select($fields)
+		                     ->orderByRaw('CONVERT(name USING gb2312) ASC')
+		                     ->orderBy('hot', 'desc')
+		                     ->paginate($filter['perPage']);
+		$listArr  = json_decode(json_encode($listPage), 1);
+		$total    = $listArr['total'];
+		$list     = $listArr['data'];
 		$this->addStatusText($list);
 		
-		return $list;
+		return compact('list', 'listPage', 'total');
 	}
 	
 	/**
@@ -50,18 +75,19 @@ class CarService extends BaseService {
 	 * @date   2018-7-24 22:53:46
 	 * @return array
 	 */
-	public function getModelListByBrandId($branId) {
+	public function getModelList($branId) {
 		
-		$list = \DB::table('car_model AS a')
-		           ->join('car_brand AS b', 'b.id', '=', 'a.brand_id')
-		           ->where('a.brand_id', $branId)
-		           ->get(['a.id', 'a.name', 'a.status', 'b.name AS brand_name'])
-		           ->toArray();
-		if (empty($list)) return [];
-		
+		$listPage = \DB::table('car_model AS a')
+		               ->join('car_brand AS b', 'b.id', '=', 'brand_id')
+		               ->where('brand_id', $branId)
+		               ->select(['id', 'name', 'status', 'b.name AS brand_name'])
+		               ->paginate();
+		$listArr  = json_decode(json_encode($listPage), 1);
+		$total    = $listArr['total'];
+		$list     = $listArr['data'];
 		$this->addStatusText($list);
 		
-		return $list;
+		return compact('list', 'listPage', 'total');
 	}
 	# endregion
 	

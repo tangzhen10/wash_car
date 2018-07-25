@@ -19,4 +19,5 @@ return [
 	'THUMB_HEIGHT'               => '200', # 缩略图高度最大值
 	'THUMB_PREFIX'               => 'thumb_', # 缩略图前缀
 	'ALLOW_TYPE_OF_CONTENT_TYPE' => ['1', '2'], # 合法的文档类型的类型
+	'FIRST_LETTER'               => 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z' # 车辆品牌首字母
 ];

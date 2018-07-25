@@ -37,6 +37,7 @@ return [
 	'hot_value'                => '热度值',
 	'upper_letter'             => '大写字母',
 	'int'                      => '整数',
+	'per_page'                 => '每页条数',
 	
 	# 车辆
 	'brand'                    => '品牌',
@@ -67,6 +68,7 @@ return [
 	'filter'                   => '筛选',
 	'show_more'                => '显示更多',
 	'refresh'                  => '刷新',
+	'search'                   => '搜索',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',
