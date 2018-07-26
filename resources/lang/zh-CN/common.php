@@ -77,6 +77,7 @@ return [
 	
 	# 结果
 	'action_success'           => '操作成功！',
+	'register_success'         => '注册成功！',
 	'action_failed'            => '操作失败，请稍后重试。',
 	'no_more'                  => '没有更多了',
 	'no_data'                  => '暂无数据',

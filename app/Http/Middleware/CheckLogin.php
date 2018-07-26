@@ -7,8 +7,8 @@ use Closure;
 class CheckLogin {
 	
 	private $except = [
-		'register',
-		'login',
+		'apiRegister',
+		'apiLogin',
 	];
 	
 	/**

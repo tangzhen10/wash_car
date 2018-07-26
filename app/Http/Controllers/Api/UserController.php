@@ -9,7 +9,7 @@
 namespace App\Http\Controllers\Api;
 
 /**
- * 用户类
+ * 用户接口类
  * Class UserController
  * @package App\Http\Controllers\Main
  */
@@ -28,7 +28,7 @@ class UserController extends BaseController {
 		# 注册
 		$res = $this->user->create($regData);
 		if ($res) {
-			json_msg(trans('common.action_success'));
+			json_msg(trans('common.register_success'));
 		} else {
 			json_msg(trans('common.action_failed'), 40004);
 		}

@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+/**
+ * 车辆功能接口类
+ * Class CarController
+ * @package App\Http\Controllers\Api
+ */
 class CarController extends BaseController {
 	
 	/**

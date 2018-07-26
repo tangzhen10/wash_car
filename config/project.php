@@ -11,6 +11,7 @@ return [
 		'EMAIL' => '/^[a-z0-9\-_\.]+[a-z0-9\-_\.]*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/',
 		'DATE'  => '/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|2\d|3[01])$/',
 	],
+	'ALLOW_IDENTITY_TYPE'        => ['phone'/*, 'email'*/], # 合法的注册渠道，目前只允许手机注册
 	'ADMIN_LOGIN_COOKIE'         => 'admin_log_id', # admin登录ID的cookie名
 	'UPLOAD_STORAGE_PATH'        => 'src/upload/image', # 图片上传目录
 	'ALLOW_PICTURE_TYPE'         => ['jpg', 'jpeg', 'png', 'gif'], # 允许上传文件格式

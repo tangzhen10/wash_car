@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId = 0;
+	public $userId   = 0;
 	public $nickname = 0;
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -61,6 +61,13 @@ class UserService {
 		$identityType = $data['identityType'];
 		$identity     = $data['account'];
 		$password     = $data['password'];
+		
+		# 检查渠道是否允许注册
+		if (!in_array($identityType, config('project.ALLOW_IDENTITY_TYPE'))) {
+			$typeTextArr = [];
+			foreach (config('project.ALLOW_IDENTITY_TYPE') as $type) $typeTextArr[] = trans('common.'.$type);
+			json_msg(trans('error.support_register_identity_type', ['type' => implode(',', $typeTextArr)]), 40003);
+		}
 		
 		# 检测是否已注册
 		$hasRegister = $this->checkExistIdentity($identityType, $identity);
@@ -310,7 +317,7 @@ class UserService {
 			json_msg($errorMsg, 40003);
 		}
 		
-		# 检测渠道
+		# 判断渠道
 		$identityType = 'username';
 		if (preg_match(config('project.PATTERN.PHONE'), $account)) {
 			$identityType = 'phone';
