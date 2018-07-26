@@ -43,6 +43,9 @@ class MemberController extends BaseController {
 		
 		$check    = [];
 		$userId   = $detail['user_id'];
+		
+		if ($userId == 0) json_msg(trans('error.can_not_create_member'), 40003);
+		
 		$authList = $this->service->getUserAuthList($userId);
 		
 		foreach ($authList as $auth) {

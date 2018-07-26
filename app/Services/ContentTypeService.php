@@ -342,7 +342,7 @@ class ContentTypeService extends BaseService {
 	public function checkboxFormElement(array $field, array $value = []) {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
-		<span class="skin-minimal  form_value_row">';
+		<span class="skin-minimal form_value_row">';
 		$groups = explode(',', $field['value']);
 		foreach ($groups as $group) {
 			$checked = in_array($group, $value) ? 'checked' : '';

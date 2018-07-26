@@ -34,6 +34,7 @@ return [
 	'sort'                     => '排序',
 	'time_status'              => '生效',
 	'value'                    => '值',
+	'hot'                      => '热门',
 	'hot_value'                => '热度值',
 	'upper_letter'             => '大写字母',
 	'int'                      => '整数',
@@ -46,6 +47,8 @@ return [
 	'first_letter'             => '名称首字母',
 	'model'                    => '型号',
 	'view_car_model'           => '查看车型',
+	'color'                    => '颜色',
+	'color_code'               => '颜色码',
 	
 	# 属性
 	'gender_0'                 => '',
@@ -70,6 +73,7 @@ return [
 	'show_more'                => '显示更多',
 	'refresh'                  => '刷新',
 	'search'                   => '搜索',
+	'preview'                  => '预览',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',

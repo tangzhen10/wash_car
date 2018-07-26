@@ -78,7 +78,7 @@ class BaseService {
 	 */
 	public function changeStatus($id, $status, $module) {
 		
-		$this->checkStatusValue($status);
+		$this->_checkStatusValue($status);
 		if (method_exists(static::class, 'checkChangeStatus')) static::checkChangeStatus($id, $status, $module);
 		
 		$source = \DB::table($module)->where('id', $id)->count();
@@ -97,14 +97,23 @@ class BaseService {
 	}
 	
 	/**
-	 * 检测新状态值是否合法
+	 * 简单修改状态
+	 * 不做额外检测，适用于无关联属性的数据状态修改
+	 * @param $table
+	 * @param $id
 	 * @param $status
 	 * @author 李小同
-	 * @date   2018-7-25 22:08:44
+	 * @date   2018-7-26 17:09:19
+	 * @return mixed
 	 */
-	public function checkStatusValue($status) {
+	public function easyChangeStatus($table, $id, $status) {
 		
-		if (!in_array($status, ['1', '0', '-1'])) json_msg(trans('error.illegal_param'), 40001);
+		$id = intval($id);
+		$this->_checkStatusValue($status);
+		
+		$res = \DB::table($table)->where('id', $id)->update(['status' => $status]);
+		
+		return $res;
 	}
 	
 	/**
@@ -130,7 +139,7 @@ class BaseService {
 	 * @author 李小同
 	 * @date   2018-7-11 15:54:45
 	 */
-	protected function addStatusText(array &$list = []) {
+	public function addStatusText(array &$list = []) {
 		
 		foreach ($list as &$item) {
 			$item['status_text'] = trans('common.'.($item['status'] ? 'enable' : 'disable'));
@@ -158,6 +167,17 @@ class BaseService {
 		$columns = array_column($columns, 'column_name');
 		
 		return $columns;
+	}
+	
+	/**
+	 * 检测新状态值是否合法
+	 * @param $status
+	 * @author 李小同
+	 * @date   2018-7-25 22:08:44
+	 */
+	private function _checkStatusValue($status) {
+		
+		if (!in_array($status, ['1', '0', '-1'])) json_msg(trans('error.illegal_param'), 40001);
 	}
 	
 }

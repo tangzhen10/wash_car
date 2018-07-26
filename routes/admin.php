@@ -23,7 +23,14 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::match(['get', 'post'], 'modelForm/{id?}', ['uses' => 'CarController@modelForm', 'as' => 'modelForm']);
 		# 修改车型状态
 		Route::post('modelChangeStatus', ['uses' => 'CarController@modelChangeStatus', 'as' => 'modelChangeStatus']);
-		
+		# 车牌省份列表
+		Route::get('provinceList', ['uses' => 'CarController@provinceList', 'as' => 'provinceList']);
+		# 颜色列表
+		Route::get('colorList', ['uses' => 'CarController@colorList', 'as' => 'colorList']);
+		# 增改颜色
+		Route::match(['get', 'post'], 'colorForm/{id?}', ['uses' => 'CarController@colorForm', 'as' => 'colorForm']);
+		# 修改颜色状态
+		Route::post('colorChangeStatus', ['uses' => 'CarController@colorChangeStatus', 'as' => 'colorChangeStatus']);
 	});
 	
 	# 管理员
@@ -84,7 +91,7 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 会员列表
 		Route::get('list', ['uses' => 'MemberController@memberList', 'as' => 'memberList']);
 		# 修改用户信息
-		Route::match(['get', 'post'], 'form/{id}', ['uses' => 'MemberController@form', 'as' => 'memberForm']);
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'MemberController@form', 'as' => 'memberForm']);
 		
 	});
 	
@@ -94,9 +101,15 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 列表
 		Route::get('list/{type?}', ['uses' => 'ContentTypeController@typeList', 'as' => 'contentTypeList']);
 		# 增改
-		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ContentTypeController@form', 'as' => 'contentTypeForm']);
+		Route::match(['get', 'post'], 'form/{id?}', [
+			'uses' => 'ContentTypeController@form',
+			'as'   => 'contentTypeForm',
+		]);
 		# 修改状态
-		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ContentTypeController@changeStatus', 'as' => 'contentTypeChangeStatus']);
+		Route::match(['get', 'post'], 'changeStatus', [
+			'uses' => 'ContentTypeController@changeStatus',
+			'as'   => 'contentTypeChangeStatus',
+		]);
 		# 文档类型的表单html
 		Route::get('formHtml/{id?}', ['uses' => 'ContentTypeController@formHtml', 'as' => 'contentTypeFormHtml']);
 	});
@@ -109,9 +122,15 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 增改
 		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'ArticleController@form', 'as' => 'articleForm']);
 		# 修改状态
-		Route::match(['get', 'post'], 'changeStatus', ['uses' => 'ArticleController@changeStatus', 'as' => 'articleChangeStatus']);
+		Route::match(['get', 'post'], 'changeStatus', [
+			'uses' => 'ArticleController@changeStatus',
+			'as'   => 'articleChangeStatus',
+		]);
 		# 上传文件
-		Route::match(['get', 'post'], 'upload', ['uses' => 'ArticleController@uploadFile', 'as' => 'articleUploadFile']);
+		Route::match(['get', 'post'], 'upload', [
+			'uses' => 'ArticleController@uploadFile',
+			'as'   => 'articleUploadFile',
+		]);
 		# 批量删除
 		Route::post('batchDelete', ['uses' => 'ArticleController@batchDelete', 'as' => 'batchDeleteArticle']);
 		
@@ -140,7 +159,5 @@ Route::group(['namespace' => 'Admin'], function () {
 		Route::post('save/{id?}', ['uses' => 'SettingController@form', 'as' => 'saveSetting']);
 		
 	});
-	
-	
 	
 });

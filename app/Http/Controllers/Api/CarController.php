@@ -41,4 +41,16 @@ class CarController extends BaseController {
 		
 		json_msg(['list' => $res]);
 	}
+	
+	/**
+	 * 车牌省份简称
+	 * @author 李小同
+	 * @date   2018-7-26 17:04:11
+	 */
+	public function province() {
+		
+		$res = \CarService::getProvince();
+		
+		json_msg($res);
+	}
 }

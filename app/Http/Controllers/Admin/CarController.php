@@ -21,6 +21,7 @@ class CarController extends BaseController {
 			'filter_id'           => \Request::input('filter_id'),
 			'filter_first_letter' => \Request::input('filter_first_letter'),
 			'filter_name'         => \Request::input('filter_name'),
+			'filter_hot'          => \Request::input('filter_hot'),
 			'perPage'             => \Request::input('perPage', \SettingService::getValue('per_page')),
 		];
 		$list   = $this->service->getBrandList($filter);
@@ -31,33 +32,6 @@ class CarController extends BaseController {
 		$this->data['filter']     = $filter;
 		
 		return view('admin/car/brand/list', $this->data);
-	}
-	
-	/**
-	 * 获取品牌详情
-	 * @param $id
-	 * @author 李小同
-	 * @date   2018-7-24 16:11:27
-	 * @return array
-	 */
-	public function getBrandDetailById($id) {
-		
-		if ($id > 0) {
-			
-			$detail = \DB::table('car_brand')->where('id', $id)->first();
-		} else {
-			$detail = [
-				'id'           => '0',
-				'name'         => '',
-				'logo'         => '',
-				'hot'          => '0',
-				'first_letter' => '',
-				'status'       => '1',
-				'name_en'      => '',
-			];
-		}
-		
-		return $detail;
 	}
 	
 	/**
@@ -120,7 +94,7 @@ class CarController extends BaseController {
 					'value'     => '1,0',
 				],
 			];
-			$detail    = $this->getBrandDetailById($id);
+			$detail    = $this->service->getBrandDetailById($id);
 			
 			$this->data['html'] = $this->getFormHtml($detail, $structure);
 			
@@ -137,7 +111,7 @@ class CarController extends BaseController {
 		
 		$brandId = \Request::input('id');
 		$status  = \Request::input('status');
-		$res     = $this->service->brandChangeStatus($brandId, $status);
+		$res     = $this->service->easyChangeStatus('car_brand', $brandId, $status);
 		$this->render($res);
 	}
 	# endregion
@@ -164,30 +138,6 @@ class CarController extends BaseController {
 		$this->data['filter']     = $filter;
 		
 		return view('admin/car/model/list', $this->data);
-	}
-	
-	/**
-	 * 获取车型详情
-	 * @param $id
-	 * @author 李小同
-	 * @date   2018-7-25 17:58:28
-	 * @return array
-	 */
-	public function getModelDetailById($id) {
-		
-		if ($id > 0) {
-			
-			$detail = \DB::table('car_model')->where('id', $id)->first();
-		} else {
-			$detail = [
-				'id'       => '0',
-				'name'     => '',
-				'brand_id' => '0',
-				'status'   => '1',
-			];
-		}
-		
-		return $detail;
 	}
 	
 	/**
@@ -227,7 +177,7 @@ class CarController extends BaseController {
 					'name_text' => '',
 					'type'      => 'hidden',
 					'name'      => 'brand_id',
-					'value'     => $brandId,
+					'value'     => '',
 				],
 				[
 					'name_text' => trans('common.status'),
@@ -236,7 +186,7 @@ class CarController extends BaseController {
 					'value'     => '1,0',
 				],
 			];
-			$detail             = $this->getModelDetailById($id, $brandId);
+			$detail             = $this->service->getModelDetailById($id, $brandId);
 			$detail['brand_id'] = $brandId; # 新增型号，品牌读取当前页面的品牌值
 			
 			$this->data['html']  = $this->getFormHtml($detail, $structure);
@@ -255,9 +205,103 @@ class CarController extends BaseController {
 		
 		$modelId = \Request::input('id');
 		$status  = \Request::input('status');
-		$res     = $this->service->modelChangeStatus($modelId, $status);
+		$res     = $this->service->easyChangeStatus('car_model', $modelId, $status);
 		$this->render($res);
 	}
 	
+	# endregion
+	
+	# region 车牌
+	/**
+	 * 车牌省份简称
+	 * @author 李小同
+	 * @date   2018-7-26 16:21:29
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function provinceList() {
+		
+		$this->data['list'] = $this->service->getProvinceList();
+		
+		return view('admin/car/plate/list', $this->data);
+	}
+	# endregion
+	
+	# region 颜色color
+	/**
+	 * 获取车辆颜色列表
+	 * @author 李小同
+	 * @date   2018-7-26 16:37:15
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function colorList() {
+		
+		$this->data['list'] = $this->service->getColorList();
+		
+		return view('admin/car/color/list', $this->data);
+	}
+	
+	/**
+	 * 增改颜色
+	 * @param int $id
+	 * @author 李小同
+	 * @date   2018-7-26 17:14:33
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function colorForm($id = 0) {
+		
+		if (\Request::getMethod() == 'POST') {
+			
+			$modelId = $this->service->handleModelForm();
+			$this->render($modelId);
+			
+		} else {
+			
+			$structure = [
+				[
+					'name_text' => '',
+					'type'      => 'hidden',
+					'name'      => 'id',
+					'value'     => '',
+				],
+				[
+					'name_text' => trans('common.name'),
+					'type'      => 'input',
+					'name'      => 'name',
+					'value'     => '',
+				],
+				[
+					'name_text' => trans('common.color_code'),
+					'type'      => 'input',
+					'name'      => 'color_code',
+					'value'     => '',
+				],
+				[
+					'name_text' => trans('common.status'),
+					'type'      => 'radio',
+					'name'      => 'status',
+					'value'     => '1,0',
+				],
+			];
+			$detail    = $this->service->getColorDetailById($id);
+			
+			$this->data['html']   = $this->getFormHtml($detail, $structure);
+			$this->data['detail'] = $detail;
+			
+			return view('admin/car/color/form', $this->data);
+		}
+	}
+	
+	/**
+	 * 修改颜色状态
+	 * @author 李小同
+	 * @date   2018-7-26 17:13:47
+	 */
+	public function colorChangeStatus() {
+		
+		$colorId = \Request::input('id');
+		$status  = \Request::input('status');
+		$res     = $this->service->easyChangeStatus('car_color', $colorId, $status);
+		$this->render($res);
+	}
 	# endregion
 }

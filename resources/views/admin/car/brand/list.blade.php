@@ -1,8 +1,10 @@
 @extends('admin.public')
 @section('body')
 	<div class="text-c mb-15">
+		
 		<span>ID：</span>
 		<input type="number" name="filter_id" class="input-text" style="width:80px;" value="{{$filter['filter_id']}}">
+		
 		<span>{{trans('common.first_letter')}}：</span>
 		<select class="select-box" name="filter_first_letter" style="width:60px;">
 			<option></option>
@@ -10,8 +12,15 @@
 				<option value="{{$letter}}" @if ($letter == $filter['filter_first_letter']) selected @endif>{{$letter}}</option>
 			@endforeach
 		</select>
+		
 		<span>{{trans('common.name')}}：</span>
 		<input type="text" class="input-text" style="width:250px" placeholder="中英文名皆可" name="filter_name" value="{{$filter['filter_name']}}">
+		
+		{{trans('common.hot')}}：
+		<p class="check-box" style="position: relative;top: -7px;">
+			<input name="filter_hot" type="checkbox" value="1" @if ($filter['filter_hot']) checked @endif>
+		</p>
+		
 		<span>{{trans('common.per_page')}}：</span>
 		<select class="select-box" name="perPage" style="width:60px;">
 			<option></option>
@@ -19,6 +28,7 @@
 				<option value="{{$perQty}}" @if ($perQty == $filter['perPage']) selected @endif>{{$perQty}}</option>
 			@endforeach
 		</select>
+		
 		<button type="submit" class="btn btn-success radius" id="J_search">
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.search')}}
 		</button>
@@ -95,7 +105,7 @@
 		@endforeach
 		</tbody>
 	</table>
-	{{$pagination->render()}}
+	{{$pagination->links()}}
 @endsection
 @section('js')
 	<script>
@@ -115,14 +125,16 @@
 			var filter_id           = $('input[name="filter_id"]').val().trim(),
 				filter_first_letter = $('select[name="filter_first_letter"]').val(),
 				perPage             = $('select[name="perPage"]').val(),
-				filter_name         = $('input[name="filter_name"]').val().trim();
-			if (filter_id || filter_first_letter || perPage || filter_name) {
+				filter_name         = $('input[name="filter_name"]').val().trim(),
+				filter_hot          = $('input[name="filter_hot"]:checked').val();
+			if (filter_id || filter_first_letter || perPage || filter_name || filter_hot) {
 				
 				var query_string = [];
 				if (filter_id) query_string.push('filter_id='+filter_id);
 				if (filter_first_letter) query_string.push('filter_first_letter='+filter_first_letter);
 				if (perPage) query_string.push('perPage='+perPage);
 				if (filter_name) query_string.push('filter_name='+filter_name);
+				if (filter_hot) query_string.push('filter_hot='+filter_hot);
 				
 				location.href = '{{route('brandList')}}?'+query_string.join('&');
 			} else {

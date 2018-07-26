@@ -55,6 +55,10 @@ Route::group(['namespace' => 'Api'], function () {
 		Route::match(['get', 'post'], 'brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
 		# 车型
 		Route::match(['get', 'post'], 'model/{brand_id}', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
+		# 车牌省份
+		Route::match(['get', 'post'], 'province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
+		# 颜色
+		Route::match(['get', 'post'], 'color', ['uses' => 'CarController@color', 'as' => 'apiCarColor']);
 	
 	});
 	

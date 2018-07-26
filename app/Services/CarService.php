@@ -11,7 +11,6 @@ namespace App\Services;
 class CarService extends BaseService {
 	
 	# region 后台
-	# region 品牌
 	/**
 	 * 获取品牌列表
 	 * @param array $filter
@@ -33,6 +32,9 @@ class CarService extends BaseService {
 			});
 		}
 		
+		# 筛选热门
+		if (!empty($filter['filter_hot'])) $listPage = $listPage->where('hot', '>', '0');
+		
 		# 精确筛选
 		$where = [];
 		if (!empty($filter['filter_id'])) $where['id'] = $filter['filter_id'];
@@ -50,6 +52,33 @@ class CarService extends BaseService {
 		$this->addStatusText($list);
 		
 		return compact('list', 'listPage', 'total');
+	}
+	
+	/**
+	 * 获取品牌详情
+	 * @param $id
+	 * @author 李小同
+	 * @date   2018-7-24 16:11:27
+	 * @return array
+	 */
+	public function getBrandDetailById($id) {
+		
+		if ($id > 0) {
+			
+			$detail = \DB::table('car_brand')->where('id', $id)->first();
+		} else {
+			$detail = [
+				'id'           => '0',
+				'name'         => '',
+				'logo'         => '',
+				'hot'          => '0',
+				'first_letter' => '',
+				'status'       => '1',
+				'name_en'      => '',
+			];
+		}
+		
+		return $detail;
 	}
 	
 	/**
@@ -98,26 +127,6 @@ class CarService extends BaseService {
 	}
 	
 	/**
-	 * 修改品牌状态
-	 * @param $brandId
-	 * @param $status
-	 * @author 李小同
-	 * @date   2018-7-24 15:28:56
-	 * @return mixed
-	 */
-	public function brandChangeStatus($brandId, $status) {
-		
-		$brandId = intval($brandId);
-		$this->checkStatusValue($status);
-		
-		$res = \DB::table('car_brand')->where('id', $brandId)->update(['status' => $status]);
-		
-		return $res;
-	}
-	# endregion
-	
-	# region 车型
-	/**
 	 * 获取指定品牌下的车型列表
 	 * @param array $filter
 	 * @author 李小同
@@ -145,6 +154,30 @@ class CarService extends BaseService {
 		$this->addStatusText($list);
 		
 		return compact('list', 'listPage', 'total');
+	}
+	
+	/**
+	 * 获取车型详情
+	 * @param $id
+	 * @author 李小同
+	 * @date   2018-7-25 17:58:28
+	 * @return array
+	 */
+	public function getModelDetailById($id) {
+		
+		if ($id > 0) {
+			
+			$detail = \DB::table('car_model')->where('id', $id)->first();
+		} else {
+			$detail = [
+				'id'       => '0',
+				'name'     => '',
+				'brand_id' => '0',
+				'status'   => '1',
+			];
+		}
+		
+		return $detail;
 	}
 	
 	/**
@@ -183,23 +216,56 @@ class CarService extends BaseService {
 	}
 	
 	/**
-	 * 修改车型状态
-	 * @param $modelId
-	 * @param $status
+	 * 获取车牌省份列表
 	 * @author 李小同
-	 * @date   2018-7-25 22:06:11
-	 * @return mixed
+	 * @date   2018-7-26 16:19:00
+	 * @return array
 	 */
-	public function modelChangeStatus($modelId, $status) {
+	public function getProvinceList() {
 		
-		$modelId = intval($modelId);
-		$this->checkStatusValue($status);
+		$list = \DB::table('car_province')->get(['id', 'name', 'status'])->toArray();
+		$this->addStatusText($list);
 		
-		$res = \DB::table('car_model')->where('id', $modelId)->update(['status' => $status]);
-		
-		return $res;
+		return $list;
 	}
-	# endregion
+	
+	/**
+	 * 获取颜色详情
+	 * @param $id
+	 * @author 李小同
+	 * @date   2018-7-26 17:30:48
+	 * @return array
+	 */
+	public function getColorDetailById($id) {
+		
+		if ($id > 0) {
+			
+			$detail = \DB::table('car_color')->where('id', $id)->first();
+		} else {
+			$detail = [
+				'id'         => '0',
+				'name'       => '',
+				'color_code' => '',
+				'status'     => '1',
+			];
+		}
+		
+		return $detail;
+	}
+	
+	/**
+	 * 获取车辆颜色列表
+	 * @author 李小同
+	 * @date   2018-7-26 16:36:32
+	 * @return array
+	 */
+	public function getColorList() {
+		
+		$list = \DB::table('car_color')->get(['id', 'name', 'color_code', 'status'])->toArray();
+		$this->addStatusText($list);
+		
+		return $list;
+	}
 	# endregion
 	
 	# region 前台
@@ -260,6 +326,26 @@ class CarService extends BaseService {
 		           ->where('status', '1')
 		           ->get(['id', 'name'])
 		           ->toArray();
+		return $list;
+	}
+	
+	/**
+	 * 获取车牌省份简称
+	 * @author 李小同
+	 * @date   2018-7-26 16:31:45
+	 * @return array
+	 */
+	public function getProvince() {
+		
+		$list = \DB::table('car_province')->get(['id', 'name'])->toArray();
+		
+		return $list;
+	}
+	
+	public function colorList() {
+		
+		$list = \DB::table('car_color')->get(['id', 'name'])->toArray();
+		
 		return $list;
 	}
 	
