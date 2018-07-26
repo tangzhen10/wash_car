@@ -251,7 +251,7 @@ class CarController extends BaseController {
 		
 		if (\Request::getMethod() == 'POST') {
 			
-			$modelId = $this->service->handleModelForm();
+			$modelId = $this->service->handleColorForm();
 			$this->render($modelId);
 			
 		} else {
@@ -272,7 +272,7 @@ class CarController extends BaseController {
 				[
 					'name_text' => trans('common.color_code'),
 					'type'      => 'input',
-					'name'      => 'color_code',
+					'name'      => 'code',
 					'value'     => '',
 				],
 				[

@@ -53,4 +53,17 @@ class CarController extends BaseController {
 		
 		json_msg($res);
 	}
+	
+	/**
+	 * 车辆品牌
+	 * 包含热门品牌和所有品牌
+	 * @author 李小同
+	 * @date   2018-7-23 16:02:53
+	 */
+	public function color() {
+		
+		$res = \CarService::colorList();
+		
+		json_msg($res);
+	}
 }

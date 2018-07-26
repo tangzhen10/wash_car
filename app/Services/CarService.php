@@ -230,6 +230,20 @@ class CarService extends BaseService {
 	}
 	
 	/**
+	 * 获取车辆颜色列表
+	 * @author 李小同
+	 * @date   2018-7-26 16:36:32
+	 * @return array
+	 */
+	public function getColorList() {
+		
+		$list = \DB::table('car_color')->get(['id', 'name', 'code', 'status'])->toArray();
+		$this->addStatusText($list);
+		
+		return $list;
+	}
+	
+	/**
 	 * 获取颜色详情
 	 * @param $id
 	 * @author 李小同
@@ -243,28 +257,45 @@ class CarService extends BaseService {
 			$detail = \DB::table('car_color')->where('id', $id)->first();
 		} else {
 			$detail = [
-				'id'         => '0',
-				'name'       => '',
-				'color_code' => '',
-				'status'     => '1',
+				'id'     => '0',
+				'name'   => '',
+				'code'   => '',
+				'status' => '1',
 			];
 		}
 		
 		return $detail;
 	}
 	
-	/**
-	 * 获取车辆颜色列表
-	 * @author 李小同
-	 * @date   2018-7-26 16:36:32
-	 * @return array
-	 */
-	public function getColorList() {
+	public function handleColorForm() {
 		
-		$list = \DB::table('car_color')->get(['id', 'name', 'color_code', 'status'])->toArray();
-		$this->addStatusText($list);
+		$post = request_all();
 		
-		return $list;
+		# validation
+		if (empty($post['name'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.name')]), 40001);
+		}
+		if (empty($post['code'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.color_code')]), 40001);
+		}
+		
+		$colorId = $post['id'];
+		$query   = \DB::table('car_color');
+		
+		if (!$colorId) {
+			
+			# 无id新增
+			$colorId = $query->insertGetId($post);
+			
+		} else {
+			
+			# 有id修改
+			$where = ['id' => $colorId];
+			unset($post['id']);
+			$query->where($where)->update($post);
+		}
+		
+		return $colorId;
 	}
 	# endregion
 	
@@ -344,7 +375,11 @@ class CarService extends BaseService {
 	
 	public function colorList() {
 		
-		$list = \DB::table('car_color')->get(['id', 'name'])->toArray();
+		$list = \DB::table('car_color')->get(['id', 'name', 'code'])->toArray();
+		foreach ($list as &$item) {
+			$item['code'] = '#'.$item['code'];
+		}
+		unset($item);
 		
 		return $list;
 	}

@@ -1,12 +1,16 @@
 @extends('admin.structure_form')
 @section('js')
 	<script>
-		var preview = '<span class="J_image_preview" style="padding: 5px 0 0 15%;display: block;width: 80px;height: 80px;background: #{{$detail['color_code']}};box-shadow: #ccc 1px 1px 5px;margin : 0 5px"></span>';
-		$('input[name="color_code"]').after(preview);
-		$('input[name="color_code"]').change(function () {
-			var color_code = $(this).val().trim();
-			if (color_code.length == 6) {
-				$('input[name="color_code"]').after(preview);
+		var preview = '<p>'+
+			'<span class="form_filed_row">预览：</span>'+
+			'<span class="J_preview ml-5 radius" style="position:relative;top:5px;display:inline-block;'+
+			'width: 75%;height: 30px;background: #{{$detail['code']}};"></span>'+
+			'</p>';
+		$('input[name="code"]').after(preview);
+		$('input[name="code"]').bind('input propertychange', function () {
+			var code = $(this).val().trim();
+			if (code.length == 6) {
+				$('.J_preview').css('background', '#'+code);
 			}
 		});
 	</script>

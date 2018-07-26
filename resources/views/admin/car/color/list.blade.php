@@ -27,8 +27,8 @@
 				{{--<td><input type="checkbox"></td>--}}
 				<td>{{$row['id']}}</td>
 				<td>{{$row['name']}}</td>
-				<td>{{$row['color_code']}}</td>
-				<td><span class="round" style="display: inline-block;width: 20px;height: 20px;background: #{{$row['color_code']}};"></span></td>
+				<td>{{$row['code']}}</td>
+				<td><span class="round" style="display: inline-block;width: 20px;height: 20px;background: #{{$row['code']}};"></span></td>
 				<td class="td-status">
 					<span class="label label-{{$row['status'] ? 'success' : 'danger'}} radius">{{$row['status_text']}}</span>
 				</td>
