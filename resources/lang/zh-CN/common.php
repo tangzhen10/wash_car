@@ -42,6 +42,7 @@ return [
 	
 	# 车辆
 	'brand'                    => '品牌',
+	'car_model'                => '车型',
 	'logo'                     => '标志',
 	'name_en'                  => '英文名称',
 	'first_letter'             => '名称首字母',
@@ -49,6 +50,8 @@ return [
 	'view_car_model'           => '查看车型',
 	'color'                    => '颜色',
 	'color_code'               => '颜色码',
+	'province'                 => '省份',
+	'plate_number'             => '车牌号码',
 	
 	# 属性
 	'gender_0'                 => '',

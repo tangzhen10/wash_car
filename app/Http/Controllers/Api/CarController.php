@@ -9,6 +9,17 @@ namespace App\Http\Controllers\Api;
  */
 class CarController extends BaseController {
 	
+	public function saveCar() {
+		
+		$post = request_all();
+		
+		$post['user_id'] = $this->user->userId;
+		
+		$carId = \CarService::saveCar($post);
+		
+		json_msg($carId);
+	}
+	
 	/**
 	 * 车辆品牌
 	 * 包含热门品牌和所有品牌

@@ -51,6 +51,8 @@ Route::group(['namespace' => 'Api'], function () {
 	# 车辆
 	Route::group(['prefix' => 'car'], function () {
 		
+		# 保存车辆
+		Route::match(['get', 'post'], 'save', ['uses' => 'CarController@saveCar', 'as' => 'apiCarSave']);
 		# 品牌
 		Route::match(['get', 'post'], 'brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
 		# 车型

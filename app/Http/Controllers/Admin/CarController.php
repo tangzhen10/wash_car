@@ -8,6 +8,33 @@ class CarController extends BaseController {
 	
 	const MODULE = 'car';
 	
+	# region 客户车辆
+	/**
+	 * 客户车辆列表
+	 * @author 李小同
+	 * @date   2018-7-26 23:11:13
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function carList() {
+		
+		$filter = [
+			'filter_id'           => \Request::input('filter_id'),
+			'filter_first_letter' => \Request::input('filter_first_letter'),
+			'filter_name'         => \Request::input('filter_name'),
+			'filter_hot'          => \Request::input('filter_hot'),
+			'perPage'             => \Request::input('perPage', \SettingService::getValue('per_page')),
+		];
+		$list   = $this->service->getBrandList($filter);
+		
+		$this->data['list']       = $list['list'];
+		$this->data['pagination'] = $list['listPage'];
+		$this->data['total']      = $list['total'];
+		$this->data['filter']     = $filter;
+		
+		return view('admin/car/car/list', $this->data);
+	}
+	# endregion
+	
 	# region 品牌brand
 	/**
 	 * 品牌列表

@@ -279,8 +279,9 @@ class CarService extends BaseService {
 			json_msg(trans('validation.required', ['attr' => trans('common.color_code')]), 40001);
 		}
 		
-		$colorId = $post['id'];
-		$query   = \DB::table('car_color');
+		$colorId      = $post['id'];
+		$post['code'] = strtoupper($post['code']);
+		$query        = \DB::table('car_color');
 		
 		if (!$colorId) {
 			
@@ -300,6 +301,28 @@ class CarService extends BaseService {
 	# endregion
 	
 	# region 前台
+	/**
+	 * 保存客户车辆
+	 * @param $post
+	 * @author 李小同
+	 * @date   2018-7-26 23:25:04
+	 * @return int 车辆id
+	 */
+	public function saveCar($post) {
+		
+		if (empty($post['brand_id'])) json_msg(trans('validation.required', ['attr' => trans('common.brand')]), 40001);
+		if (empty($post['model_id'])) json_msg(trans('validation.required', ['attr' => trans('common.car_model')]), 40001);
+		if (empty($post['province_id'])) json_msg(trans('validation.required', ['attr' => trans('common.province')]), 40001);
+		if (empty($post['plate_number'])) {
+			json_msg(trans('validation.required', ['attr' => trans('common.plate_number')]), 40001);
+		}
+		if (empty($post['color_id'])) json_msg(trans('validation.required', ['attr' => trans('common.color')]), 40001);
+		
+		$carId = \DB::table('car')->insertGetId($post);
+		
+		return $carId;
+	}
+	
 	/**
 	 * 获取品牌分组
 	 * @author 李小同

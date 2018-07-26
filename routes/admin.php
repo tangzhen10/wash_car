@@ -11,6 +11,9 @@ Route::group(['namespace' => 'Admin'], function () {
 	# 车辆
 	Route::group(['prefix' => 'car'], function () {
 		
+		# 客户车辆列表
+		Route::get('carList', ['uses' => 'CarController@carList', 'as' => 'carList']);
+		
 		# 品牌列表
 		Route::get('brandList', ['uses' => 'CarController@brandList', 'as' => 'brandList']);
 		# 增改品牌
