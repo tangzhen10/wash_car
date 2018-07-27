@@ -130,4 +130,19 @@ class BaseController extends Controller {
 		}
 	}
 	
+	/**
+	 * 获取每页条数
+	 * @author 李小同
+	 * @date   2018-7-27 20:47:36
+	 * @return int
+	 */
+	public function getPerPage() {
+		
+		$perPage = intval(\Request::input('perPage'));
+		
+		if ($perPage <= 0) $perPage = \SettingService::getValue('per_page');
+		
+		return $perPage;
+	}
+	
 }

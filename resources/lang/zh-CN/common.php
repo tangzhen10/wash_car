@@ -77,6 +77,7 @@ return [
 	'refresh'                  => '刷新',
 	'search'                   => '搜索',
 	'preview'                  => '预览',
+	'back'                     => '后退',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',

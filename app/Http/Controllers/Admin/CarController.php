@@ -16,13 +16,17 @@ class CarController extends BaseController {
 	public function carList() {
 		
 		$filter = [
-			'filter_id'           => \Request::input('filter_id'),
-			'filter_first_letter' => \Request::input('filter_first_letter'),
-			'filter_name'         => \Request::input('filter_name'),
-			'filter_hot'          => \Request::input('filter_hot'),
-			'perPage'             => \Request::input('perPage', \SettingService::getValue('per_page')),
+			'filter_id'      => \Request::input('filter_id'),
+			'filter_user_id' => \Request::input('filter_user_id'),
+			'filter_name'    => \Request::input('filter_name'),
+			'perPage'        => $this->getPerPage(),
 		];
-		$list   = $this->service->getBrandList($filter);
+		$list   = $this->service->getCarList($filter);
+		
+		foreach ($list['list'] as &$item) {
+			$item['plate'] = $item['province'].substr($item['plate_number'], 0, 1).'·'.substr($item['plate_number'], 1);
+		}
+		unset($item);
 		
 		$this->data['list']       = $list['list'];
 		$this->data['pagination'] = $list['listPage'];
@@ -47,7 +51,7 @@ class CarController extends BaseController {
 			'filter_first_letter' => \Request::input('filter_first_letter'),
 			'filter_name'         => \Request::input('filter_name'),
 			'filter_hot'          => \Request::input('filter_hot'),
-			'perPage'             => \Request::input('perPage', \SettingService::getValue('per_page')),
+			'perPage'             => $this->getPerPage(),
 		];
 		$list   = $this->service->getBrandList($filter);
 		
@@ -153,7 +157,7 @@ class CarController extends BaseController {
 		
 		$filter = [
 			'brand_id' => $brandId,
-			'perPage'  => \Request::input('perPage', \SettingService::getValue('per_page')),
+			'perPage'  => $this->getPerPage(),
 		];
 		$list   = $this->service->getModelList($filter);
 		
@@ -236,7 +240,7 @@ class CarController extends BaseController {
 	
 	# endregion
 	
-	# region 车牌
+	# region 省份
 	/**
 	 * 车牌省份简称
 	 * @author 李小同
@@ -247,7 +251,7 @@ class CarController extends BaseController {
 		
 		$this->data['list'] = $this->service->getProvinceList();
 		
-		return view('admin/car/plate/list', $this->data);
+		return view('admin/car/province/list', $this->data);
 	}
 	# endregion
 	

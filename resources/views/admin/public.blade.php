@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/lib/Hui-iconfont/1.0.8/iconfont.css')}}" />
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/static/h-ui.admin/css/style.css')}}" />
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/static/h-ui.admin/skin/default/skin.css')}}" id="skin" />
+	@yield('css')
 </head>
 <body>
 @include('admin.header')
@@ -23,6 +24,9 @@
 		@endforeach
 		<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="{{trans('common.refresh')}}">
 			<i class="Hui-iconfont">&#xe68f;</i>
+		</a>
+		<a class="btn btn-primary radius r mr-5" style="line-height:1.6em;margin-top:3px" href="javascript:history.back();" title="{{trans('common.back')}}">
+			<i class="Hui-iconfont">&#xe66b;</i>
 		</a>
 	</nav>
 	<div class="Hui-article">

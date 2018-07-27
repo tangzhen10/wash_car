@@ -12,6 +12,46 @@ class CarService extends BaseService {
 	
 	# region 后台
 	/**
+	 * 获取车辆列表
+	 * @param array $filter
+	 * @author 李小同
+	 * @date   2018-7-27 20:05:34
+	 * @return array
+	 */
+	public function getCarList(array $filter = []) {
+		
+		$fields   = [
+			'a.id',
+			'a.user_id',
+			'a.brand_id',
+			'a.model_id',
+			'b.nickname AS username',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS province',
+			'a.plate_number',
+			'f.name AS color',
+			'a.status',
+		];
+		$listPage = \DB::table('car AS a')
+		               ->join('user AS b', 'b.user_id', '=', 'a.user_id')
+		               ->leftJoin('car_brand AS c', 'c.id', '=', 'a.brand_id')
+		               ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
+		               ->leftJoin('car_province AS e', 'e.id', '=', 'a.province_id')
+		               ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
+		               ->select($fields);
+		
+		if (!empty($filter['filter_user_id'])) $listPage = $listPage->where('a.user_id', $filter['filter_user_id']);
+		
+		$listPage = $listPage->paginate($filter['perPage'])->appends($filter);
+		$listArr  = json_decode(json_encode($listPage), 1);
+		$total    = $listArr['total'];
+		$list     = $listArr['data'];
+		
+		return compact('list', 'listPage', 'total');
+	}
+	
+	/**
 	 * 获取品牌列表
 	 * @param array $filter
 	 * @author 李小同
@@ -45,7 +85,8 @@ class CarService extends BaseService {
 		                     ->orderBy('first_letter', 'asc')
 		                     ->orderByRaw('CONVERT(name USING gb2312) ASC')
 		                     ->orderBy('hot', 'desc')
-		                     ->paginate($filter['perPage']);
+		                     ->paginate($filter['perPage'])
+		                     ->appends($filter);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		$total    = $listArr['total'];
 		$list     = $listArr['data'];
@@ -147,7 +188,10 @@ class CarService extends BaseService {
 		# 过滤品牌
 		if (!empty($filter['brand_id'])) $listPage = $listPage->where('a.brand_id', $filter['brand_id']);
 		
-		$listPage = $listPage->where('a.status', '!=', '-1')->select($fields)->paginate($filter['perPage']);
+		$listPage = $listPage->where('a.status', '!=', '-1')
+		                     ->select($fields)
+		                     ->paginate($filter['perPage'])
+		                     ->appends($filter);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		$total    = $listArr['total'];
 		$list     = $listArr['data'];
@@ -315,8 +359,15 @@ class CarService extends BaseService {
 		if (empty($post['province_id'])) json_msg(trans('validation.required', ['attr' => trans('common.province')]), 40001);
 		if (empty($post['plate_number'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.plate_number')]), 40001);
+		} else {
+			if (!preg_match(config('project.PATTERN.PLATE'), $post['plate_number'])) {
+				json_msg(trans('validation.invalid', ['attr' => trans('common.plate_number')]), 40003);
+			}
 		}
 		if (empty($post['color_id'])) json_msg(trans('validation.required', ['attr' => trans('common.color')]), 40001);
+		
+		# 车牌大写
+		$post['plate_number'] = strtoupper($post['plate_number']);
 		
 		if (empty($post['car_id'])) {
 			

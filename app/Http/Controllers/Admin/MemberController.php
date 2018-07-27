@@ -20,13 +20,16 @@ class MemberController extends BaseController {
 	public function memberList() {
 		
 		$filter                   = [
-			'date_from' => \Request::input('filter_date_from', ''),
-			'date_to'   => \Request::input('filter_date_to', ''),
-			'account'   => \Request::input('filter_account', ''),
+			'filter_user_id'   => \Request::input('filter_user_id', ''),
+			'filter_date_from' => \Request::input('filter_date_from', ''),
+			'filter_date_to'   => \Request::input('filter_date_to', ''),
+			'filter_account'   => \Request::input('filter_account', ''),
+			'perPage'          => $this->getPerPage(),
 		];
-		$this->data['pagination'] = $this->service->getPaginationList($filter);
-		$this->data['total']      = json_decode(json_encode($this->data['pagination']), 1)['total'];
-		$this->data['members']    = $this->service->getListByPage($this->data['pagination']);
+		$list                     = $this->service->getMemberList($filter);
+		$this->data['list']       = $list['list'];
+		$this->data['pagination'] = $list['listPage'];
+		$this->data['total']      = $list['total'];
 		$this->data['filter']     = $filter;
 		
 		return view('admin/member/list', $this->data);
@@ -41,8 +44,8 @@ class MemberController extends BaseController {
 	 */
 	public function assocDataForForm($detail = []) {
 		
-		$check    = [];
-		$userId   = $detail['user_id'];
+		$check  = [];
+		$userId = $detail['user_id'];
 		
 		if ($userId == 0) json_msg(trans('error.can_not_create_member'), 40003);
 		

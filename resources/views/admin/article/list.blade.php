@@ -1,9 +1,9 @@
 @extends('admin.public')
 @section('body')
-	<div class="text-c mb-20">
-					<span>{{trans('common.article_name')}}：
-						<input class="input-text filter_input" name="filter_article_name" value="{{$filter_article_name}}" />
-					</span>
+	<div class="text-c mb-10">
+		<span>{{trans('common.article_name')}}：
+			<input class="input-text filter_input" name="filter_article_name" value="{{$filter_article_name}}" />
+		</span>
 		<span>{{trans('common.content_type')}}：
 						<select class="select-box filter_input" name="filter_content_type">
 							<option></option>
@@ -26,7 +26,7 @@
 		</span>
 		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 	</div>
-	<table class="table table-border table-bordered table-striped table-hover table-bg">
+	<table class="table table-border table-bordered table-striped table-hover table-bg mt-10">
 		<thead>
 		<tr class="text-c">
 			<th width="25"><input type="checkbox" name="" value=""></th>
@@ -94,7 +94,7 @@
 		// 筛选
 		$('.J_filter').click(function () {
 			var content_type = $('select[name="filter_content_type"]').val(),
-				article_name = $('input[name="filter_article_name"]').val();
+			    article_name = $('input[name="filter_article_name"]').val();
 			if (content_type || article_name) {
 				
 				var query_string = [];

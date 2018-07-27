@@ -59,14 +59,14 @@ class MemberService extends BaseService {
 	
 	/**
 	 * 获取前台用户
-	 * @param array $data
+	 * @param array $filter
 	 * @author 李小同
-	 * @date
-	 * @return mixed
+	 * @date   2018-7-27 22:09:23
+	 * @return array
 	 */
-	public function getPaginationList(array $data = []) {
+	public function getMemberList(array $filter = []) {
 		
-		$fields = [
+		$fields   = [
 			'a.user_id',
 			'a.nickname',
 			'a.phone',
@@ -76,44 +76,34 @@ class MemberService extends BaseService {
 			'a.last_login_at',
 			'a.last_login_ip',
 		];
-		if (empty($data['per_page'])) $data['per_page'] = \SettingService::getValue('per_page');
-		$pagination = \DB::table('user AS a')->select($fields);
-		if (!empty($data['account'])) {
-			$pagination = $pagination->where(function ($pagination) use ($data) {
+		$listPage = \DB::table('user AS a')->select($fields);
+		
+		if (!empty($filter['filter_user_id'])) $listPage = $listPage->where('user_id', '=', $filter['filter_user_id']);
+		if (!empty($filter['filter_date_from'])) $listPage = $listPage->where('create_at', '>=', strtotime($filter['filter_date_from']));
+		if (!empty($filter['filter_date_to'])) $listPage = $listPage->where('create_at', '<=', strtotime($filter['filter_date_to']));
+		if (!empty($filter['filter_account'])) {
+			$listPage = $listPage->where(function ($query) use ($filter) {
 				
-				$pagination->where('nickname', 'LIKE', '%'.$data['account'].'%')
-				           ->orWhere('phone', 'LIKE', '%'.$data['account'].'%')
-				           ->orWhere('email', 'LIKE', '%'.$data['account'].'%');
+				$query->where('nickname', 'LIKE', '%'.$filter['filter_account'].'%')
+				      ->orWhere('phone', 'LIKE', '%'.$filter['filter_account'].'%')
+				      ->orWhere('email', 'LIKE', '%'.$filter['filter_account'].'%');
 			});
 		}
-		if (!empty($data['date_from'])) $pagination = $pagination->where('create_at', '>=', strtotime($data['date_from']));
-		if (!empty($data['date_to'])) $pagination = $pagination->where('create_at', '<=', strtotime($data['date_to']));
 		
-		$pagination = $pagination->orderBy('a.user_id', 'desc')->paginate($data['per_page']);
+		$listPage = $listPage->orderBy('a.user_id', 'desc')->paginate($filter['perPage']);
+		$listArr  = json_decode(json_encode($listPage), 1);
 		
-		return $pagination;
-	}
-	
-	/**
-	 * 通过分页对象获取数据
-	 * @param $pagination DB::pagination()
-	 * @author 李小同
-	 * @date   2018-7-6 15:09:40
-	 * @return array
-	 */
-	public function getListByPage($pagination) {
+		$total = $listArr['total'];
+		$list  = $listArr['data'];
 		
-		$paginationArr = json_decode(json_encode($pagination), 1);
-		if (empty($paginationArr)) return [];
-		$list = $paginationArr['data'];
-		
+		# format
 		foreach ($list as &$item) {
 			$item['gender_text'] = trans('common.gender_'.$item['gender']);
 			$item['create_at']   = date('Y-m-d H:i:s', $item['create_at']);
 		}
 		unset($item);
 		
-		return $list;
+		return compact('list', 'listPage', 'total');
 	}
 	
 	/**

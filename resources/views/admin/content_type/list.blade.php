@@ -8,7 +8,7 @@
 		</span>
 		<span class="r">共有数据：<strong>{{count($typeList)}}</strong> 条</span>
 	</div>
-	<table class="table table-border table-bordered table-striped table-hover table-bg">
+	<table class="table table-border table-bordered table-striped table-hover table-bg mt-10">
 		<thead>
 		<tr class="text-c">
 			<th width="40">ID</th>

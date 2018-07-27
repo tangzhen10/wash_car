@@ -10,7 +10,7 @@ return [
 		'PHONE' => '/^1[34578]{1}[\d]{9}$/',
 		'EMAIL' => '/^[a-z0-9\-_\.]+[a-z0-9\-_\.]*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/',
 		'DATE'  => '/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|2\d|3[01])$/',
-		'PLATE' => '/^[A-Z][A-Za-z0-9]{6}$/', # 车牌号
+		'PLATE' => '/^[A-Z][A-Za-z0-9]{5}$/', # 车牌号
 	],
 	'ALLOW_IDENTITY_TYPE'        => ['phone'/*, 'email'*/], # 合法的注册渠道，目前只允许手机注册
 	'ADMIN_LOGIN_COOKIE'         => 'admin_log_id', # admin登录ID的cookie名

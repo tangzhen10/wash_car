@@ -1,6 +1,6 @@
 @extends('admin.public')
 @section('body')
-	<div class="text-c mb-15">
+	<div class="text-c">
 		
 		<span>ID：</span>
 		<input type="number" name="filter_id" class="input-text" style="width:80px;" value="{{$filter['filter_id']}}">
@@ -33,7 +33,7 @@
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.search')}}
 		</button>
 	</div>
-	<div class="cl pd-5 bg-1 bk-gray">
+	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		<span class="l">
 			<a href="javascript:;" onclick="layer_show('添加品牌','{{route('brandForm')}}','1000','600')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加品牌
@@ -41,7 +41,7 @@
 		</span>
 		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
 	</div>
-	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort">
+	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort mt-10">
 		<thead>
 		<tr class="text-c">
 			{{--<th width="25"><input type="checkbox"></th>--}}
