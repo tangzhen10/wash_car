@@ -56,8 +56,8 @@ function json_msg($data = '', $code = 0) {
 	} else {
 		if (is_array($data)) {
 			$result['data'] = $data;
-		} elseif (is_string($data)) {
-			$result['msg'] = $data;
+		} else {
+			$result['msg'] = (string)$data;
 		}
 	}
 	echo json_encode($result);

@@ -9,6 +9,11 @@ namespace App\Http\Controllers\Api;
  */
 class CarController extends BaseController {
 	
+	/**
+	 * 用户保存车辆
+	 * @author 李小同
+	 * @date   2018-7-27 17:40:46
+	 */
 	public function saveCar() {
 		
 		$post = request_all();
@@ -17,7 +22,7 @@ class CarController extends BaseController {
 		
 		$carId = \CarService::saveCar($post);
 		
-		json_msg($carId);
+		$this->render($carId);
 	}
 	
 	/**

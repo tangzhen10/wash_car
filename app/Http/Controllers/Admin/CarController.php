@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Services\ContentTypeService;
-
 class CarController extends BaseController {
 	
 	const MODULE = 'car';

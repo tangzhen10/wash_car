@@ -19,4 +19,19 @@ class BaseController extends Controller {
 		
 		$this->user = new UserService();
 	}
+	
+	/**
+	 * 统一返回固定格式的json
+	 * @param $res
+	 * @author 李小同
+	 * @date   2018-7-4 17:09:42
+	 */
+	public function render($res) {
+		
+		if ($res) {
+			json_msg('ok');
+		} else {
+			json_msg(trans('common.action_failed'), 40004);
+		}
+	}
 }

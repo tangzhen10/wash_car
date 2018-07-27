@@ -318,7 +318,15 @@ class CarService extends BaseService {
 		}
 		if (empty($post['color_id'])) json_msg(trans('validation.required', ['attr' => trans('common.color')]), 40001);
 		
-		$carId = \DB::table('car')->insertGetId($post);
+		if (empty($post['car_id'])) {
+			
+			$carId = \DB::table('car')->insertGetId($post);
+		} else {
+			$where = ['id' => $post['car_id']];
+			unset($post['car_id']);
+			\DB::table('car')->where($where)->update($post);
+			$carId = $where['id'];
+		}
 		
 		return $carId;
 	}
