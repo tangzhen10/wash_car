@@ -62,7 +62,7 @@ class CarController extends BaseController {
 		
 		$res = \CarService::getProvince();
 		
-		json_msg($res);
+		json_msg(['list' => $res]);
 	}
 	
 	/**
@@ -75,6 +75,6 @@ class CarController extends BaseController {
 		
 		$res = \CarService::colorList();
 		
-		json_msg($res);
+		json_msg(['list' => $res]);
 	}
 }
