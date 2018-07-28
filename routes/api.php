@@ -52,19 +52,19 @@ Route::group(['namespace' => 'Api'], function () {
 	Route::group(['prefix' => 'car'], function () {
 		
 		# 我的车辆
-		Route::match(['get', 'post'], 'myCar', ['uses' => 'CarController@myCar', 'as' => 'apiMyCar']);
+		Route::post('myCar', ['uses' => 'CarController@myCar', 'as' => 'apiMyCar']);
 		# 保存车辆
 		Route::post('save', ['uses' => 'CarController@saveCar', 'as' => 'apiSaveCar']);
 		# 删除车辆
 		Route::post('delete', ['uses' => 'CarController@deleteCar', 'as' => 'apiCarDelete']);
 		# 品牌
-		Route::match(['get', 'post'], 'brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
+		Route::post('brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
 		# 车型
-		Route::match(['get', 'post'], 'model/{brand_id}', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
+		Route::post('model/{brand_id}', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
 		# 车牌省份
-		Route::match(['get', 'post'], 'province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
+		Route::post('province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
 		# 颜色
-		Route::match(['get', 'post'], 'color', ['uses' => 'CarController@color', 'as' => 'apiCarColor']);
+		Route::post('color', ['uses' => 'CarController@color', 'as' => 'apiCarColor']);
 	
 	});
 	

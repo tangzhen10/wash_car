@@ -12,17 +12,71 @@ namespace App\Services;
 class ToolService {
 	
 	private $_validSMSCodeUseTypes = [
+		'login', # 手机号登录
 		'register', # 注册
-		'bind_phone', # 绑定手机号码
 	];
 	
+	/**
+	 * 发送短信验证码
+	 * @author 李小同
+	 * @date   2018-7-28 13:41:50
+	 * @return bool
+	 */
 	public function sendSMSCode() {
 		
-		$this->_validation();
+		$phoneInfo = $this->_validation();
 		
-		# todo lxt 发送验证码 & 根据使用用途，在redis里生成有效期的验证码
+		$code = $this->createVerifyCode($phoneInfo);
+		
+		# todo lxt sendCode
+		$res = '本次验证码为：'.$code;
+		
+		return $res;
 	}
 	
+	/**
+	 * 创建验证码
+	 * @param array $phoneInfo
+	 * @author 李小同
+	 * @date   2018-7-28 13:42:07
+	 * @return string
+	 */
+	public function createVerifyCode(array $phoneInfo) {
+		
+		$code = '';
+		for ($i = 0; $i < $phoneInfo['codeLength']; $i++) $code .= rand(0, 9);
+		
+		$phone    = $phoneInfo['phone'];
+		$useType  = $phoneInfo['useType'];
+		$cacheKey = sprintf(config('cache.VERIFY_CODE.'.strtoupper($useType)), $phone);
+		redisSet($cacheKey, $code);
+		
+		return $code;
+	}
+	
+	/**
+	 * 获取验证码
+	 * @param array $phoneInfo
+	 * @author 李小同
+	 * @date   2018-7-28 15:31:06
+	 * @return bool|mixed
+	 */
+	public function getVerifyCodeCacheKey(array $phoneInfo) {
+		
+		$phone    = $phoneInfo['phone'];
+		$useType  = $phoneInfo['useType'];
+		$cacheKey = sprintf(config('cache.VERIFY_CODE.'.strtoupper($useType)), $phone);
+		
+		return $cacheKey;
+	}
+	
+	/**
+	 * 上传文件
+	 * @param $files Request::file()
+	 * @author 李小同
+	 * @date   2018-7-15 11:17:38
+	 * @return string
+	 */
 	public static function uploadFiles($files) {
 		
 		$file = $files;
@@ -44,7 +98,7 @@ class ToolService {
 		
 		# 转移临时文件到存盘目录
 		# $originalName = $file->getClientOriginalName();
-		$fileName     = time().rand(11392, 92192).'.'.$type;
+		$fileName = time().rand(11392, 92192).'.'.$type;
 		if (!$file->move($uploadStoragePath, $fileName)) die(json_encode(['error' => '保存文件失败！']));
 		
 		# 缩略图
@@ -72,16 +126,20 @@ class ToolService {
 		# 验证是否是合法的使用用途
 		if (!in_array($useType, $this->_validSMSCodeUseTypes)) json_msg(trans('error.illegal_param'), 40003);
 		
+		$codeLength = 6;
 		switch ($useType) {
 			case 'register' :
 				# 验证手机号是否被注册
-				\UserService::checkExistIdentity('phone', $phone);
+				$res = \UserService::checkExistIdentity('phone', $phone);
+				if ($res) json_msg(trans('validation.has_been_registered', ['attr' => trans('common.phone')]), 40002);
 				break;
-			case 'bind_phone':
-				# todo lxt
+			case 'login':
+				# 验证手机号是否已注册
+				$res = \UserService::checkExistIdentity('phone', $phone);
+				if (!$res) json_msg(trans('validation.not_registered', ['attr' => trans('common.phone')]), 50001);
 				break;
 		}
 		
-		return true;
+		return compact('phone', 'useType', 'codeLength');
 	}
 }

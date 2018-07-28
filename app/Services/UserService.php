@@ -72,6 +72,19 @@ class UserService {
 		$identityType = $data['identityType'];
 		$identity     = $data['account'];
 		$password     = $data['password'];
+		$verifyCode   = \Request::input('verify_code');
+		if ($identityType == 'phone') {
+			$phoneInfo = [
+				'phone'   => $identity,
+				'useType' => 'register',
+			];
+			$cacheKey  = \ToolService::getVerifyCodeCacheKey($phoneInfo);
+			if ($verifyCode != redisGet($cacheKey)) {
+				json_msg(trans('error.wrong_verify_code'), 40001);
+			} else {
+				redisDel($cacheKey); # 验证通过，清除验证码
+			}
+		}
 		
 		# 检查渠道是否允许注册
 		if (!in_array($identityType, config('project.ALLOW_IDENTITY_TYPE'))) {
@@ -108,7 +121,7 @@ class UserService {
 			'identity_type' => $identityType,
 			'identity'      => $identity,
 		];
-		$row   = \DB::table('user_auth')->where($where)->pluck('user_id');
+		$row   = \DB::table('user_auth')->where($where)->pluck('user_id')->toArray();
 		
 		return count($row) ? $row[0] : false;
 	}

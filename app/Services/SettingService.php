@@ -71,6 +71,12 @@ class SettingService extends BaseService {
 		return redisDel($cacheKey);
 	}
 	
+	/**
+	 * 获取首页的一些统计信息
+	 * @author 李小同
+	 * @date   2018-7-28 15:06:38
+	 * @return array
+	 */
 	public function getTotalInfo() {
 		
 		# 版块

@@ -39,6 +39,7 @@ class CarService extends BaseService {
 		               ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
 		               ->leftJoin('car_province AS e', 'e.id', '=', 'a.province_id')
 		               ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
+		               ->where('a.status', '1')
 		               ->select($fields);
 		
 		if (!empty($filter['filter_user_id'])) $listPage = $listPage->where('a.user_id', $filter['filter_user_id']);
