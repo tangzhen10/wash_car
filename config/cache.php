@@ -99,5 +99,10 @@ return [
 	'TABLE_COLUMN'         => env('APP_NAME').':table_column:%s@604800', # 表结构字段
 	'CONTENT_TYPE'         => env('APP_NAME').':content_type:%s@604800', # 文档类型结构
 	'SETTING'              => env('APP_NAME').':setting:%s@604800', # 系统配置
+	'CAR'                  => [
+		'BRAND'    => env('APP_NAME').':car:brand@604800', # 品牌
+		'PROVINCE' => env('APP_NAME').':car:province@604800', # 车牌省份
+		'COLOR'    => env('APP_NAME').':car:color@604800', # 颜色
+	],
 
 ];

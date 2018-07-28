@@ -19,5 +19,6 @@ return [
 	'has_sub_permission'             => '该权限下存在子权限！',
 	'support_register_identity_type' => '抱歉，目前仅支持:type！',
 	'can_not_create_member'          => '不允许创建用户！',
+	'not_your_car'                   => '抱歉，这不是您的车辆，您无法操作！',
 
 ];

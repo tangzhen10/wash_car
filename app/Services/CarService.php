@@ -345,6 +345,42 @@ class CarService extends BaseService {
 	# endregion
 	
 	# region 前台
+	
+	/**
+	 * 获取我的列表
+	 * @author 李小同
+	 * @date   2018-7-28 10:50:20
+	 * @return array
+	 */
+	public function getMyCarList() {
+		
+		$fields = [
+			'a.id AS car_id',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS province',
+			'a.plate_number',
+			'f.name AS color',
+		];
+		$list   = \DB::table('car AS a')
+		             ->join('user AS b', 'b.user_id', '=', 'a.user_id')
+		             ->leftJoin('car_brand AS c', 'c.id', '=', 'a.brand_id')
+		             ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
+		             ->leftJoin('car_province AS e', 'e.id', '=', 'a.province_id')
+		             ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
+		             ->where('a.user_id', $this->userId)
+		             ->where('a.status', '1')
+		             ->get($fields)
+		             ->toArray();
+		foreach ($list as &$item) {
+			$item['plate'] = $item['province'].$item['plate_number'];
+			unset($item['province'], $item['plate_number']);
+		}
+		unset($item);
+		
+		return $list;
+	}
+	
 	/**
 	 * 保存客户车辆
 	 * @param $post
@@ -353,6 +389,8 @@ class CarService extends BaseService {
 	 * @return int 车辆id
 	 */
 	public function saveCar($post) {
+		
+		if (!empty($post['car_id'])) $this->_checkCar($post['car_id']);
 		
 		if (empty($post['brand_id'])) json_msg(trans('validation.required', ['attr' => trans('common.brand')]), 40001);
 		if (empty($post['model_id'])) json_msg(trans('validation.required', ['attr' => trans('common.car_model')]), 40001);
@@ -368,6 +406,7 @@ class CarService extends BaseService {
 		
 		# 车牌大写
 		$post['plate_number'] = strtoupper($post['plate_number']);
+		$post['user_id']      = $this->userId;
 		
 		if (empty($post['car_id'])) {
 			
@@ -383,6 +422,26 @@ class CarService extends BaseService {
 	}
 	
 	/**
+	 * 用户删除车辆
+	 * @param $carId
+	 * @author 李小同
+	 * @date   2018-7-28 11:16:03
+	 * @return mixed
+	 */
+	public function deleteCar($carId) {
+		
+		$this->_checkCar($carId);
+		
+		$where = [
+			'user_id' => $this->userId,
+			'id'      => intval($carId),
+		];
+		$res   = \DB::table('car')->where($where)->update(['status' => '-1']);
+		
+		return $res;
+	}
+	
+	/**
 	 * 获取品牌分组
 	 * @author 李小同
 	 * @date   2018-7-23 21:58:39
@@ -390,35 +449,40 @@ class CarService extends BaseService {
 	 */
 	public function getBrandGroup() {
 		
-		$rows = \DB::table('car_brand')
-		           ->where('status', '1')
-		           ->orderBy('hot', 'desc')
-		           ->orderByRaw('CONVERT(name USING gb2312) ASC')
-		           ->get()
-		           ->toArray();
-		$hot  = [];
-		$list = [];
-		foreach ($rows as $row) {
-			$row['logo'] = \URL::asset($row['logo']);
-			unset($row['status'], $row['status_text'], $row['name_en']);
-			if ($row['hot']) $hot[] = $row;
-			if (empty($row['first_letter'])) $row['first_letter'] = '#';
-			$list[$row['first_letter']][] = $row;
-		}
-		$hot = array_slice($hot, 0, 10);
-		ksort($list);
-		
-		$groups = [];
-		foreach ($list as $key => $item) {
-			$groups[] = [
-				'title' => $key,
-				'list'  => $item,
+		$cacheKey = config('cache.CAR.BRAND');
+		$res      = redisGet($cacheKey);
+		if (false === $res) {
+			$rows = \DB::table('car_brand')
+			           ->where('status', '1')
+			           ->orderBy('hot', 'desc')
+			           ->orderByRaw('CONVERT(name USING gb2312) ASC')
+			           ->get()
+			           ->toArray();
+			$hot  = [];
+			$list = [];
+			foreach ($rows as $row) {
+				$row['logo'] = \URL::asset($row['logo']);
+				unset($row['status'], $row['status_text'], $row['name_en']);
+				if ($row['hot']) $hot[] = $row;
+				if (empty($row['first_letter'])) $row['first_letter'] = '#';
+				$list[$row['first_letter']][] = $row;
+			}
+			$hot = array_slice($hot, 0, 10);
+			ksort($list);
+			
+			$groups = [];
+			foreach ($list as $key => $item) {
+				$groups[] = [
+					'title' => $key,
+					'list'  => $item,
+				];
+			}
+			$res = [
+				'hot' => $hot,
+				'all' => $groups,
 			];
+			redisSet($cacheKey, $res);
 		}
-		$res = [
-			'hot' => $hot,
-			'all' => $groups,
-		];
 		
 		return $res;
 	}
@@ -450,20 +514,54 @@ class CarService extends BaseService {
 	 */
 	public function getProvince() {
 		
-		$list = \DB::table('car_province')->get(['id', 'name'])->toArray();
+		$cacheKey = config('cache.CAR.PROVINCE');
+		$list     = redisGet($cacheKey);
+		if (false === $list) {
+			$list = \DB::table('car_province')->get(['id', 'name'])->toArray();
+			redisSet($cacheKey, $list);
+		}
 		
 		return $list;
 	}
 	
+	/**
+	 * 获取车辆颜色列表
+	 * @author 李小同
+	 * @date   2018-7-28 11:56:02
+	 * @return bool|mixed
+	 */
 	public function colorList() {
 		
-		$list = \DB::table('car_color')->get(['id', 'name', 'code'])->toArray();
-		foreach ($list as &$item) {
-			$item['code'] = '#'.$item['code'];
+		$cacheKey = config('cache.CAR.COLOR');
+		$list     = redisGet($cacheKey);
+		if (false === $list) {
+			$list = \DB::table('car_color')->get(['id', 'name', 'code'])->toArray();
+			foreach ($list as &$item) {
+				$item['code'] = '#'.$item['code'];
+			}
+			unset($item);
+			redisSet($cacheKey, $list);
 		}
-		unset($item);
 		
 		return $list;
+	}
+	
+	/**
+	 * 检测车辆是否属于当前用户
+	 * @param $carId
+	 * @author 李小同
+	 * @date   2018-7-28 11:27:42
+	 */
+	private function _checkCar($carId) {
+		
+		$where = [
+			'user_id' => $this->userId,
+			'id'      => intval($carId),
+			'status'  => '1',
+		];
+		$count = \DB::table('car')->where($where)->count('id');
+		
+		if ($count == 0) json_msg(trans('error.not_your_car'), 40003);
 	}
 	
 	# endregion

@@ -75,6 +75,7 @@ class CarController extends BaseController {
 		if (\Request::getMethod() == 'POST') {
 			
 			$brandId = $this->service->handleBrandForm();
+			if ($brandId) redisDel(config('cache.CAR.BRAND'));
 			$this->render($brandId);
 			
 		} else {
@@ -141,6 +142,7 @@ class CarController extends BaseController {
 		$brandId = \Request::input('id');
 		$status  = \Request::input('status');
 		$res     = $this->service->easyChangeStatus('car_brand', $brandId, $status);
+		if ($res) redisDel(config('cache.CAR.BRAND'));
 		$this->render($res);
 	}
 	# endregion
@@ -280,8 +282,9 @@ class CarController extends BaseController {
 		
 		if (\Request::getMethod() == 'POST') {
 			
-			$modelId = $this->service->handleColorForm();
-			$this->render($modelId);
+			$colorId = $this->service->handleColorForm();
+			if ($colorId) redisDel(config('cache.CAR.COLOR'));
+			$this->render($colorId);
 			
 		} else {
 			
@@ -330,6 +333,7 @@ class CarController extends BaseController {
 		$colorId = \Request::input('id');
 		$status  = \Request::input('status');
 		$res     = $this->service->easyChangeStatus('car_color', $colorId, $status);
+		if ($res) redisDel(config('cache.CAR.COLOR'));
 		$this->render($res);
 	}
 	# endregion

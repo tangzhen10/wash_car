@@ -39,6 +39,9 @@ function json_msg($data = '', $code = 0) {
 	
 	header('charset:utf-8');
 	header('X-powered-by:ahulxt/wm');
+	header('token:'.\UserService::getToken());
+	header('login:'.\UserService::isLogin());
+	
 	if ($code > 0 && empty(\Request::header('vfrom'))) {
 		die('<script>alert(\''.(string)$data.'\');history.back();</script>');
 	}

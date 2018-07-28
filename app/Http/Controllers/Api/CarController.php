@@ -10,6 +10,18 @@ namespace App\Http\Controllers\Api;
 class CarController extends BaseController {
 	
 	/**
+	 * 我的车辆
+	 * @author 李小同
+	 * @date   2018-7-28 10:54:31
+	 */
+	public function myCar() {
+		
+		$carList = \CarService::getMyCarList();
+		
+		json_msg(['list' => $carList]);
+	}
+	
+	/**
 	 * 用户保存车辆
 	 * @author 李小同
 	 * @date   2018-7-27 17:40:46
@@ -18,11 +30,23 @@ class CarController extends BaseController {
 		
 		$post = request_all();
 		
-		$post['user_id'] = $this->user->userId;
-		
 		$carId = \CarService::saveCar($post);
 		
 		$this->render($carId);
+	}
+	
+	/**
+	 * 移除车辆
+	 * @author 李小同
+	 * @date   2018-7-28 11:24:03
+	 */
+	public function deleteCar() {
+		
+		$carId = \Request::input('car_id');
+		
+		$res = \CarService::deleteCar($carId);
+		
+		$this->render($res);
 	}
 	
 	/**

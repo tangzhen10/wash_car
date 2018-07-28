@@ -10,7 +10,10 @@ namespace App\Services;
 
 class BaseService {
 	
-	protected $module = '';
+	public $module = '';
+	public $userId = 0;
+	
+	public function __construct() { $this->userId = \UserService::getUserId(); }
 	
 	/**
 	 * 获取详情

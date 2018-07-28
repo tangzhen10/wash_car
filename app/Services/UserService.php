@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId   = 0;
+	public $userId = 0;
 	public $nickname = 0;
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -23,7 +23,7 @@ class UserService {
 	 */
 	public function __construct() {
 		
-		$token = \Request::header('token', '');
+		$token = $this->getToken();
 		if ($token) {
 			$cacheKey = sprintf(config('cache.USER_INFO'), $token);
 			$userInfo = redisGet($cacheKey);
@@ -36,6 +36,17 @@ class UserService {
 				$this->nickname = $userInfo['nickname'];
 			}
 		}
+	}
+	
+	/**
+	 * 获取客户端会话token
+	 * @author 李小同
+	 * @date   2018-7-28 11:21:30
+	 * @return string
+	 */
+	public function getToken() {
+		
+		return \Request::header('token', '');
 	}
 	
 	/**
@@ -211,6 +222,17 @@ class UserService {
 		redisSet($cacheKey, $userInfo);
 		
 		return $userInfo;
+	}
+	
+	/**
+	 * 获取用户id
+	 * @author 李小同
+	 * @date   2018-7-28 10:56:17
+	 * @return int|mixed
+	 */
+	public function getUserId() {
+		
+		return $this->userId;
 	}
 	
 	/**
