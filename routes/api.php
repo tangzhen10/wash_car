@@ -37,17 +37,6 @@ Route::group(['namespace' => 'Api'], function () {
 		
 	});
 	
-	# 微信
-	Route::group(['prefix' => 'wechat'], function () {
-		
-		# 获取access_token
-		Route::get('baseAccessToken', ['uses' => 'WechatController@baseAccessToken', 'as' => 'apiWechatBaseAccessToken']);
-		# 获取openid
-		Route::get('openid', ['uses' => 'WechatController@getAccessTokenAndOpenId', 'as' => 'apiWechatOpenid']);
-		# 获取用户信息
-		Route::get('userinfo', ['uses' => 'WechatController@getUserInfo', 'as' => 'apiWechatUserInfo']);
-	});
-	
 	# 车辆
 	Route::group(['prefix' => 'car'], function () {
 		
@@ -65,7 +54,19 @@ Route::group(['namespace' => 'Api'], function () {
 		Route::post('province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
 		# 颜色
 		Route::post('color', ['uses' => 'CarController@color', 'as' => 'apiCarColor']);
+		# 预约时间段
+		Route::post('time', ['uses' => 'CarController@washTime', 'as' => 'apiWashTime']);
+		
+	});
 	
+	# 产品
+	Route::group(['prefix' => 'product'], function () {
+		
+		# 洗车服务列表
+		Route::post('washList', ['uses' => 'ProductController@washList', 'as' => 'apiWashList']);
+		# 洗车服务详情
+		Route::post('washDetail', ['uses' => 'ProductController@washDetail', 'as' => 'apiWashDetail']);
+		
 	});
 	
 });

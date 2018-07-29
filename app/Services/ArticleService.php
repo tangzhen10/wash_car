@@ -269,28 +269,13 @@ class ArticleService extends BaseService {
 	 */
 	public function getArticleList(array $filter = []) {
 		
-		$where = ['status' => '1'];
-		if (!empty($filter['content_type'])) {
-			$where['content_type'] = intval($filter['content_type']);
-		} else {
-			json_msg('必须指定一种文档类型', 40001);
-		}
-		
-		# 公共属性
-		
-		$now      = time();
-		$articles = \DB::table('article')->where($where)->where(function ($query) use ($now) {
-			
-			$query->where('start_time', 0)->orWhere('start_time', '<=', $now);
-		})->where(function ($query) use ($now) {
-			
-			$query->where('end_time', 0)->orWhere('end_time', '>=', $now);
-		});
+		$articles = $this->getArticlePublicInfo($filter);
 		
 		# 按article_id筛选
 		if (isset($filter['article_id_arr'])) $articles = $articles->whereIn('id', $filter['article_id_arr']);
 		
-		$articles = $articles->orderBy('sort', 'desc')->orderBy('id', 'desc')->get()->toArray();
+		$fields   = ['id', 'name', 'sub_name'];
+		$articles = $articles->orderBy('sort', 'desc')->orderBy('id', 'desc')->get($fields)->toArray();
 		
 		# 私有属性
 		$privateFields = \ContentTypeService::getDetailById($filter['content_type'], true);
@@ -330,5 +315,50 @@ class ArticleService extends BaseService {
 		
 		return $articles;
 	}
+	
+	/**
+	 * 获取文章公共属性（基本信息）
+	 * @param array $filter
+	 * @author 李小同
+	 * @date   2018-7-29 11:53:23
+	 * @return array
+	 */
+	public function getArticleBaseInfo(array $filter = []) {
+		
+		$articles = $this->getArticlePublicInfo($filter);
+		$articles = $articles->orderBy('sort', 'desc')->orderBy('id', 'desc')->get(['id', 'name'])->toArray();
+		
+		return $articles;
+	}
+	
+	/**
+	 * 获取文章公共属性（基本信息）
+	 * @param array $filter
+	 * @author 李小同
+	 * @date   2018-7-29 11:53:23
+	 * @return array
+	 */
+	public function getArticlePublicInfo(array $filter = []) {
+		
+		$where = ['status' => '1'];
+		if (!empty($filter['content_type'])) {
+			$where['content_type'] = intval($filter['content_type']);
+		} else {
+			json_msg('必须指定一种文档类型', 40001);
+		}
+		
+		# 公共属性
+		$now      = time();
+		$articles = \DB::table('article')->where($where)->where(function ($query) use ($now) {
+			
+			$query->where('start_time', 0)->orWhere('start_time', '<=', $now);
+		})->where(function ($query) use ($now) {
+			
+			$query->where('end_time', 0)->orWhere('end_time', '>=', $now);
+		});
+		
+		return $articles;
+	}
+	
 	# endregion
 }

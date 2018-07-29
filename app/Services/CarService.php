@@ -536,9 +536,15 @@ class CarService extends BaseService {
 		$cacheKey = config('cache.CAR.COLOR');
 		$list     = redisGet($cacheKey);
 		if (false === $list) {
-			$list = \DB::table('car_color')->get(['id', 'name', 'code'])->toArray();
+			$fields = ['id', 'name', 'code'];
+			$list   = \DB::table('car_color')
+			             ->where('status', '1')
+			             ->orderBy('id', 'desc')
+			             ->limit(12)
+			             ->get($fields)
+			             ->toArray();
 			foreach ($list as &$item) {
-				$item['code'] = '#'.$item['code'];
+				if ($item['id']) $item['code'] = '#'.$item['code'];
 			}
 			unset($item);
 			redisSet($cacheKey, $list);

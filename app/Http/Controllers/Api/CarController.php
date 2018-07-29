@@ -106,4 +106,40 @@ class CarController extends BaseController {
 		
 		json_msg(['list' => $res]);
 	}
+	
+	/**
+	 * 预约时间段
+	 * @author 李小同
+	 * @date   2018-7-28 21:21:52
+	 * @return array
+	 */
+	public function washTime() {
+		
+		$todayText    = trans('common.today');
+		$tomorrowText = trans('common.tomorrow');
+		$timeList     = [
+			date('Y-m-d 00:00:00')                         => $todayText.' 00:00-01:00',
+			date('Y-m-d 01:00:00')                         => $todayText.' 01:00-02:00',
+			date('Y-m-d 21:00:00')                         => $todayText.' 21:00-22:00',
+			date('Y-m-d 22:00:00')                         => $todayText.' 22:00-23:00',
+			date('Y-m-d 23:00:00')                         => $todayText.' 23:00-24:00',
+			date('Y-m-d', strtotime('+1 day')).' 00:00:00' => $tomorrowText.' 00:00-01:00',
+			date('Y-m-d', strtotime('+1 day')).' 01:00:00' => $tomorrowText.' 01:00-02:00',
+		];
+		
+		$now      = date('Y-m-d H:i:s');
+		$am2clock = date('Y-m-d 02:00:00'); # 今天2点
+		
+		foreach ($timeList as $key => $item) {
+			
+			if ($now < $am2clock && $am2clock < $key) {
+				unset($timeList[$key]);
+			}
+			if ($now > $key) {
+				unset($timeList[$key]);
+			}
+		}
+		
+		json_msg(['list' => array_values($timeList)]);
+	}
 }

@@ -213,7 +213,7 @@ function redisDel($key, $database = 'default') {
  * @date   2018-7-13 22:29:49
  * @return bool
  */
-function is_weixin() {
+function is_wechat() {
 	
 	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
 		return true;

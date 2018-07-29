@@ -6,7 +6,6 @@ class CarController extends BaseController {
 	
 	const MODULE = 'car';
 	
-	# region 客户车辆
 	/**
 	 * 客户车辆列表
 	 * @author 李小同
@@ -35,7 +34,19 @@ class CarController extends BaseController {
 		
 		return view('admin/car/car/list', $this->data);
 	}
-	# endregion
+	
+	/**
+	 * 车牌省份简称
+	 * @author 李小同
+	 * @date   2018-7-26 16:21:29
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function provinceList() {
+		
+		$this->data['list'] = $this->service->getProvinceList();
+		
+		return view('admin/car/province/list', $this->data);
+	}
 	
 	# region 品牌brand
 	/**
@@ -188,7 +199,7 @@ class CarController extends BaseController {
 		} else {
 			
 			$brandId = \Request::input('brand_id');
-			$brand   = $this->getBrandDetailById($brandId);
+			$brand   = $this->service->getBrandDetailById($brandId);
 			if (empty($brand)) json_msg(trans('error.illegal_param'), 40001);
 			
 			$structure          = [
@@ -240,21 +251,6 @@ class CarController extends BaseController {
 		$this->render($res);
 	}
 	
-	# endregion
-	
-	# region 省份
-	/**
-	 * 车牌省份简称
-	 * @author 李小同
-	 * @date   2018-7-26 16:21:29
-	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-	 */
-	public function provinceList() {
-		
-		$this->data['list'] = $this->service->getProvinceList();
-		
-		return view('admin/car/province/list', $this->data);
-	}
 	# endregion
 	
 	# region 颜色color

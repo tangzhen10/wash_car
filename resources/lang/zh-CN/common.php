@@ -39,6 +39,8 @@ return [
 	'upper_letter'             => '大写字母',
 	'int'                      => '整数',
 	'per_page'                 => '每页条数',
+	'today'                    => '今天',
+	'tomorrow'                 => '明天',
 	
 	# 车辆
 	'brand'                    => '品牌',

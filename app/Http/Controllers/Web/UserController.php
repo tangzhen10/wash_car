@@ -12,7 +12,7 @@ class UserController extends Controller {
 		
 		$pageTitle = '个人中心';
 		
-		if (is_weixin()) {
+		if (is_wechat()) {
 			
 			$flagLogin = false;
 			
