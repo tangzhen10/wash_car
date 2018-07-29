@@ -51,7 +51,9 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<strong class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>{{trans('common.type')}}：</strong>
+				<strong class="form-label col-xs-4 col-sm-2">
+					<span class="c-red">*</span>{{trans('common.type')}}：
+				</strong>
 				<div class="formControls col-xs-8 col-sm-10">
 					<span class="skin-minimal form_value">
 						<span class="radio-box">
@@ -165,12 +167,12 @@
 			
 			@if (!$detail['id'])
 				$('.J_add_row').click();
-				if ($('input[name="type"]:checked').val() == '1') {
-					$('tbody tr:first input[name="field_name_text[]"]').val('产品池');
-					$('tbody tr:first select[name="field_type[]"]').val('articlepond');
-					$('tbody tr:first input[name="field_name[]"]').val('article_list');
-					$('tbody tr:first input[name="field_value[]"]').val('多篇文章用英文逗号隔开，如36,37,34,35，前台将按所填的文章id排序');
-				}
+			if ($('input[name="type"]:checked').val() == '1') {
+				$('tbody tr:first input[name="field_name_text[]"]').val('产品池');
+				$('tbody tr:first select[name="field_type[]"]').val('articlepond');
+				$('tbody tr:first input[name="field_name[]"]').val('article_list');
+				$('tbody tr:first input[name="field_value[]"]').val('多篇文章用英文逗号隔开，如36,37,34,35，前台将按所填的文章id排序');
+			}
 			@endif
 			
 			// 移除

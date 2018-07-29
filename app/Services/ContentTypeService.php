@@ -223,7 +223,9 @@ class ContentTypeService extends BaseService {
 		if (!empty($contentType['structure'])) {
 			foreach ($contentType['structure'] as $field) {
 				
-				$value    = isset($article['detail'][$field['name']]) ? $article['detail'][$field['name']] : ($field['type'] == 'checkbox' ? [] : '');
+				$value = in_array($field['type'], ['checkbox', 'images']) ? [] : '';
+				if (isset($article['detail'][$field['name']])) $value = $article['detail'][$field['name']];
+				
 				$funcName = $field['type'].'FormElement';
 				if (method_exists($this, $funcName)) $html .= $this->$funcName($field, $value, $id);
 			}
@@ -279,7 +281,7 @@ class ContentTypeService extends BaseService {
 		$html = '<p>
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<input type="number" class="input-text radius form_value_row" placeholder="'.$field['value'].'" 
-							name="'.$field['name'].'" value="'.$value.'" />
+							name="'.$field['name'].'" value="'.$value.'" style="width: 200px;" />
 				</p>';
 		
 		return $html;
@@ -457,27 +459,19 @@ class ContentTypeService extends BaseService {
 		$html = '<p class="J_image">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<span class="btn-upload form-group">
-						<input class="input-text upload-url radius" type="text" style="width: 600px" 
-						name="uploadfile_'.$field['name'].'" readonly value="'.$value.'">
+						<input class="input-text upload-url radius" type="text" style="width: 600px" value="'.$value.'"   
+							   name="uploadfile_'.$field['name'].'" readonly placeholder="'.$field['value'].'">
 						<a href="javascript:void();" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
 						</a>
 						<input type="file" name="'.$field['name'].'" class="input-file">
 					</span>
-					<span class="J_image_preview" style="padding: 5px 0 0 15%;display: block;">';
-		if ($value) {
-			$html .= '<img src="'.\URL::asset($value).'" style="max-width: 400px;max-height: 300px;box-shadow: #ccc 1px 1px 5px;margin : 0 5px" />';
-		}
+					<span class="J_image_preview">';
+		if ($value) $html .= '<img src="'.\URL::asset($value).'" />';
 		
 		$html .= '</span></p>';
-		$imgCss = '{
-						\'max-width\' : \'400px\', 
-						\'max-height\' : \'300px\',
-						\'box-shadow\': \'#ccc 1px 1px 5px\',
-						\'margin\' : \'0 5px\',
-					}';
 		$html .= '<script>
-						$(\'input[name="'.$field['name'].'"]\').change(function () {
+					$(\'input[name="'.$field['name'].'"]\').change(function () {
 				
 						var files = this.files   // 获取input上传的图片数据;						
 						$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(\'\');
@@ -485,7 +479,6 @@ class ContentTypeService extends BaseService {
 							var img = new Image();						
 							url = window.URL.createObjectURL(files[i])  // 得到bolb对象路径，可当成普通的文件路径一样使用，赋值给src;
 							img.src = url;						
-							$(img).css('.$imgCss.');
 							$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(img);
 						}
 					});
@@ -496,49 +489,39 @@ class ContentTypeService extends BaseService {
 	
 	/**
 	 * 多图
-	 * @param array  $field
-	 * @param string $value
+	 * @param array $field
+	 * @param array $value
 	 * @author 李小同
 	 * @date   2018-7-15 08:22:53
 	 * @return string
 	 */
-	public function multiImageFormElement(array $field, $value = '') {
+	public function imagesFormElement(array $field, $value = []) {
 		
-		$html = '<p>
+		$html = '<p class="J_image">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<span class="btn-upload form-group">
-						<input class="input-text upload-url radius" type="text" name="uploadfile" id="uploadfile-1" readonly value="'.$value.'">
+						<input class="input-text upload-url radius" type="text" style="width: 600px" value="'.implode(',', $value).'"   
+							   name="uploadfile_'.$field['name'].'" readonly placeholder="'.$field['value'].'">
 						<a href="javascript:void();" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
 						</a>
-						<input type="file" multiple name="'.$field['name'].'" class="input-file">
+						<input type="file" multiple name="'.$field['name'].'[]" class="input-file">
 					</span>
-					<div class="J_image_preview" style="padding-left: 10%"></div>
-				</p>';
-		
+					<span class="J_image_preview">';
 		if ($value) {
-			$imgCss = '{
-				\'max-width\' : \'400px\', 
-				\'max-height\' : \'300px\',
-				\'box-shadow\': \'#ccc 1px 1px 5px\',
-				\'margin\' : \'0 5px\',
-			}';
-			$html .= '<script>
-						var img = new Image();
-						$(img).attr(\'src\', \''.\URL::asset($value).'\').css('.$imgCss.');
-						$(\'.J_image_preview\').html(img);
-						</script>';
+			foreach ($value as $src) $html .= '<img src="'.\URL::asset($src).'" />';
 		}
+		
+		$html .= '</span></p>';
 		$html .= '<script>
-						$(\'input[name="'.$field['name'].'"]\').change(function () {
+					$(\'input[name="'.$field['name'].'[]"]\').change(function () {
 				
 						var files = this.files   // 获取input上传的图片数据;						
-						$(\'.J_image_preview\').html(\'\');
+						$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(\'\');
 						for(var i = 0; i < files.length; i++) {
-							var img = new Image();						
-							url = window.URL.createObjectURL(files[i])  // 得到bolb对象路径，可当成普通的文件路径一样使用，赋值给src;
-							img.src = url;						
-							$(img).css('.$imgCss.');
+							var img = new Image(),						
+								url = window.URL.createObjectURL(files[i]); // 得到对象路径，可当成普通的文件路径一样使用，赋值给src;
+							img.src = url;			
 							$(\'.J_image_preview\').append(img);
 						}
 					});

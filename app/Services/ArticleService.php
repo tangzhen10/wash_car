@@ -44,7 +44,7 @@ class ArticleService extends BaseService {
 			$contentTypeId = $detail['content_type'];
 			$contentType   = \ContentTypeService::getDetailById($contentTypeId);
 			foreach ($contentType['structure'] as $field) {
-				if ($field['type'] == 'checkbox') {
+				if (in_array($field['type'], ['checkbox', 'images'])) {
 					if (empty($detail['detail'][$field['name']])) $detail['detail'][$field['name']] = '';
 					$detail['detail'][$field['name']] = explode(',', $detail['detail'][$field['name']]);
 				}
@@ -137,6 +137,7 @@ class ArticleService extends BaseService {
 						$value = implode(',', $value);
 						break;
 					case 'image':
+					case 'images':
 						if (empty($value)) {
 							$value = $data['uploadfile_'.$name];
 						} else {

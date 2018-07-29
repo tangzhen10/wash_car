@@ -97,6 +97,23 @@ class CarService extends BaseService {
 	}
 	
 	/**
+	 * 获取所有的品牌
+	 * @author 李小同
+	 * @date   2018-7-29 22:39:29
+	 * @return mixed
+	 */
+	public function getAllBrand() {
+		
+		$list = \DB::table('car_brand')
+		           ->where('status', '1')
+		           ->orderBy('first_letter', 'asc')
+		           ->orderByRaw('CONVERT(name USING gb2312) ASC')
+		           ->get(['id', 'name'])
+		           ->toArray();
+		return $list;
+	}
+	
+	/**
 	 * 获取品牌详情
 	 * @param $id
 	 * @author 李小同
@@ -212,7 +229,10 @@ class CarService extends BaseService {
 		
 		if ($id > 0) {
 			
-			$detail = \DB::table('car_model')->where('id', $id)->first();
+			$detail = \DB::table('car_model AS a')
+			             ->join('car_brand AS b', 'b.id', '=', 'a.brand_id')
+			             ->where('a.id', $id)
+			             ->first(['a.id', 'a.name', 'a.status', 'a.brand_id', 'b.name AS brand']);
 		} else {
 			$detail = [
 				'id'       => '0',
@@ -268,7 +288,7 @@ class CarService extends BaseService {
 	 */
 	public function getProvinceList() {
 		
-		$list = \DB::table('car_province')->get(['id', 'name', 'status'])->toArray();
+		$list = \DB::table('car_province')->get(['id', 'name', 'status'])->where('status', '!=', '-1')->toArray();
 		$this->addStatusText($list);
 		
 		return $list;
@@ -282,7 +302,7 @@ class CarService extends BaseService {
 	 */
 	public function getColorList() {
 		
-		$list = \DB::table('car_color')->get(['id', 'name', 'code', 'status'])->toArray();
+		$list = \DB::table('car_color')->get(['id', 'name', 'code', 'status'])->where('status', '!=', '-1')->toArray();
 		$this->addStatusText($list);
 		
 		return $list;

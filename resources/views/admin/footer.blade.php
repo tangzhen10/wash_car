@@ -48,7 +48,7 @@
 	
 	// 列表页启用数据
 	function handleDataStart(obj, id, url) {
-		layer.confirm('确认要启用吗？', function () {
+//		layer.confirm('确认要启用吗？', function () {
 			$.ajax({
 				url        : url,
 				data       : {
@@ -70,12 +70,12 @@
 					}
 				}
 			});
-		});
+//		});
 	}
 	
 	// 列表页停用数据
 	function handleDataStop(obj, id, url) {
-		layer.confirm('确认要停用吗？', function () {
+//		layer.confirm('确认要停用吗？', function () {
 			$.ajax({
 				url        : url,
 				data       : {
@@ -100,7 +100,7 @@
 					}
 				}
 			});
-		});
+//		});
 	}
 	
 	// 列表页删除数据

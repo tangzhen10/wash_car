@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 class ProductController extends BaseController {
 	
+	const CONTENT_TYPE = 24;
+	
 	/**
 	 * 清洗服务产品列表
 	 * @author 李小同
@@ -24,24 +26,28 @@ class ProductController extends BaseController {
 	 */
 	public function washDetail() {
 		
-		$id = \Request::input('id');
-		$id = intval($id);
+		$id = intval(\Request::input('id'));
 		
-		$filter = [
-			'content_type'   => 24,
-			'article_id_arr' => [$id],
-		];
-		$rows   = \ArticleService::getArticleList($filter);
-		if (count($rows)) {
-			
-			$rows[0]['detail']['price']['value'] .= '元/次';
-			unset($rows[0]['sub_name']);
-			# todo lxt 已售多少单，读数据库
-			
-			json_msg(['detail' => $rows[0]]);
-		} else {
-			json_msg(trans('error.illegal_param'), 40001);
+		$cacheKey = sprintf(config('cache.ARTICLE.DETAIL'), $id);
+		$detail   = redisGet($cacheKey);
+		if (false === $detail) {
+			$filter = [
+				'content_type'   => self::CONTENT_TYPE,
+				'article_id_arr' => [$id],
+			];
+			$rows   = \ArticleService::getArticleList($filter);
+			if (count($rows)) {
+				
+				$rows[0]['detail']['price']['value'] .= '元/次';
+				unset($rows[0]['sub_name']);
+				# todo lxt 已售多少单，读数据库
+				
+				$detail = $rows[0];
+			} else {
+				json_msg(trans('error.illegal_param'), 40001);
+			}
 		}
 		
+		json_msg($detail);
 	}
 }

@@ -198,10 +198,6 @@ class CarController extends BaseController {
 			
 		} else {
 			
-			$brandId = \Request::input('brand_id');
-			$brand   = $this->service->getBrandDetailById($brandId);
-			if (empty($brand)) json_msg(trans('error.illegal_param'), 40001);
-			
 			$structure          = [
 				[
 					'name_text' => '',
@@ -216,23 +212,20 @@ class CarController extends BaseController {
 					'value'     => '',
 				],
 				[
-					'name_text' => '',
-					'type'      => 'hidden',
-					'name'      => 'brand_id',
-					'value'     => '',
-				],
-				[
 					'name_text' => trans('common.status'),
 					'type'      => 'radio',
 					'name'      => 'status',
 					'value'     => '1,0',
 				],
 			];
-			$detail             = $this->service->getModelDetailById($id, $brandId);
-			$detail['brand_id'] = $brandId; # 新增型号，品牌读取当前页面的品牌值
+			$detail             = $this->service->getModelDetailById($id);
+			$this->data['html'] = $this->getFormHtml($detail, $structure);
 			
-			$this->data['html']  = $this->getFormHtml($detail, $structure);
-			$this->data['brand'] = $brand;
+			if (empty($detail['brand_id']) && !empty(\Request::input('brand_id'))) {
+				$detail['brand_id'] = \Request::input('brand_id');
+			}
+			$this->data['brandList'] = $this->service->getAllBrand();
+			$this->data['detail']    = $detail;
 			
 			return view('admin/car/model/form', $this->data);
 		}
