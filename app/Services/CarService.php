@@ -429,15 +429,21 @@ class CarService extends BaseService {
 		
 		# 车牌大写
 		$post['plate_number'] = strtoupper($post['plate_number']);
-		$post['user_id']      = $this->userId;
 		
+		$carData = [
+			'user_id'      => $this->userId,
+			'brand_id'     => $post['brand_id'],
+			'model_id'     => $post['model_id'],
+			'plate_number' => $post['plate_number'],
+			'color_id'     => $post['color_id'],
+		];
 		if (empty($post['car_id'])) {
 			
-			$carId = \DB::table('car')->insertGetId($post);
+			$carId = \DB::table('car')->insertGetId($carData);
 		} else {
+			
 			$where = ['id' => $post['car_id']];
-			unset($post['car_id']);
-			\DB::table('car')->where($where)->update($post);
+			\DB::table('car')->where($where)->update($carData);
 			$carId = $where['id'];
 		}
 		
