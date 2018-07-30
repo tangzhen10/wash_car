@@ -25,20 +25,18 @@ class CarService extends BaseService {
 			'a.user_id',
 			'a.brand_id',
 			'a.model_id',
+			'a.plate_number',
 			'b.nickname AS username',
 			'c.name AS brand',
 			'd.name AS model',
-			'e.name AS province',
-			'a.plate_number',
-			'f.name AS color',
+			'e.name AS color',
 			'a.status',
 		];
 		$listPage = \DB::table('car AS a')
 		               ->join('user AS b', 'b.user_id', '=', 'a.user_id')
 		               ->leftJoin('car_brand AS c', 'c.id', '=', 'a.brand_id')
 		               ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
-		               ->leftJoin('car_province AS e', 'e.id', '=', 'a.province_id')
-		               ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
+		               ->leftJoin('car_color AS e', 'e.id', '=', 'a.color_id')
 		               ->where('a.status', '1')
 		               ->select($fields);
 		
@@ -415,11 +413,15 @@ class CarService extends BaseService {
 		
 		if (empty($post['brand_id'])) json_msg(trans('validation.required', ['attr' => trans('common.brand')]), 40001);
 		if (empty($post['model_id'])) json_msg(trans('validation.required', ['attr' => trans('common.car_model')]), 40001);
-		if (empty($post['province_id'])) json_msg(trans('validation.required', ['attr' => trans('common.province')]), 40001);
+		
 		if (empty($post['plate_number'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.plate_number')]), 40001);
 		} else {
-			if (!preg_match(config('project.PATTERN.PLATE'), $post['plate_number'])) {
+			$province     = mb_substr($post['plate_number'], 0, 1, 'utf8');
+			$plateNumber  = mb_substr($post['plate_number'], 1, 6, 'utf8');
+			$provinceList = array_column($this->getProvince(), 'name');
+			
+			if (!in_array($province, $provinceList) || !preg_match(config('project.PATTERN.PLATE'), $plateNumber)) {
 				json_msg(trans('validation.invalid', ['attr' => trans('common.plate_number')]), 40003);
 			}
 		}
@@ -538,7 +540,7 @@ class CarService extends BaseService {
 		$cacheKey = config('cache.CAR.PROVINCE');
 		$list     = redisGet($cacheKey);
 		if (false === $list) {
-			$list = \DB::table('car_province')->get(['id', 'name'])->toArray();
+			$list = \DB::table('car_province')->where('status', '1')->get(['id', 'name'])->toArray();
 			redisSet($cacheKey, $list);
 		}
 		

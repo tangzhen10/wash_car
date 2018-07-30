@@ -23,7 +23,7 @@ class CarController extends BaseController {
 		$list   = $this->service->getCarList($filter);
 		
 		foreach ($list['list'] as &$item) {
-			$item['plate'] = $item['province'].substr($item['plate_number'], 0, 1).'·'.substr($item['plate_number'], 1);
+			$item['plate'] = mb_substr($item['plate_number'], 0, 2, 'utf8').'·'.mb_substr($item['plate_number'], 2, 6, 'utf8');
 		}
 		unset($item);
 		
