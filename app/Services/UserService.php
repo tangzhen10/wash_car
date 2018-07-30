@@ -90,7 +90,7 @@ class UserService {
 		if (!in_array($identityType, config('project.ALLOW_IDENTITY_TYPE'))) {
 			$typeTextArr = [];
 			foreach (config('project.ALLOW_IDENTITY_TYPE') as $type) $typeTextArr[] = trans('common.'.$type);
-			json_msg(trans('error.support_register_identity_type', ['type' => implode(',', $typeTextArr)]), 40003);
+			json_msg(trans('error.allow_identity_type', ['type' => implode(',', $typeTextArr)]), 40003);
 		}
 		
 		# 检测是否已注册

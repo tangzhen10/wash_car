@@ -69,5 +69,15 @@ Route::group(['namespace' => 'Api'], function () {
 		
 	});
 	
+	# 订单
+	Route::group(['prefix' => 'order'], function () {
+		
+		# 下单
+		Route::post('checkout', ['uses' => 'OrderController@checkout', 'as' => 'apiOrderCheckout']);
+		
+	});
+	
+	
+	
 });
 

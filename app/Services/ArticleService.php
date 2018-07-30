@@ -138,7 +138,7 @@ class ArticleService extends BaseService {
 						break;
 					case 'image':
 					case 'images':
-						if (empty($value)) {
+						if (empty($value) || $value == [null]) {
 							$value = $data['uploadfile_'.$name];
 						} else {
 							$files = \Request::file($name);
@@ -341,16 +341,16 @@ class ArticleService extends BaseService {
 	 */
 	public function getArticlePublicInfo(array $filter = []) {
 		
-		$where = ['status' => '1'];
+		$filter['status'] = '1';
 		if (!empty($filter['content_type'])) {
-			$where['content_type'] = intval($filter['content_type']);
+			$filter['content_type'] = intval($filter['content_type']);
 		} else {
 			json_msg('必须指定一种文档类型', 40001);
 		}
 		
 		# 公共属性
 		$now      = time();
-		$articles = \DB::table('article')->where($where)->where(function ($query) use ($now) {
+		$articles = \DB::table('article')->where($filter)->where(function ($query) use ($now) {
 			
 			$query->where('start_time', 0)->orWhere('start_time', '<=', $now);
 		})->where(function ($query) use ($now) {

@@ -190,6 +190,7 @@ return [
 		App\Providers\ArticleServiceProvider::class,        # 文章 李小同 2018-7-11 21:43:25
 		App\Providers\SettingServiceProvider::class,        # 设置 李小同 2018-7-22 13:02:40
 		App\Providers\CarServiceProvider::class,            # 车辆 李小同 2018-7-22 22:13:12
+		App\Providers\OrderServiceProvider::class,          # 订单 李小同 2018-7-30 20:34:27
 	],
 	
 	/*
@@ -250,6 +251,7 @@ return [
 		'ArticleService'     => App\Facades\ArticleServiceFacade::class,        # 文章 李小同 2018-7-11 21:43:49
 		'SettingService'     => App\Facades\SettingServiceFacade::class,        # 设置 李小同 2018-7-22 13:02:23
 		'CarService'         => App\Facades\CarServiceFacade::class,            # 车辆 李小同 2018-7-22 22:13:40
+		'OrderService'       => App\Facades\OrderServiceFacade::class,          # 订单 李小同 2018-7-30 20:33:55
 	],
 
 ];
