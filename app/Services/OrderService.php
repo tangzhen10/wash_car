@@ -65,12 +65,22 @@ class OrderService extends BaseService {
 		# 联系电话
 		if (empty($data['contact_phone'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.contact_phone')]), 40001);
+		} else {
+			if (!preg_match(config('project.PATTERN.PHONE'), $data['contact_phone'])) {
+				json_msg(trans('validation.invalid', ['attr' => trans('common.contact_phone')]), 40003);
+			}
 		}
 		
 		# 地址
 		if (empty($data['address'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.address')]), 40001);
 		}
+		
+		# 地址坐标
+		if (empty($data['address_coordinate'])) {
+			json_msg('未获取到坐标地址', 40001);
+		}
+		
 		# 车辆
 		if (empty($data['car_id'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.car')]), 40001);
