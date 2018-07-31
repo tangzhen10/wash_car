@@ -10,6 +10,12 @@ namespace App\Services;
 
 class OrderService extends BaseService {
 	
+	/**
+	 * 创建洗车订单
+	 * @author 李小同
+	 * @date   2018-7-31 18:36:31
+	 * @return int
+	 */
 	public function createOrder() {
 		
 		$post = request_all();
@@ -22,8 +28,6 @@ class OrderService extends BaseService {
 			'order_id'           => $this->getOrderId(),
 			'user_id'            => $this->userId,
 			'wash_product_id'    => intval($post['wash_product_id']),
-			'user_id'            => $post['user_id'],
-			'wash_product_id'    => $post['wash_product_id'],
 			'car_id'             => $post['car_id'],
 			'address'            => $post['address'],
 			'address_coordinate' => $post['address_coordinate'],
@@ -34,6 +38,8 @@ class OrderService extends BaseService {
 			'create_at'          => time(),
 		];
 		\DB::table('wash_order')->insert($orderData);
+		
+		return $orderData['order_id'];
 	}
 	
 	/**
@@ -92,16 +98,47 @@ class OrderService extends BaseService {
 		return count($result) ? round($result[0], 2) : 0;
 	}
 	
+	/**
+	 * 获取订单号
+	 * @author 李小同
+	 * @date   2018-7-31 18:30:26
+	 * @return string
+	 */
 	public function getOrderId() {
 		
-		$this->createOrderIdList();
+		$cacheKey = sprintf(config('cache.ORDER.TODAY_ORDER_ID_LIST'), date('ymd'));
+		$orderId  = \Redis::lpop($cacheKey);
+		
+		if (null === $orderId) {
+			$this->makeOrderIdList();
+			$orderId = \Redis::lpop($cacheKey);
+		}
+		
+		return $orderId;
 	}
 	
-	public function createOrderIdList() {
+	/**
+	 * 创建订单号
+	 * @author 李小同
+	 * @date   2018-7-31 18:30:02
+	 * @return bool
+	 */
+	public function makeOrderIdList() {
 		
-		$today = today();
-		echo $today;
-		die;
+		$today = date('ymd');
+		
+		$orderIdList = [];
+		for ($i = 1000; $i < 10000; ++$i) {
+			$orderIdList[] = $today.$i;
+		}
+		shuffle($orderIdList);
+		
+		$cacheKey = sprintf(config('cache.ORDER.TODAY_ORDER_ID_LIST'), date('ymd'));
+		foreach ($orderIdList as $item) {
+			\Redis::lpush($cacheKey, $item);
+		}
+		
+		return true;
 	}
 	
 }
