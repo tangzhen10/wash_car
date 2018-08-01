@@ -78,7 +78,7 @@ class OrderService extends BaseService {
 		
 		# 地址坐标
 		if (empty($data['address_coordinate'])) {
-			json_msg('未获取到坐标地址', 40001);
+			json_msg(trans('common.lost_coordinate'), 40001);
 		}
 		
 		# 车辆

@@ -39,7 +39,7 @@ class ContentTypeService extends BaseService {
 			$detail = [
 				'id'        => '0',
 				'name'      => '',
-				'type'      => '1', # 默认为产品分类
+				'type'      => '2', # 1产品分类，2产品
 				'structure' => [],
 			];
 		}
@@ -55,7 +55,12 @@ class ContentTypeService extends BaseService {
 	 */
 	public function getFormElements() {
 		
-		$res = \DB::table('form_element')->where('status', '1')->get(['name', 'type'])->toArray();
+		$cacheKey = config('cache.FORM_ELEMENT');
+		$res      = redisGet($cacheKey, 'admin');
+		if ($res === false) {
+			$res = \DB::table('form_element')->where('status', '1')->get(['name', 'type'])->toArray();
+			redisSet($cacheKey, $res, 'admin');
+		}
 		
 		return $res;
 	}

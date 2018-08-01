@@ -59,6 +59,7 @@ return [
 	'plate_number'             => '车牌号码',
 	'wash_time'                => '清洗时间',
 	'wash_product'             => '清洗服务项目',
+	'lost_coordinate'          => '未获取到坐标地址',
 	
 	# 属性
 	'gender_0'                 => '',

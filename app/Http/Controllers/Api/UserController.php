@@ -46,9 +46,26 @@ class UserController extends BaseController {
 		json_msg($loginInfo);
 	}
 	
+	/**
+	 * 修改密码
+	 * @author 李小同
+	 * @date   2018-8-1 22:29:51
+	 */
 	public function changePassword() {
 		
-		$this->user->updatePassword();
+		$res = $this->user->updatePassword();
+		$this->render($res);
 	}
 	
+	# region 洗车
+	/**
+	 * 洗车联系人
+	 * @author 李小同
+	 * @date
+	 */
+	public function washContact() {
+		
+		
+	}
+	# endregion
 }

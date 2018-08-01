@@ -270,7 +270,7 @@ class ArticleService extends BaseService {
 	 */
 	public function getArticleList(array $filter = []) {
 		
-		$articles = $this->getArticlePublicInfo($filter);
+		$articles = $this->getArticlePublicInfo(['content_type' => $filter['content_type']]);
 		
 		# 按article_id筛选
 		if (isset($filter['article_id_arr'])) $articles = $articles->whereIn('id', $filter['article_id_arr']);

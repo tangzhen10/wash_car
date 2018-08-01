@@ -89,9 +89,12 @@ return [
 	
 	'DEFAULT_CACHE_EXPIRE' => 1800, # 默认缓存时间
 	
+	# admin redis key [86400 = 24h, 604800 = 1 week]
+	'ADMIN_LOG_INFO'       => env('APP_NAME').':manager_info:%s@86400', # 管理员登录信息
+	'FORM_ELEMENT'         => env('APP_NAME').':form_element@604800', # 表单类型
+	
 	# redis key [86400 = 24h, 604800 = 1 week]
 	'USER_INFO'            => env('APP_NAME').':user_info:%s@604800', # 用户登录信息
-	'ADMIN_LOG_INFO'       => env('APP_NAME').':manager_info:%s@86400', # 管理员登录信息
 	'WECHAT'               => [
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
 		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息

@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+/**
+ * 定制业务 - 产品类
+ * Class ProductController
+ * @package App\Http\Controllers\Api
+ */
 class ProductController extends BaseController {
 	
 	const CONTENT_TYPE = 24;
@@ -38,7 +43,7 @@ class ProductController extends BaseController {
 			$rows   = \ArticleService::getArticleList($filter);
 			if (count($rows)) {
 				
-				$rows[0]['detail']['price']['value'] .= '元/次';
+				$rows[0]['detail']['price']['value'] = currencyFormat($rows[0]['detail']['price']['value']);
 				unset($rows[0]['sub_name']);
 				# todo lxt 已售多少单，读数据库
 				

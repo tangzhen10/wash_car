@@ -322,4 +322,9 @@ function create_thumb($srcPath, $flag = true) {
 	return $prefix.$filename;
 }
 
+function currencyFormat($value) {
+	
+	return '￥'.round($value, 2);
+}
+
 

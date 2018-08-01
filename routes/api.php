@@ -54,8 +54,6 @@ Route::group(['namespace' => 'Api'], function () {
 		Route::post('province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
 		# 颜色
 		Route::post('color', ['uses' => 'CarController@color', 'as' => 'apiCarColor']);
-		# 预约时间段
-		Route::post('time', ['uses' => 'CarController@washTime', 'as' => 'apiWashTime']);
 		
 	});
 	
@@ -72,8 +70,16 @@ Route::group(['namespace' => 'Api'], function () {
 	# 订单
 	Route::group(['prefix' => 'order'], function () {
 		
+		# 洗车服务项目列表
+		Route::post('washList', ['uses' => 'ProductController@washList', 'as' => 'apiWashList']);
+		# 洗车服务项目详情
+		Route::post('washDetail', ['uses' => 'ProductController@washDetail', 'as' => 'apiWashDetail']);
+		# 联系人
+		Route::post('contact', ['uses' => 'UserController@washContact', 'as' => 'apiContactUser']);
+		# 清洗时间
+		Route::post('washTime', ['uses' => 'OrderController@washTime', 'as' => 'apiWashTime']);
 		# 下单
-		Route::post('checkout', ['uses' => 'OrderController@checkout', 'as' => 'apiOrderCheckout']);
+		Route::post('placeOrder', ['uses' => 'OrderController@placeOrder', 'as' => 'apiPlaceOrder']);
 		
 	});
 	
