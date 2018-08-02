@@ -35,7 +35,7 @@ class MemberService extends BaseService {
 	
 	/**
 	 * 获取详情
-	 * copy from UserService::getUserInfo()
+	 * copy from UserService::getUserInfoFromDB()
 	 * @param $id
 	 * @author 李小同
 	 * @date   2018-7-7 00:01:15

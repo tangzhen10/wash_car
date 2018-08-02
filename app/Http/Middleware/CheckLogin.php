@@ -7,6 +7,7 @@ use Closure;
 class CheckLogin {
 	
 	private $except = [
+		'apiAppIndex',
 		'apiRegister',
 		'apiLogin',
 		'apiLoginByPhone',

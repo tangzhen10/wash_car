@@ -43,13 +43,22 @@ class ProductController extends BaseController {
 			$rows   = \ArticleService::getArticleList($filter);
 			if (count($rows)) {
 				
-				$rows[0]['detail']['price']['value']     = currencyFormat($rows[0]['detail']['price']['value']);
-				$rows[0]['detail']['price_ori']['value'] = currencyFormat($rows[0]['detail']['price_ori']['value']);
-				unset($rows[0]['sub_name']);
-				$detail = $rows[0];
+				$detail                                 = $rows[0];
+				$detail['detail']['price']['value']     = currencyFormat($detail['detail']['price']['value']);
+				$detail['detail']['price_ori']['value'] = currencyFormat($detail['detail']['price_ori']['value']);
+				unset($detail['sub_name']);
 				
-				# todo lxt 已售多少单，读数据库
-				
+				# 已售多少单，读数据库
+				$saleCountCacheKey = sprintf(config('cache.ORDER.PRODUCT_SALE_COUNT'), $id);
+				$saleCount         = redisGet($saleCountCacheKey);
+				if (false === $saleCount) {
+					$saleCount = \OrderService::getSaleCount($id);
+					redisSet($saleCountCacheKey, $saleCount);
+				}
+				$detail['detail']['sale_count'] = [
+					'text'  => sprintf(trans('common.sale_count'), $saleCount),
+					'value' => $saleCount,
+				];
 				
 			} else {
 				json_msg(trans('error.illegal_param'), 40001);

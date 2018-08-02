@@ -322,6 +322,13 @@ function create_thumb($srcPath, $flag = true) {
 	return $prefix.$filename;
 }
 
+/**
+ * 格式化人民币数额
+ * @param $value
+ * @author 李小同
+ * @date   2018-8-2 22:29:48
+ * @return string
+ */
 function currencyFormat($value) {
 	
 	return '￥'.sprintf('%.2f', $value);

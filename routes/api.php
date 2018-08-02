@@ -84,6 +84,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('washTime', ['uses' => 'OrderController@washTime', 'as' => 'apiWashTime']);
 		# 下单
 		Route::post('placeOrder', ['uses' => 'OrderController@placeOrder', 'as' => 'apiPlaceOrder']);
+		# 订单列表
+		Route::post('list', ['uses' => 'OrderController@washOrderList', 'as' => 'apiWashOrderList']);
 		
 	});
 	

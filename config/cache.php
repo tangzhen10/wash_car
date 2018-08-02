@@ -116,7 +116,7 @@ return [
 		'DETAIL' => env('APP_NAME').':article:detail:%s@3600', # 文章详情
 	],
 	'ORDER'                => [
-		'TODAY_ORDER_COUNT'   => env('APP_NAME').':order:today_order_count_'.date('ymd'), # 今日订单量
+		'PRODUCT_SALE_COUNT'  => env('APP_NAME').':order:product_sale_count:%s', # 商品的销售次数
 		'TODAY_ORDER_ID_LIST' => env('APP_NAME').':order:order_id_list:%s', # 订单号列表
 	],
 

@@ -22,20 +22,20 @@ class OrderController extends BaseController {
 		# 默认服务项目
 		$products = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_PRODUCT')], false);
 		$product  = $products[0];
-		$price    = $product['detail']['price'];
-		$priceOri = $product['detail']['price_ori'];
+		$total    = currencyFormat($product['detail']['price'] * 1);
+		$totalOri = currencyFormat($product['detail']['price_ori'] * 1);
 		unset($product['sub_name'], $product['detail']);
 		
 		# 联系人电话
 		$contact = [
-			'user'  => $this->user->userInfo['nickname'],
-			'phone' => $this->user->userInfo['phone'],
+			'user'  => $this->user->getUserInfo('nickname'),
+			'phone' => $this->user->getUserInfo('phone'),
 		];
 		
 		# 默认车辆
-		$car = \CarService::myLastWashCar();
+		$car = \CarService::getMyLastWashCar();
 		
-		json_msg(compact('banners', 'product', 'contact', 'car', 'price', 'priceOri'));
+		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri'));
 	}
 	
 	/**
@@ -85,6 +85,26 @@ class OrderController extends BaseController {
 		
 		$orderId = \OrderService::createOrder();
 		
-		$this->render($orderId);
+		if ($orderId) {
+			$result = [
+				'order_id'    => $orderId,
+				'success_msg' => trans('common.place_order_success'),
+			];
+			json_msg($result);
+		} else {
+			json_msg(trans('common.place_order_failed'), 40004);
+		}
+	}
+	
+	/**
+	 * 洗车订单列表
+	 * @author 李小同
+	 * @date   2018-8-2 22:46:33
+	 */
+	public function washOrderList() {
+		
+		$list = \OrderService::getWashOrderList();
+		
+		json_msg(['list' => $list]);
 	}
 }

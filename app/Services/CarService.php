@@ -398,9 +398,34 @@ class CarService extends BaseService {
 	 * @date   2018-8-2 18:16:10
 	 * @return array
 	 */
-	public function myLastWashCar() {
+	public function getMyLastWashCar() {
 		
-		return [];
+		$res = \DB::table('wash_order')
+		          ->where('user_id', $this->userId)
+		          ->orderBy('id', 'desc')
+		          ->pluck('car_id')
+		          ->toArray();
+		if ($res) {
+			$lastWashCarId = $res[0];
+			$fields        = [
+				'a.id',
+				'a.plate_number',
+				'c.name AS brand',
+				'd.name AS model',
+				'e.name AS color',
+			];
+			$lastWashCar   = \DB::table('car AS a')
+			                    ->leftJoin('car_brand AS c', 'c.id', '=', 'a.brand_id')
+			                    ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
+			                    ->leftJoin('car_color AS e', 'e.id', '=', 'a.color_id')
+			                    ->where('a.status', '1')
+			                    ->where('a.id', $lastWashCarId)
+			                    ->first($fields);
+			return $lastWashCar;
+			
+		} else {
+			return [];
+		}
 	}
 	
 	/**

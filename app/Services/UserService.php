@@ -11,8 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId   = 0;
-	public $nickname = 0;
+	public $userId = 0;
 	public $userInfo = [];
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -33,9 +32,8 @@ class UserService {
 				# 登录状态续签
 				redisSet($cacheKey, $userInfo);
 				
-				$this->userId   = $userInfo['user_id'];
-				$this->nickname = $userInfo['nickname'];
 				$this->userInfo = $userInfo;
+				$this->userId   = $userInfo['user_id'];
 			}
 		}
 	}
@@ -228,7 +226,7 @@ class UserService {
 		$where         = ['user_id' => $userId];
 		\DB::table('user')->where($where)->update($lastLoginInfo);
 		
-		$userInfo          = $this->getUserInfo($userId);
+		$userInfo          = $this->getUserInfoFromDB($userId);
 		$userInfo['token'] = create_token();
 		$userInfo += $extraData;
 		
@@ -257,7 +255,7 @@ class UserService {
 	 * @date   2018-7-6 20:34:07
 	 * @return array
 	 */
-	public function getUserInfo($id) {
+	public function getUserInfoFromDB($id) {
 		
 		$userInfo = \DB::table('user')->where('user_id', $id)->first();
 		
@@ -273,6 +271,23 @@ class UserService {
 		}
 		
 		return $userInfo;
+	}
+	
+	/**
+	 * 获取用户的指定信息
+	 * @param $field
+	 * @author 李小同
+	 * @date   2018-8-2 20:53:46
+	 * @return bool|mixed
+	 */
+	public function getUserInfo($field) {
+		
+		$userInfo = $this->userInfo;
+		if (isset($userInfo[$field])) {
+			return $userInfo[$field];
+		} else {
+			return '';
+		}
 	}
 	
 	/**

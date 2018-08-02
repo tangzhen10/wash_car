@@ -13,6 +13,67 @@ use Monolog\Logger;
 
 class OrderService extends BaseService {
 	
+	public function getWashOrderList() {
+		
+		$fields = [
+			'a.order_id',
+			'a.wash_product_id',
+			'a.address',
+			'a.wash_time',
+			'a.create_at',
+			'b.plate_number',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS color',
+		];
+		$rows   = \DB::table('wash_order AS a')
+		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
+		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
+		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
+		             ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		             ->where('a.user_id', $this->userId)
+		             ->orderBy('a.id', 'desc')
+		             ->get($fields)
+		             ->toArray();
+		$list   = [];
+		foreach ($rows as $row) {
+			$list[] = [
+				'order_id'  => [
+					'text'  => trans('common.order_id'),
+					'value' => $row['order_id'],
+				],
+				'create_at' => [
+					'text'  => trans('common.create_at'),
+					'value' => intToTime($row['create_at']),
+				],
+				'wash_product' => [
+					'text'  => trans('common.wash_product'),
+					'value' => $row['wash_product_id'],
+				],
+				'wash_time' => [
+					'text'  => trans('common.wash_time'),
+					'value' => $row['wash_time'],
+				],
+				'car'     => [
+					'text'  => trans('common.car_info'),
+					'value' => [
+						'plate_number' => $row['plate_number'],
+						'brand'        => $row['brand'],
+						'model'        => $row['model'],
+						'color'        => $row['color'],
+					],
+				],
+				'address' => [
+					'text'  => trans('common.address'),
+					'value' => $row['address'],
+				],
+			
+			];
+		}
+		
+		return $list;
+	}
+	
 	/**
 	 * 创建洗车订单
 	 * @author 李小同
@@ -135,6 +196,20 @@ class OrderService extends BaseService {
 		$id   = \DB::table('wash_order_log')->insertGetId($data);
 		
 		return $id;
+	}
+	
+	/**
+	 * 获取商品的销售次数
+	 * @param $productId
+	 * @author 李小同
+	 * @date   2018-8-2 21:56:50
+	 * @return mixed
+	 */
+	public function getSaleCount($productId) {
+		
+		$count = \DB::table('wash_order')->where('wash_product_id', intval($productId))->count('order_id');
+		
+		return $count;
 	}
 	
 	/**

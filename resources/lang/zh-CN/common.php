@@ -48,9 +48,11 @@ return [
 	'color'                    => '颜色',
 	'color_code'               => '颜色码',
 	'verify_code'              => '验证码',
+	'order_id'                 => '订单号',
 	
-	# 车辆
+	# 洗车
 	'car'                      => '车辆',
+	'car_info'                 => '车辆信息',
 	'brand'                    => '品牌',
 	'car_model'                => '车型',
 	'first_letter'             => '名称首字母',
@@ -61,6 +63,9 @@ return [
 	'wash_time'                => '清洗时间',
 	'wash_product'             => '清洗服务项目',
 	'lost_coordinate'          => '未获取到坐标地址',
+	'place_order_success'      => "提交成功\n正在为您派单",
+	'place_order_failed'       => '提交失败，请稍后重试！',
+	'sale_count'               => '已售%s单',
 	
 	# 属性
 	'gender_0'                 => '',

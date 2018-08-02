@@ -49,7 +49,7 @@ class UserController extends Controller {
 					setcookie('token', $userInfo['token'], time() + 7000, '/');
 					setcookie('refresh_token', $res['refresh_token'], time() + 29*24*3600, '/');
 					
-					$userInfo = \UserService::getUserInfo($userId);
+					$userInfo = \UserService::getUserInfoFromDB($userId);
 				} else {
 					return redirect()->route(\Route::currentRouteName());
 				}
