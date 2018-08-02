@@ -10,6 +10,7 @@ class CheckLogin {
 		'apiRegister',
 		'apiLogin',
 		'apiLoginByPhone',
+		'apiSendSMSCode',
 	];
 	
 	/**
@@ -21,7 +22,7 @@ class CheckLogin {
 	 */
 	public function handle($request, Closure $next) {
 		
-		$this->checkUserLogin();
+		if (env('CHECK_LOGIN')) $this->checkUserLogin();
 		
 		return $next($request);
 	}
