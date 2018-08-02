@@ -66,10 +66,14 @@ class UserController extends BaseController {
 		
 		$phone            = trim(\Request::input('account'));
 		$useType          = 'login_by_phone';
+		$cacheKey         = \ToolService::getVerifyCodeCacheKey(compact('phone', 'useType'));
+		$serverVerifyCode = redisGet($cacheKey);
 		$clientVerifyCode = \Request::input('verify_code');
-		$serverVerifyCode = \ToolService::getVerifyCodeCacheKey(compact('phone', 'useType'));
 		
+		# todo lxt 上正式后去掉 '||' 及其后面的内容 李小同 2018-8-2 14:18:21
 		if ($serverVerifyCode == $clientVerifyCode || env('APP_ENV') == 'local') {
+			
+			redisDel($cacheKey);
 			
 			$userId = $this->user->checkExistIdentity('phone', $phone);
 			

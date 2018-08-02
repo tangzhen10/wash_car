@@ -22,7 +22,7 @@ class CheckLogin {
 	 */
 	public function handle($request, Closure $next) {
 		
-		if (env('CHECK_LOGIN')) $this->checkUserLogin();
+		$this->checkUserLogin();
 		
 		return $next($request);
 	}
