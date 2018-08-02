@@ -12,8 +12,9 @@ namespace App\Services;
 class ToolService {
 	
 	private $_validSMSCodeUseTypes = [
-		'login', # 手机号登录
+		'login', # 登录
 		'register', # 注册
+		'login_by_phone', # 手机号登录
 	];
 	
 	/**
@@ -141,6 +142,9 @@ class ToolService {
 				# 验证手机号是否已注册
 				$res = \UserService::checkExistIdentity('phone', $phone);
 				if (!$res) json_msg(trans('validation.not_registered', ['attr' => trans('common.phone')]), 50001);
+				break;
+			case 'login_by_phone':
+				# 手机号登录（未注册则自动注册）
 				break;
 		}
 		

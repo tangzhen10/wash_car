@@ -9,6 +9,7 @@ class CheckLogin {
 	private $except = [
 		'apiRegister',
 		'apiLogin',
+		'apiLoginByPhone',
 	];
 	
 	/**

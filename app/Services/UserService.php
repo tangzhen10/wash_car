@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId = 0;
+	public $userId   = 0;
 	public $nickname = 0;
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -57,7 +57,7 @@ class UserService {
 	 */
 	public function isLogin() {
 		
-		return $this->userId ? true : false;
+		return $this->userId ? '1' : '0';
 	}
 	
 	/**

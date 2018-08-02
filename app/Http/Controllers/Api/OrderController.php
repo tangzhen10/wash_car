@@ -54,6 +54,8 @@ class OrderController extends BaseController {
 	 */
 	public function placeOrder() {
 		
-		\OrderService::createOrder();
+		$orderId = \OrderService::createOrder();
+		
+		$this->render($orderId);
 	}
 }

@@ -108,8 +108,9 @@ return [
 		'COLOR'    => env('APP_NAME').':car:color@604800', # 颜色
 	],
 	'VERIFY_CODE'          => [
-		'REGISTER' => env('APP_NAME').':verify_code:register:%s@300', # 注册验证码
-		'LOGIN'    => env('APP_NAME').':verify_code:login:%s@60', # 登录验证码
+		'REGISTER'       => env('APP_NAME').':verify_code:register:%s@300', # 注册验证码
+		'LOGIN'          => env('APP_NAME').':verify_code:login:%s@60', # 登录验证码
+		'LOGIN_BY_PHONE' => env('APP_NAME').':verify_code:login_by_phone:%s@300', # 手机登录验证码
 	],
 	'ARTICLE'              => [
 		'DETAIL' => env('APP_NAME').':article:detail:%s@3600', # 文章详情

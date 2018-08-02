@@ -324,7 +324,7 @@ function create_thumb($srcPath, $flag = true) {
 
 function currencyFormat($value) {
 	
-	return '￥'.round($value, 2);
+	return '￥'.sprintf('%.2f', $value);
 }
 
 

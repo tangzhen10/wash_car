@@ -47,6 +47,7 @@ return [
 	'logo'                     => '标志',
 	'color'                    => '颜色',
 	'color_code'               => '颜色码',
+	'verify_code'              => '验证码',
 	
 	# 车辆
 	'car'                      => '车辆',

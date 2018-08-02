@@ -9,5 +9,6 @@ return [
 		'string' => ':attr至少:min个字符！',
 	],
 	'invalid'             => '无效的:attr！',
+	'wrong'               => ':attr不正确，请重新输入！',
 	'no_one_selected'     => '未选择任何条目！',
 ];

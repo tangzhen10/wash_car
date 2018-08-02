@@ -15,15 +15,17 @@ use Illuminate\Http\Request;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) { return $request->user(); });
 
-Route::group(['namespace' => 'Api'], function () {
+Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 	
 	# 账户系统
 	Route::group(['prefix' => 'user', 'middleware' => 'checkLogin'], function () {
 		
+		# 手机号登录（未注册则自动注册）
+		Route::post('loginByPhone', ['uses' => 'UserController@loginByPhone', 'as' => 'apiLoginByPhone']);
 		# 注册
 		Route::post('register', ['uses' => 'UserController@register', 'as' => 'apiRegister']);
 		# 登录
-		Route::post('login', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
+		Route::post('loginOri', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
 		# 修改密码
 		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'apiChangePassword']);
 		
@@ -82,8 +84,6 @@ Route::group(['namespace' => 'Api'], function () {
 		Route::post('placeOrder', ['uses' => 'OrderController@placeOrder', 'as' => 'apiPlaceOrder']);
 		
 	});
-	
-	
 	
 });
 

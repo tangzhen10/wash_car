@@ -57,6 +57,44 @@ class UserController extends BaseController {
 		$this->render($res);
 	}
 	
+	/**
+	 * 手机号登录（未注册则自动注册）
+	 * @author 李小同
+	 * @date   2018-8-2 11:10:42
+	 */
+	public function loginByPhone() {
+		
+		$phone            = trim(\Request::input('account'));
+		$useType          = 'login_by_phone';
+		$clientVerifyCode = \Request::input('verify_code');
+		$serverVerifyCode = \ToolService::getVerifyCodeCacheKey(compact('phone', 'useType'));
+		
+		if ($serverVerifyCode == $clientVerifyCode || env('APP_ENV') == 'local') {
+			
+			$userId = $this->user->checkExistIdentity('phone', $phone);
+			
+			# 未注册自动注册
+			if (!$userId) {
+				
+				$regData  = [
+					'identityType' => 'phone',
+					'identity'     => $phone,
+					'credential'   => '',
+					'salt'         => '',
+				];
+				$userInfo = ['phone' => $phone]; # 手机号注册的，自动验证通过
+				$userId   = $this->user->create($regData, $userInfo);
+			}
+			
+			# 登录
+			$loginInfo = $this->user->handleLogin($userId);
+			json_msg($loginInfo);
+			
+		} else {
+			json_msg(trans('validation.wrong', ['attr' => trans('common.verify_code')]), 50001);
+		}
+	}
+	
 	# region 洗车
 	/**
 	 * 洗车联系人
@@ -64,7 +102,6 @@ class UserController extends BaseController {
 	 * @date
 	 */
 	public function washContact() {
-		
 		
 	}
 	# endregion
