@@ -10,6 +10,35 @@ namespace App\Http\Controllers\Api;
 class OrderController extends BaseController {
 	
 	/**
+	 * 首页
+	 * @author 李小同
+	 * @date   2018-8-2 18:24:16
+	 */
+	public function appIndex() {
+		
+		# banner
+		$banners = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_INDEX_BANNER')], false);
+		
+		# 默认服务项目
+		$products = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_PRODUCT')], false);
+		$product  = $products[0];
+		$price    = $product['detail']['price'];
+		$priceOri = $product['detail']['price_ori'];
+		unset($product['sub_name'], $product['detail']);
+		
+		# 联系人电话
+		$contact = [
+			'user'  => $this->user->userInfo['nickname'],
+			'phone' => $this->user->userInfo['phone'],
+		];
+		
+		# 默认车辆
+		$car = \CarService::myLastWashCar();
+		
+		json_msg(compact('banners', 'product', 'contact', 'car', 'price', 'priceOri'));
+	}
+	
+	/**
 	 * 清洗时间
 	 * @author 李小同
 	 * @date   2018-7-28 21:21:52

@@ -59,7 +59,7 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		
 	});
 	
-	# 产品
+	/*# 产品
 	Route::group(['prefix' => 'product'], function () {
 		
 		# 洗车服务列表
@@ -67,11 +67,13 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		# 洗车服务详情
 		Route::post('washDetail', ['uses' => 'ProductController@washDetail', 'as' => 'apiWashDetail']);
 		
-	});
+	});*/
 	
 	# 订单
 	Route::group(['prefix' => 'order'], function () {
 		
+		# 首页
+		Route::post('index', ['uses' => 'OrderController@appIndex', 'as' => 'apiAppIndex']);
 		# 洗车服务项目列表
 		Route::post('washList', ['uses' => 'ProductController@washList', 'as' => 'apiWashList']);
 		# 洗车服务项目详情

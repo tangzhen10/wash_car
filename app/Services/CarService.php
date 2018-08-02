@@ -377,7 +377,6 @@ class CarService extends BaseService {
 			'a.id AS car_id',
 			'c.name AS brand',
 			'd.name AS model',
-			'e.name AS province',
 			'a.plate_number',
 			'f.name AS color',
 		];
@@ -385,19 +384,23 @@ class CarService extends BaseService {
 		             ->join('user AS b', 'b.user_id', '=', 'a.user_id')
 		             ->leftJoin('car_brand AS c', 'c.id', '=', 'a.brand_id')
 		             ->leftJoin('car_model AS d', 'd.id', '=', 'a.model_id')
-		             ->leftJoin('car_province AS e', 'e.id', '=', 'a.province_id')
 		             ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
 		             ->where('a.user_id', $this->userId)
 		             ->where('a.status', '1')
 		             ->get($fields)
 		             ->toArray();
-		foreach ($list as &$item) {
-			$item['plate'] = $item['province'].$item['plate_number'];
-			unset($item['province'], $item['plate_number']);
-		}
-		unset($item);
-		
 		return $list;
+	}
+	
+	/**
+	 * 我最近清洗的车辆
+	 * @author 李小同
+	 * @date   2018-8-2 18:16:10
+	 * @return array
+	 */
+	public function myLastWashCar() {
+		
+		return [];
 	}
 	
 	/**

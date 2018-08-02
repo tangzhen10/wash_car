@@ -46,9 +46,11 @@ class ProductController extends BaseController {
 				$rows[0]['detail']['price']['value']     = currencyFormat($rows[0]['detail']['price']['value']);
 				$rows[0]['detail']['price_ori']['value'] = currencyFormat($rows[0]['detail']['price_ori']['value']);
 				unset($rows[0]['sub_name']);
+				$detail = $rows[0];
+				
 				# todo lxt 已售多少单，读数据库
 				
-				$detail = $rows[0];
+				
 			} else {
 				json_msg(trans('error.illegal_param'), 40001);
 			}

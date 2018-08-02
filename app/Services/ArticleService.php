@@ -264,11 +264,12 @@ class ArticleService extends BaseService {
 	/**
 	 * 获取文章列表
 	 * @param array $filter
+	 * @param bool  $withText detail字段是否带text
 	 * @author 李小同
 	 * @date   2018-7-15 23:02:17
 	 * @return array
 	 */
-	public function getArticleList(array $filter = []) {
+	public function getArticleList(array $filter = [], $withText = true) {
 		
 		$articles = $this->getArticlePublicInfo(['content_type' => $filter['content_type']]);
 		
@@ -313,6 +314,16 @@ class ArticleService extends BaseService {
 			$item['detail'] = $details[$item['id']];
 		}
 		unset($item);
+		
+		if (!$withText) {
+			foreach ($articles as &$article) {
+				foreach ($article['detail'] as &$item) {
+					$item = $item['value'];
+				}
+				unset($item);
+			}
+			unset($article);
+		}
 		
 		return $articles;
 	}

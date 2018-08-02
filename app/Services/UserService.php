@@ -13,6 +13,7 @@ class UserService {
 	
 	public $userId   = 0;
 	public $nickname = 0;
+	public $userInfo = [];
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
 	
@@ -34,6 +35,7 @@ class UserService {
 				
 				$this->userId   = $userInfo['user_id'];
 				$this->nickname = $userInfo['nickname'];
+				$this->userInfo = $userInfo;
 			}
 		}
 	}

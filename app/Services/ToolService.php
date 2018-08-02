@@ -9,6 +9,8 @@
 
 namespace App\Services;
 
+use Illuminate\Http\UploadedFile;
+
 class ToolService {
 	
 	private $_validSMSCodeUseTypes = [
@@ -79,6 +81,9 @@ class ToolService {
 	 * @return string
 	 */
 	public static function uploadFiles($files) {
+		
+		# 单图按多图的格式处理 李小同 2018-8-2 17:03:58
+		if (!is_array($files) && is_a($files, UploadedFile::class)) $files = [$files];
 		
 		$uploadedFiles = [];
 		foreach ($files as $file) {
