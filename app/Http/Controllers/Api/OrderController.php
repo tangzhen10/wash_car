@@ -102,7 +102,9 @@ class OrderController extends BaseController {
 	 */
 	public function washOrderList() {
 		
-		$list = \OrderService::getWashOrderList();
+		$list = \OrderService::getMyWashOrderList();
+		
+		# todo lxt 无订单
 		
 		json_msg(['list' => $list]);
 	}

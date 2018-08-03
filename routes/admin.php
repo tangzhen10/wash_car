@@ -8,6 +8,14 @@ Route::group(['namespace' => 'Admin'], function () {
 	# 后台首页
 	Route::get('/', ['uses' => 'ManagerController@index', 'as' => 'adminIndex']);
 	
+	# 订单
+	Route::group(['prefix' => 'order'], function () {
+		
+		# 洗车订单列表
+		Route::get('washOrderList', ['uses' => 'OrderController@washOrderList', 'as' => 'washOrderList']);
+		
+	});
+	
 	# 车辆
 	Route::group(['prefix' => 'car'], function () {
 		

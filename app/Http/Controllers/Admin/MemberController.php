@@ -27,6 +27,7 @@ class MemberController extends BaseController {
 			'perPage'          => $this->getPerPage(),
 		];
 		$list                     = $this->service->getMemberList($filter);
+		var_dump($list                     );die;
 		$this->data['list']       = $list['list'];
 		$this->data['pagination'] = $list['listPage'];
 		$this->data['total']      = $list['total'];

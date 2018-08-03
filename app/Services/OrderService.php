@@ -13,7 +13,78 @@ use Monolog\Logger;
 
 class OrderService extends BaseService {
 	
-	public function getWashOrderList() {
+	const STATUS_1 = ['value' => 1, 'text' => '未付款'];
+	const STATUS_2 = ['value' => 2, 'text' => '等待接单中'];
+	const STATUS_3 = ['value' => 3, 'text' => '已接单'];
+	const STATUS_4 = ['value' => 4, 'text' => '服务中'];
+	const STATUS_5 = ['value' => 5, 'text' => '已完成'];
+	const STATUS_6 = ['value' => 6, 'text' => '已退款'];
+	const STATUS_7 = ['value' => 7, 'text' => '已关闭'];
+	
+	# region 后台
+	/**
+	 * 洗车订单列表
+	 * @param array $filter
+	 * @author 李小同
+	 * @date   2018-8-3 18:09:33
+	 * @return array
+	 */
+	public function getOrderList(array $filter = []) {
+		
+		$fields   = [
+			'a.order_id',
+			'a.wash_product_id',
+			'a.address',
+			'a.wash_time',
+			'a.create_at',
+			'b.plate_number',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS color',
+		];
+		$listPage = \DB::table('wash_order AS a')
+		               ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
+		               ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
+		               ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
+		               ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		               ->leftJoin('user AS f', 'f.user_id', '=', 'a.user_id');
+		
+		if (!empty($filter['filter_user_id'])) $listPage = $listPage->where('a.user_id', '=', $filter['filter_user_id']);
+		if (!empty($filter['filter_date_from'])) $listPage = $listPage->where('a.create_at', '>=', strtotime($filter['filter_date_from']));
+		if (!empty($filter['filter_date_to'])) $listPage = $listPage->where('a.create_at', '<=', strtotime($filter['filter_date_to']));
+		if (!empty($filter['filter_account'])) {
+			$listPage = $listPage->where(function ($query) use ($filter) {
+				
+				$query->where('f.nickname', 'LIKE', '%'.$filter['filter_account'].'%')
+				      ->orWhere('f.phone', 'LIKE', '%'.$filter['filter_account'].'%')
+				      ->orWhere('f.email', 'LIKE', '%'.$filter['filter_account'].'%');
+			});
+		}
+		
+		$listPage = $listPage->select($fields)->orderBy('a.id', 'desc')->paginate($filter['perPage']);
+		$listArr  = json_decode(json_encode($listPage), 1);
+		
+		$total = $listArr['total'];
+		$list  = $listArr['data'];
+		
+		# format
+		foreach ($list as &$item) {
+			$item['create_at'] = date('Y-m-d H:i:s', $item['create_at']);
+		}
+		unset($item);
+		
+		return compact('list', 'listPage', 'total');
+	}
+	# endregion
+	
+	# region 前台
+	/**
+	 * 订单列表
+	 * @author 李小同
+	 * @date   2018-8-3 18:01:24
+	 * @return array
+	 */
+	public function getMyWashOrderList() {
 		
 		$fields = [
 			'a.order_id',
@@ -38,11 +109,11 @@ class OrderService extends BaseService {
 		$list   = [];
 		foreach ($rows as $row) {
 			$list[] = [
-				'order_id'  => [
+				'order_id'     => [
 					'text'  => trans('common.order_id'),
 					'value' => $row['order_id'],
 				],
-				'create_at' => [
+				'create_at'    => [
 					'text'  => trans('common.create_at'),
 					'value' => intToTime($row['create_at']),
 				],
@@ -50,11 +121,11 @@ class OrderService extends BaseService {
 					'text'  => trans('common.wash_product'),
 					'value' => $row['wash_product_id'],
 				],
-				'wash_time' => [
+				'wash_time'    => [
 					'text'  => trans('common.wash_time'),
 					'value' => $row['wash_time'],
 				],
-				'car'     => [
+				'car'          => [
 					'text'  => trans('common.car_info'),
 					'value' => [
 						'plate_number' => $row['plate_number'],
@@ -63,11 +134,10 @@ class OrderService extends BaseService {
 						'color'        => $row['color'],
 					],
 				],
-				'address' => [
+				'address'      => [
 					'text'  => trans('common.address'),
 					'value' => $row['address'],
 				],
-			
 			];
 		}
 		
@@ -285,10 +355,11 @@ class OrderService extends BaseService {
 			'wash_time'          => $post['wash_time'],
 			'total'              => $price,
 			'create_at'          => time(),
+			'status'             => self::STATUS_1['value'],
 		];
 		\DB::table('wash_order')->insert($orderData);
 		
 		return $orderData;
 	}
-	
+	# endregion
 }
