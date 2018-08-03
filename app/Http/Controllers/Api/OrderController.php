@@ -22,8 +22,8 @@ class OrderController extends BaseController {
 		# 默认服务项目
 		$products = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_PRODUCT')], false);
 		$product  = $products[0];
-		$total    = currencyFormat($product['detail']['price'] * 1);
-		$totalOri = currencyFormat($product['detail']['price_ori'] * 1);
+		$total    = $product['detail']['price'] * 1;
+		$totalOri = $product['detail']['price_ori'] * 1;
 		unset($product['sub_name'], $product['detail']);
 		
 		# 联系人电话
@@ -48,14 +48,16 @@ class OrderController extends BaseController {
 		
 		$todayText    = trans('common.today');
 		$tomorrowText = trans('common.tomorrow');
+		$today        = date('Y-m-d');
+		$tomorrow     = date('Y-m-d', strtotime('+1 day'));
 		$timeList     = [
-			date('Y-m-d 00:00:00')                         => $todayText.' 00:00-01:00',
-			date('Y-m-d 01:00:00')                         => $todayText.' 01:00-02:00',
-			date('Y-m-d 21:00:00')                         => $todayText.' 21:00-22:00',
-			date('Y-m-d 22:00:00')                         => $todayText.' 22:00-23:00',
-			date('Y-m-d 23:00:00')                         => $todayText.' 23:00-24:00',
-			date('Y-m-d', strtotime('+1 day')).' 00:00:00' => $tomorrowText.' 00:00-01:00',
-			date('Y-m-d', strtotime('+1 day')).' 01:00:00' => $tomorrowText.' 01:00-02:00',
+			$today.' 00:00:00'    => ['text' => $todayText.' 00:00-01:00', 'value' => $today.' 00:00-01:00'],
+			$today.' 01:00:00'    => ['text' => $todayText.' 01:00-02:00', 'value' => $today.' 01:00-02:00'],
+			$today.' 21:00:00'    => ['text' => $todayText.' 21:00-22:00', 'value' => $today.' 21:00-22:00'],
+			$today.' 22:00:00'    => ['text' => $todayText.' 22:00-23:00', 'value' => $today.' 22:00-23:00'],
+			$today.' 23:00:00'    => ['text' => $todayText.' 23:00-24:00', 'value' => $today.' 23:00-24:00'],
+			$tomorrow.' 00:00:00' => ['text' => $tomorrowText.' 00:00-01:00', 'value' => $tomorrow.' 00:00-01:00'],
+			$tomorrow.' 01:00:00' => ['text' => $tomorrowText.' 01:00-02:00', 'value' => $tomorrow.' 01:00-02:00'],
 		];
 		
 		$now      = date('Y-m-d H:i:s');
@@ -67,10 +69,7 @@ class OrderController extends BaseController {
 			if ($now < $am2clock && $am2clock < $key) continue;
 			if ($now > $key) continue;
 			
-			$list[] = [
-				'text'  => $item,
-				'value' => $key,
-			];
+			$list[] = $item;
 		}
 		
 		json_msg(['list' => $list]);

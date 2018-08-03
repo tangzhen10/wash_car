@@ -302,6 +302,14 @@ class ArticleService extends BaseService {
 				case 'checkbox':
 					$item['value'] = explode(',', $item['value']);
 					break;
+				case 'images':
+					$values = explode(',', $item['value']);
+					$images = [];
+					foreach ($values as $value) {
+						$images[] = \URL::asset($value);
+					}
+					$item['value'] = $images;
+					break;
 			}
 			
 			$details[$item['article_id']][$item['name']] = [
