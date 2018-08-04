@@ -3,6 +3,7 @@
 return [
 	# 名词
 	'list'                     => '列表',
+	'user'                     => '用户',
 	'account'                  => '账户',
 	'password'                 => '密码',
 	'phone'                    => '手机号码',
@@ -42,6 +43,7 @@ return [
 	'per_page'                 => '每页条数',
 	'today'                    => '今天',
 	'tomorrow'                 => '明天',
+	'contact_user'             => '联系人',
 	'contact_phone'            => '联系电话',
 	'address'                  => '地址',
 	'logo'                     => '标志',
@@ -49,23 +51,8 @@ return [
 	'color_code'               => '颜色码',
 	'verify_code'              => '验证码',
 	'order_id'                 => '订单号',
-	
-	# 洗车
-	'car'                      => '车辆',
-	'car_info'                 => '车辆信息',
-	'brand'                    => '品牌',
-	'car_model'                => '车型',
-	'first_letter'             => '名称首字母',
-	'model'                    => '型号',
-	'view_car_model'           => '查看车型',
-	'province'                 => '省份',
-	'plate_number'             => '车牌号码',
-	'wash_time'                => '清洗时间',
-	'wash_product'             => '清洗服务项目',
-	'lost_coordinate'          => '未获取到坐标地址',
-	'place_order_success'      => "提交成功\n正在为您派单",
-	'place_order_failed'       => '提交失败，请稍后重试！',
-	'sale_count'               => '已售%s单',
+	'order_status'             => '订单状态',
+	'payment_status'           => '支付状态',
 	
 	# 属性
 	'gender_0'                 => '',
@@ -74,6 +61,8 @@ return [
 	'time_status_1'            => '生效中',
 	'time_status_2'            => '未开始',
 	'time_status_3'            => '已过期',
+	'payment_status_1'         => '已支付',
+	'payment_status_0'         => '未支付',
 	
 	# 动作
 	'action'                   => '操作',
@@ -103,4 +92,22 @@ return [
 	'action_failed'            => '操作失败，请稍后重试。',
 	'no_more'                  => '没有更多了',
 	'no_data'                  => '暂无数据',
+	
+	# 洗车
+	'car'                      => '车辆',
+	'car_info'                 => '车辆信息',
+	'brand'                    => '品牌',
+	'car_model'                => '车型',
+	'first_letter'             => '名称首字母',
+	'model'                    => '型号',
+	'view_car_model'           => '查看车型',
+	'province'                 => '省份',
+	'plate_number'             => '车牌号码',
+	'wash_time'                => '清洗时间',
+	'wash_product'             => '清洗服务项目',
+	'lost_coordinate'          => '未获取到坐标地址',
+	'place_order_success'      => "提交成功\n正在为您派单",
+	'place_order_failed'       => '提交失败，请稍后重试！',
+	'sale_count'               => '已售%s单',
+	'take_order'               => '接单',
 ];

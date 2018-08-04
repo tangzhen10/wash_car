@@ -17,6 +17,7 @@ namespace App\Services;
 class ManagerService extends BaseService {
 	
 	public $managerId = 0;
+	public $manager = [];
 	public $module = 'manager';
 	
 	public function __construct() {
@@ -198,7 +199,7 @@ class ManagerService extends BaseService {
 			if (!empty($managerInfo['id'])) {
 				
 				redisSet($cacheKey, $managerInfo, 'admin'); # 续签
-				
+				$this->manager = $managerInfo;
 				return $managerInfo['id'];
 			}
 		}
@@ -215,6 +216,17 @@ class ManagerService extends BaseService {
 	public function getManagerId() {
 		
 		return $this->managerId;
+	}
+	
+	/**
+	 * 获取后台账户名称
+	 * @author 李小同
+	 * @date   2018-8-5 00:33:51
+	 * @return string
+	 */
+	public function getManagerName() {
+		
+		return $this->manager['name'];
 	}
 	
 	/**
@@ -257,6 +269,7 @@ class ManagerService extends BaseService {
 		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')
 		               ->leftJoin('role AS c', 'c.id', '=', 'b.role_id')
 		               ->where('a.status', '!=', '-1')
+		               ->where('c.status', '1')
 		               ->groupBy('a.id')
 		               ->get($fields)
 		               ->toArray();
@@ -274,7 +287,7 @@ class ManagerService extends BaseService {
 	 */
 	public function getListByIds(array $ids = []) {
 		
-		$list = \DB::table($this->module)->whereIn('id', $ids)->get(['id', 'name'])->toArray();
+		$list = \DB::table($this->module)->whereIn('id', $ids)->where('status', '1')->get(['id', 'name'])->toArray();
 		
 		return $list;
 	}

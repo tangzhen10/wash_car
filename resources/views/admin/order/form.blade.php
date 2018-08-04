@@ -1,148 +1,198 @@
 @extends('admin.base')
 @section('css')
+	<link rel="stylesheet" type="text/css" href="{{URL::asset('css/form.css')}}" />
 	<style>
-		.width-400 {
-			width: 400px;
+		.tabBar {
+			border-bottom: 1px solid #5A98DD;
 		}
-		.tip_icon {
-			font-size: 20px;
+		.tabBar span {
+			font-size: 14px;
+			padding: 5px 25px;
 		}
+		.tabBar span:hover {
+			color: #fff;
+			background: #67b0ff;
+		}
+		.tabBar span.current {
+			color: #fff;
+			background: #5A98DD;
+		}
+		.log_item {
+			padding: 5px 20px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			margin: 10px 25px;
+		}
+		.log_item span.create_at {
+			color: #333;
+		}
+		.log_item span.operator {
+			padding: 0 10px;
+		}
+		.log_item span.action {
+			color: #5A98DD;
+			padding-left: 10px;
+			display: inline-block;
+		}
+	
 	</style>
 @endsection
 @section('body')
-	<article class="cl pd-20">
-		<form enctype="multipart/form-data" class="form form-horizontal" id="form">
-			<input type="hidden" name="user_id" value="{{$detail['user_id']}}" />
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">用户名：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input class="input-text width-400" value="{{$detail['nickname']}}" name="nickname">
-					@if (!empty($detail['avatar']))
-						<img src="{{$detail['avatar']}}" style="width: 132px;height: 132px;position: absolute;left: 445px;" />
-					@endif
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">性别：</label>
-				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
-					<div class="radio-box">
-						<input name="gender" type="radio" id="gender-1" value="1" @if ($detail['gender'] == 1) checked @endif>
-						<label for="gender-1">男</label>
-					</div>
-					<div class="radio-box">
-						<input name="gender" type="radio" id="gender-2" value="2" @if ($detail['gender'] == 2) checked @endif>
-						<label for="gender-2">女</label>
-					</div>
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">手机：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input type="text" class="input-text width-400" value="{{$detail['phone']}}"
-					       name="phone" @if (!empty($check['phone'])) disabled @endif>
-					@if ($detail['phone'])
-						@if (empty($check['phone']))
-							<i class="Hui-iconfont c-warning tip_icon" title="此手机尚未验证，不可用于登录">&#xe6e0;</i>
-						@else
-							<i class="Hui-iconfont c-success tip_icon" title="此手机已通过验证，可用于登录">&#xe6a8;</i>
+	<div id="tab_area" class="HuiTab">
+		<div class="tabBar clearfix">
+			<span>订单详情</span>
+			<span>订单日志</span>
+		</div>
+		<div class="tabCon">
+			<article class="cl pd-20">
+				<form enctype="multipart/form-data" class="form form-horizontal" id="form">
+					<p>
+						<span class="form_filed_row">{{trans('common.order_id')}}：</span>
+						<span>{{$detail['order_id']}}</span>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.order_status')}}：</span>
+						<span>{{$detail['status_text']}}</span>
+						@if ($detail['status'] == '2')
+							<span class="btn btn-secondary-outline radius ml-10 take_order">{{trans('common.take_order')}}</span>
+						@elseif ($detail['status'] == '3')
+							
 						@endif
-					@endif
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">邮箱：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input class="input-text width-400" value="{{$detail['email']}}"
-					       placeholder="@" name="email" @if (!empty($check['email'])) disabled @endif>
-					@if ($detail['email'])
-						@if (empty($check['email']))
-							<i class="Hui-iconfont c-warning tip_icon" title="此邮箱尚未验证，不可用于登录">&#xe6e0;</i>
-						@else
-							<i class="Hui-iconfont c-success tip_icon" title="此邮箱已通过验证，可用于登录">&#xe6a8;</i>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.wash_product')}}：</span>
+						<span>
+						<a href="{{route('productList')}}?filter_wash_product_id={{$detail['wash_product_id']}}" target="_blank">
+							{{$detail['wash_product']}}
+						</a>
+					</span>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.user')}}：</span>
+						<span>
+							<a href="{{route('memberList')}}?filter_user_id={{$detail['user_id']}}" target="_blank">
+								【{{$detail['username']}}】{{$detail['phone']}}
+							</a>
+						</span>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.car_info')}}：</span>
+						<span>
+							{{$detail['plate_number']}}
+							| {{$detail['brand']}} - {{$detail['model']}}
+							| {{$detail['color']}}
+						</span>
+					</p>
+					<?= $html ?>
+					<p>
+						<span class="form_filed_row">{{trans('common.wash_time')}}：</span>
+						<select class="select-box radius" style="width: 75%;position: relative;top: 0px;" name="wash_time">
+							@foreach($wash_time_list as $item)
+								<option value="{{$item}}" @if ($item == $detail['wash_time']) selected @endif>{{$item}}</option>
+							@endforeach
+						</select>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.payment_status')}}：</span>
+						<span>{{trans('common.payment_status_'.$detail['payment_status'])}}</span>
+						@if ($detail['payment_status'] == '0')
+							<span class="btn btn-warning-outline radius ml-20 J_confirm_pay">手动确认支付</span>
 						@endif
-					@endif
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">生日：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d'})"
-					       name="birthday" class="input-text Wdate" style="width:120px;" value="{{$detail['birthday']}}">
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">注册时间：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input class="input-text" value="{{$detail['create_at']}}" disabled>
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">最近登录时间：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input class="input-text" value="{{$detail['last_login_at']}}" disabled>
-				</div>
-			</div>
-			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">最近登录IP：</label>
-				<div class="formControls col-xs-8 col-sm-9">
-					<input class="input-text" value="{{$detail['last_login_ip']}}" disabled>
-				</div>
-			</div>
-			<div class="row cl">
-				<div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
-					<span class="btn btn-success radius J_submit">{{trans('common.save')}}</span>
-				</div>
-			</div>
-		</form>
-	</article>
+					</p>
+					<p>
+						<span class="form_filed_row">{{trans('common.create_at')}}：</span>
+						<span>{{$detail['create_at']}}</span>
+					</p>
+					<div class="row cl">
+						<div class="mt-5 text-c">
+							<span class="btn btn-success radius J_submit">{{trans('common.save')}}</span>
+						</div>
+					</div>
+				</form>
+			</article>
+		</div>
+		<div class="tabCon">
+			@foreach($detail['logs'] as $log)
+				<p class="log_item">
+					<span class="create_at">{{$log['create_at']}}</span>
+					<span class="operator">{{$log['operator']}}</span>
+					<span class="action">{{$log['action']}}</span>
+				</p>
+			@endforeach
+		</div>
+	</div>
 @endsection
 @section('js')
 	<script>
 		
-		// 验证手机号
-		function validate_form() {
-			
-			var phone    = $('input[name=phone]').val().trim(),
-			    email    = $('input[name=email]').val().trim(),
-			    birthday = $('input[name=birthday]').val().trim();
-			
-			var phonePattern = {{config('project.PATTERN.PHONE')}};
-			if (phone && !phonePattern.test(phone)) {
-				var errorMsg = '{{trans('validation.invalid', ['attr' => trans('common.phone')])}}';
-				layer.tips(errorMsg, 'input[name=phone]');
-				$('input[name=phone]').focus();
-				return false;
-			}
-			var emailPattern = {{config('project.PATTERN.EMAIL')}};
-			if (email && !emailPattern.test(email)) {
-				var errorMsg = '{{trans('validation.invalid', ['attr' => trans('common.email')])}}';
-				layer.tips(errorMsg, 'input[name=email]');
-				$('input[name=email]').focus();
-				return false;
-			}
-			var birthdayPattern = {{config('project.PATTERN.DATE')}};
-			if (birthday && !birthdayPattern.test(birthday)) {
-				var errorMsg = '{{trans('validation.invalid', ['attr' => trans('common.birthday')])}}';
-				layer.tips(errorMsg, 'input[name=birthday]');
-				$('input[name=birthday]').focus();
-				return false;
-			}
-			
-			return true;
-		}
-		
 		$(function () {
+			$.Huitab("#tab_area .tabBar span", "#tab_area .tabCon", "current", "click", "0")
 			
-			// 点击查看头像
-			$('.avatar').click(function () {
-				layer.open({
-					type       : 1,
-					title      : false,
-					closeBtn   : 0,
-					shadeClose : true,
-					content    : '<img src="{{$detail['avatar']}}" />'
+			// 手动确认支付
+			$('.J_confirm_pay').click(function () {
+				var order_id = $(this).attr('data_order_id');
+				layer.confirm('<strong>确认用户已付款？</strong><br>当用户支付出现问题并线下支付后操作', {
+					title : '谨慎操作',
+				}, function () {
+					$.ajax({
+						url        : '{{route('confirmPay')}}',
+						data       : {order_id : '{{$detail['order_id']}}'},
+						type       : 'post',
+						dataType   : 'json',
+						beforeSend : function () { layer.load(3) },
+						success    : function (data) {
+							layer.close(layer.load());
+							if (data.code == 0) {
+								layer.msg('{{trans('common.action_success')}}');
+								location.reload();//刷新父页面
+							} else {
+								layer.msg(data.error, function () {})
+							}
+						}
+					});
+				})
+			});
+			
+			// 接单
+			$('.take_order').click(function () {
+				
+				$.ajax({
+					url        : '{{route('washOrderChangeStatus')}}',
+					data       : {
+						order_id : '{{$detail['order_id']}}',
+						status   : 2,
+					},
+					type       : 'post',
+					dataType   : 'json',
+					beforeSend : function () { layer.load(3) },
+					success    : function (data) {
+						layer.close(layer.load());
+						if (data.code == 0) {
+							layer.msg('{{trans('common.action_success')}}');
+							location.reload();//刷新父页面
+						} else {
+							layer.msg(data.error, function () {})
+						}
+					}
 				});
 			});
 		});
+		
+		$.Huitab = function (tabBar, tabCon, class_name, tabEvent, i) {
+			var $tab_menu = $(tabBar);
+			// 初始化操作
+			$tab_menu.removeClass(class_name);
+			$(tabBar).eq(i).addClass(class_name);
+			$(tabCon).hide();
+			$(tabCon).eq(i).show();
+			
+			$tab_menu.bind(tabEvent, function () {
+				$tab_menu.removeClass(class_name);
+				$(this).addClass(class_name);
+				var index = $tab_menu.index(this);
+				$(tabCon).hide();
+				$(tabCon).eq(index).show()
+			})
+		}
 	</script>
 @endsection

@@ -211,7 +211,8 @@ class ArticleService extends BaseService {
 		                     ->select($fields)
 		                     ->orderBy('a.sort', 'desc')
 		                     ->orderBy('a.id', 'desc')
-		                     ->paginate($filter['perPage']);
+		                     ->paginate($filter['perPage'])
+		                     ->appends($filter);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		$total    = $listArr['total'];
 		$list     = $listArr['data'];

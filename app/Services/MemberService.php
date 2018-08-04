@@ -90,7 +90,7 @@ class MemberService extends BaseService {
 			});
 		}
 		
-		$listPage = $listPage->orderBy('a.user_id', 'desc')->paginate($filter['perPage']);
+		$listPage = $listPage->orderBy('a.user_id', 'desc')->paginate($filter['perPage'])->appends($filter);
 		$listArr  = json_decode(json_encode($listPage), 1);
 		
 		$total = $listArr['total'];

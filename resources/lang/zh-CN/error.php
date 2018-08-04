@@ -1,6 +1,7 @@
 <?php
 
 return [
+	# 通用
 	'wrong_account_or_pwd'     => '用户名或密码不正确！',
 	'wrong_pwd'                => '密码不正确！',
 	'wrong_old_pwd'            => '原密码不正确！',
@@ -19,8 +20,11 @@ return [
 	'has_sub_permission'       => '该权限下存在子权限！',
 	'allow_identity_type'      => '抱歉，目前仅支持:type！',
 	'can_not_create_member'    => '不允许创建用户！',
-	'not_your_car'             => '抱歉，这不是您的车辆，您无法操作！',
 	'wrong_verify_code'        => '验证码错误！',
+	
+	# 定制业务
+	'not_your_car'             => '抱歉，这不是您的车辆，您无法操作！',
 	'wrong_wash_product_price' => '抱歉，本项服务价格配置错误，无法下单！',
+	'wrong_wash_time'          => '抱歉，您选择的清洗时间不在服务时间内，请重新选择！',
 
 ];

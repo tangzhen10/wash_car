@@ -10,7 +10,7 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>初始密码：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" name="password">
 				</div>
@@ -68,17 +68,19 @@
 				return false;
 			}
 			
-			if (password.length < 6) {
-				var error = '{{trans('validation.min.string', ['attr' => trans('common.password'), 'min' => '6'])}}';
-				layer.tips(error, 'input[name="password"]', {tips : 1});
-				$('input[name="password"]').focus();
-				return false;
-			}
-			
-			if (password_repeat != password) {
-				layer.tips('{{trans('error.different_twice_pwd')}}', 'input[name="password_repeat"]', {tips : 1});
-				$('input[name="password_repeat"]').focus();
-				return false;
+			if (password.length > 0 || password_repeat.length > 0) {
+				if (password.length < 6) {
+					var error = '{{trans('validation.min.string', ['attr' => trans('common.password'), 'min' => '6'])}}';
+					layer.tips(error, 'input[name="password"]', {tips : 1});
+					$('input[name="password"]').focus();
+					return false;
+				}
+				
+				if (password.length > 0 && password_repeat != password) {
+					layer.tips('{{trans('error.different_twice_pwd')}}', 'input[name="password_repeat"]', {tips : 1});
+					$('input[name="password_repeat"]').focus();
+					return false;
+				}
 			}
 			
 			if (roles.length == 0) {

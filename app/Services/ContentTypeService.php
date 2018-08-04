@@ -310,20 +310,20 @@ class ContentTypeService extends BaseService {
 			foreach ($groups as $group) {
 				$text    = $group == '1' ? trans('common.enable') : trans('common.disable');
 				$checked = $group == $value ? 'checked' : '';
-				$html .= '<span class="radio-box">
-						<label>
-							<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$text.'
-						</label>
-					</span>';
+				$html .= '<label>
+							<span class="radio-box">
+								<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$text.'
+							</span>
+						</label>';
 			}
 		} else {
 			foreach ($groups as $group) {
 				$checked = $group == $value ? 'checked' : '';
-				$html .= '<span class="radio-box">
-						<label>
-							<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$group.'
-						</label>
-					</span>';
+				$html .= '<label>
+							<span class="radio-box">
+								<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$group.'
+							</span>
+						</label>';
 			}
 		}
 		$html .= '</span></p>

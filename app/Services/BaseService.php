@@ -25,7 +25,8 @@ class BaseService {
 	public function getDetailById($id) {
 		
 		if ($id) {
-			$detail = \DB::table($this->module)->where('id', $id)->first();
+			$detail = \DB::table($this->module)->where('id', $id)->where('status', '!=', '-1')->first();
+			if (empty($detail)) json_msg(trans('error.illegal_param'), 40003);
 		} else {
 			$detail = static::initDetail();
 		}

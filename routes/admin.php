@@ -13,6 +13,18 @@ Route::group(['namespace' => 'Admin'], function () {
 		
 		# 洗车订单列表
 		Route::get('washOrderList', ['uses' => 'OrderController@washOrderList', 'as' => 'washOrderList']);
+		# 洗车订单表单
+		Route::match(['get', 'post'], 'washOrderForm/{order_id?}', [
+			'uses' => 'OrderController@washOrderForm',
+			'as'   => 'washOrderForm',
+		]);
+		# 手动确认支付
+		Route::post('confirmPay', ['uses' => 'OrderController@confirmPay', 'as' => 'confirmPay']);
+		# 修改订单状态
+		Route::post('washOrderChangeStatus', [
+			'uses' => 'OrderController@washOrderChangeStatus',
+			'as'   => 'washOrderChangeStatus',
+		]);
 		
 	});
 	
@@ -76,7 +88,7 @@ Route::group(['namespace' => 'Admin'], function () {
 		# 修改状态
 		Route::post('changeStatus', ['uses' => 'RoleController@changeStatus', 'as' => 'roleChangeStatus']);
 		# 查看拥有该角色的管理员
-		Route::get('manager/{id}', ['uses' => 'RoleController@roleManager', 'as' => 'roleManager']);
+		Route::get('manager/{id?}', ['uses' => 'RoleController@roleManager', 'as' => 'roleManager']);
 		# 从角色中移除管理员
 		Route::post('removeManager', ['uses' => 'RoleController@removeManager', 'as' => 'removeManager']);
 		# 批量删除

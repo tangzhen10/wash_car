@@ -46,31 +46,7 @@ class OrderController extends BaseController {
 	 */
 	public function washTime() {
 		
-		$todayText    = trans('common.today');
-		$tomorrowText = trans('common.tomorrow');
-		$today        = date('Y-m-d');
-		$tomorrow     = date('Y-m-d', strtotime('+1 day'));
-		$timeList     = [
-			$today.' 00:00:00'    => ['text' => $todayText.' 00:00-01:00', 'value' => $today.' 00:00-01:00'],
-			$today.' 01:00:00'    => ['text' => $todayText.' 01:00-02:00', 'value' => $today.' 01:00-02:00'],
-			$today.' 21:00:00'    => ['text' => $todayText.' 21:00-22:00', 'value' => $today.' 21:00-22:00'],
-			$today.' 22:00:00'    => ['text' => $todayText.' 22:00-23:00', 'value' => $today.' 22:00-23:00'],
-			$today.' 23:00:00'    => ['text' => $todayText.' 23:00-24:00', 'value' => $today.' 23:00-24:00'],
-			$tomorrow.' 00:00:00' => ['text' => $tomorrowText.' 00:00-01:00', 'value' => $tomorrow.' 00:00-01:00'],
-			$tomorrow.' 01:00:00' => ['text' => $tomorrowText.' 01:00-02:00', 'value' => $tomorrow.' 01:00-02:00'],
-		];
-		
-		$now      = date('Y-m-d H:i:s');
-		$am2clock = date('Y-m-d 02:00:00'); # 今天2点
-		
-		$list = [];
-		foreach ($timeList as $key => $item) {
-			
-			if ($now < $am2clock && $am2clock < $key) continue;
-			if ($now > $key) continue;
-			
-			$list[] = $item;
-		}
+		$list = \OrderService::getWashTimeList();
 		
 		json_msg(['list' => $list]);
 	}

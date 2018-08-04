@@ -152,8 +152,12 @@ class RoleService extends BaseService {
 	 */
 	public function getManagersById($id) {
 		
-		$managers = \DB::table('manager_role')->where('role_id', $id)->pluck('manager_id')->toArray();
-		
+		$managers = \DB::table('manager_role AS a')
+		               ->join('manager AS b', 'b.id', '=', 'a.manager_id')
+		               ->where('a.role_id', $id)
+		               ->where('b.status', '1')
+		               ->pluck('a.manager_id')
+		               ->toArray();
 		return $managers;
 	}
 	

@@ -387,6 +387,7 @@ class CarService extends BaseService {
 		             ->leftJoin('car_color AS f', 'f.id', '=', 'a.color_id')
 		             ->where('a.user_id', $this->userId)
 		             ->where('a.status', '1')
+		             ->orderBy('a.id', 'desc')
 		             ->get($fields)
 		             ->toArray();
 		return $list;
