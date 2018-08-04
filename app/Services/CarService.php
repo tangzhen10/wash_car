@@ -445,7 +445,10 @@ class CarService extends BaseService {
 		if (empty($post['plate_number'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.plate_number')]), 40001);
 		} else {
-			if (!preg_match(config('project.PATTERN.PLATE'), $post['plate_number'])) {
+			$province     = mb_substr($post['plate_number'], 0, 1, 'utf8');
+			$plateNumber  = mb_substr($post['plate_number'], 1, 6, 'utf8');
+			$provinceList = array_column($this->getProvince(), 'name');
+			if (!in_array($province, $provinceList) || !preg_match(config('project.PATTERN.PLATE'), $plateNumber)) {
 				json_msg(trans('validation.invalid', ['attr' => trans('common.plate_number')]), 40003);
 			}
 		}
