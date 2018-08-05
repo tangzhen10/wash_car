@@ -446,7 +446,9 @@ class CarService extends BaseService {
 		if (!empty($post['car_id'])) $this->_checkCar($post['car_id']);
 		
 		if (empty($post['brand_id'])) json_msg(trans('validation.required', ['attr' => trans('common.brand')]), 40001);
-		if (empty($post['model_id'])) json_msg(trans('validation.required', ['attr' => trans('common.car_model')]), 40001);
+		
+		# 不存在的车型，则允许为空
+		# if (empty($post['model_id'])) json_msg(trans('validation.required', ['attr' => trans('common.car_model')]), 40001);
 		
 		if (empty($post['plate_number'])) {
 			json_msg(trans('validation.required', ['attr' => trans('common.plate_number')]), 40001);

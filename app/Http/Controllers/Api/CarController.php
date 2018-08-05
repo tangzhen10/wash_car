@@ -64,13 +64,13 @@ class CarController extends BaseController {
 	
 	/**
 	 * 指定品牌下的车型列表
-	 * @param $brandId
 	 * @author 李小同
 	 * @date   2018-7-25 14:56:14
 	 */
-	public function model($brandId) {
+	public function model() {
 		
-		$res = \CarService::getModelsByBrandId($brandId);
+		$brandId = \Request::input('brand_id');
+		$res     = \CarService::getModelsByBrandId($brandId);
 		
 		if (empty($res)) $res = [
 			[

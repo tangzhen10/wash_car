@@ -61,7 +61,7 @@ class OrderService extends BaseService {
 			'a.status',
 			'b.plate_number',
 			'c.name AS brand',
-			'd.name AS model',
+			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
 			'e.name AS color',
 		];
 		$listPage = \DB::table('wash_order AS a')
@@ -123,7 +123,7 @@ class OrderService extends BaseService {
 			'a.create_at',
 			'b.plate_number',
 			'c.name AS brand',
-			'd.name AS model',
+			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
 			'e.name AS color',
 			'f.nickname AS username',
 			'f.phone AS phone',
@@ -488,10 +488,11 @@ class OrderService extends BaseService {
 			'a.wash_product_id',
 			'a.address',
 			'a.wash_time',
+			'a.status',
 			'a.create_at',
 			'b.plate_number',
 			'c.name AS brand',
-			'd.name AS model',
+			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
 			'e.name AS color',
 		];
 		$rows   = \DB::table('wash_order AS a')
@@ -513,6 +514,11 @@ class OrderService extends BaseService {
 				'create_at'    => [
 					'text'  => trans('common.create_at'),
 					'value' => intToTime($row['create_at']),
+				],
+				'status'       => [
+					'text'   => trans('common.order_status'),
+					'value'  => self::ORDER_STATUS[$row['status']],
+					'status' => $row['status'], # 给客户端显示颜色用
 				],
 				'wash_product' => [
 					'text'  => trans('common.wash_product'),

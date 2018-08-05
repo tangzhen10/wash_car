@@ -24,8 +24,6 @@
 			text-indent: -18px;
 			border-left: 1px solid #5A98DD;
 			padding: 15px 10px;
-			/*border: 1px solid #ccc;*/
-			/*border-radius: 4px;*/
 			margin: 0px 25px;
 		}
 		.log_item span {
@@ -187,7 +185,7 @@
 					</p>
 				@elseif (!in_array($detail['status'], [1,2]))
 					<script>
-						$('input,select,textarea').attr('disabled', 'disabled');
+//						$('input,select,textarea').attr('disabled', 'disabled');
 					</script>
 				@endif
 			</form>

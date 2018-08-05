@@ -59,16 +59,6 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		
 	});
 	
-	/*# 产品
-	Route::group(['prefix' => 'product'], function () {
-		
-		# 洗车服务列表
-		Route::post('washList', ['uses' => 'ProductController@washList', 'as' => 'apiWashList']);
-		# 洗车服务详情
-		Route::post('washDetail', ['uses' => 'ProductController@washDetail', 'as' => 'apiWashDetail']);
-		
-	});*/
-	
 	# 订单
 	Route::group(['prefix' => 'order'], function () {
 		
@@ -86,6 +76,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('placeOrder', ['uses' => 'OrderController@placeOrder', 'as' => 'apiPlaceOrder']);
 		# 订单列表
 		Route::post('list', ['uses' => 'OrderController@washOrderList', 'as' => 'apiWashOrderList']);
+		# 订单详情
+		Route::post('detail', ['uses' => 'OrderController@washOrderDetail', 'as' => 'apiWashOrderDetail']);
 		
 	});
 	
