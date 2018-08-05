@@ -24,9 +24,18 @@ class OrderService extends BaseService {
 	];
 	
 	const ORDER_ACTION = [
-		'add_order'   => '下单',
-		'confirm_pay' => '手动确认支付',
-		'take_order'  => '接单',
+		'add_order'    => '提交订单',
+		'confirm_pay'  => '确认支付',
+		'take_order'   => '派单成功',
+		'serve_start'  => '开始服务',
+		'serve_finish' => '完成服务',
+	];
+	
+	# 订单操作对应的订单状态
+	const ACTION_TO_STATUS = [
+		3 => 'take_order',
+		4 => 'serve_start',
+		5 => 'serve_finish',
 	];
 	
 	# region 后台
@@ -137,7 +146,7 @@ class OrderService extends BaseService {
 			case 1 :
 				# 未付款，1小时倒计时
 				$cancelAt       = $detail['create_at'] + 3600;
-				$orderStatusMsg = '本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$orderStatusMsg = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
 		}
 		$detail['order_status_msg'] = $orderStatusMsg;
 		
@@ -146,17 +155,96 @@ class OrderService extends BaseService {
 		$detail['create_at']   = intToTime($detail['create_at']);
 		
 		# 操作日志
-		$fields = ['action', 'create_at', 'operator'];
+		$logs           = $this->getOrderLogs($orderId);
+		$detail['logs'] = $logs;
+		
+		# 清洗前后照片表单
+		$washImages                 = $this->getWashImages($orderId, $detail['status']);
+		$detail['wash_images_html'] = $washImages['imagesHtml'];
+		$detail['wash_images']      = $washImages['images'];
+		
+		return $detail;
+	}
+	
+	/**
+	 * 获取订单操作日志
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-5 08:11:41
+	 * @return array
+	 */
+	public function getOrderLogs($orderId) {
+		
+		$fields = ['action', 'create_at', 'order_status', 'operator'];
 		$logs   = \DB::table('wash_order_log')->where('wash_order_id', $orderId)->get($fields)->toArray();
 		foreach ($logs as &$log) {
-			$log['create_at'] = intToTime($log['create_at']);
-			$log['action']    = self::ORDER_ACTION[$log['action']];
+			$log['create_at']    = intToTime($log['create_at']);
+			$log['action']       = self::ORDER_ACTION[$log['action']];
+			$log['order_status'] = self::ORDER_STATUS[$log['order_status']];
 		}
 		unset($log);
 		
-		$detail['logs'] = $logs;
+		return $logs;
+	}
+	
+	/**
+	 * 获取清洗前后照片的表单及图片
+	 * @param int $orderId
+	 * @param int $status 订单状态
+	 * @author 李小同
+	 * @date   2018-8-5 14:53:40
+	 * @return array
+	 */
+	public function getWashImages($orderId, $status) {
 		
-		return $detail;
+		foreach (['before', 'after'] as $type) {
+			$imagesHtml[$type] = '';
+			$images[$type]     = [];
+			
+		}
+		if (!in_array($status, [1, 2])) {
+			$structure = [
+				[
+					'name_text' => '',
+					'type'      => 'hidden',
+					'name'      => 'wash_order_id',
+					'value'     => '',
+				],
+				[
+					'name_text' => '',
+					'type'      => 'hidden',
+					'name'      => 'type',
+					'value'     => '',
+				],
+				[
+					'name_text' => trans('common.picture'),
+					'type'      => 'images',
+					'name'      => 'images',
+					'value'     => '上传3张图片',
+				],
+			];
+			
+			$where = ['wash_order_id' => $orderId, 'status' => '1'];
+			$rows  = \DB::table('wash_image')->where($where)->get(['images', 'type'])->toArray();
+			if (!empty($rows)) {
+				foreach ($rows as $row) {
+					$images[$row['type']] = explode(',', $row['images']);
+				}
+			}
+			foreach (['before', 'after'] as $type) {
+				$imagesInfo = [
+					'wash_order_id' => $orderId,
+					'type'          => $type,
+					'images'        => $images[$type],
+				];
+				$html       = $this->getFormHtmlByStructure($structure, $imagesInfo);
+				
+				$imagesHtml[$type] = $html;
+			}
+			if ($status == 3) $imagesHtml['after'] = ''; # 接单时不允许上传清洗后照片
+		}
+		
+		return compact('imagesHtml', 'images');
 	}
 	
 	/**
@@ -201,13 +289,15 @@ class OrderService extends BaseService {
 		\DB::beginTransaction();
 		try {
 			if ($order['payment_status'] == '0') {
-				$updateData = ['payment_status' => '1', 'status' => '2'];
+				$newStatus  = 2;
+				$updateData = ['payment_status' => '1', 'status' => $newStatus];
 				\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 				
 				$logData = [
 					'wash_order_id' => $orderId,
 					'action'        => 'confirm_pay',
-					'operator'      => '【'.trans('common.manager').'】'.\ManagerService::getManagerName(),
+					'order_status'  => $newStatus,
+					'operator'      => $this->_getFormatManager(),
 				];
 				$this->addOrderLog($logData);
 				
@@ -224,28 +314,56 @@ class OrderService extends BaseService {
 	
 	/**
 	 * 修改订单状态
-	 * @param $orderId
+	 * @param int $orderId
+	 * @param int $status 新状态
 	 * @author 李小同
 	 * @date   2018-8-5 00:25:49
 	 * @return bool
 	 */
-	public function washOrderChangeStatus($orderId) {
+	public function washOrderChangeStatus($orderId, $status) {
 		
-		$order = \DB::table('wash_order')->where('order_id', $orderId)->first(['status']);
+		$order  = \DB::table('wash_order')->where('order_id', $orderId)->first(['status']);
+		$status = intval($status);
+		
 		\DB::beginTransaction();
 		try {
-			if ($order['status'] == '2') {
-				\DB::table('wash_order')->where('order_id', $orderId)->update(['status' => '3']);
+			$flag   = false;
+			$action = '';
+			switch ($status) {
+				case 3:
+					if ($order['status'] == 2) {
+						$flag   = true;
+						$action = self::ACTION_TO_STATUS[3];
+					}
+					break;
+				case 4:
+					if ($order['status'] == 3) {
+						$flag   = true;
+						$action = self::ACTION_TO_STATUS[4];
+					}
+					break;
+				case 5:
+					if ($order['status'] == 4) {
+						$flag   = true;
+						$action = self::ACTION_TO_STATUS[5];
+					}
+					break;
+			}
+			if ($flag) {
+				\DB::table('wash_order')->where('order_id', $orderId)->update(['status' => $status]);
 				
 				$logData = [
 					'wash_order_id' => $orderId,
-					'action'        => 'take_order',
-					'operator'      => '【'.trans('common.manager').'】'.\ManagerService::getManagerName(),
+					'action'        => $action,
+					'order_status'  => $status,
+					'operator'      => $this->_getFormatManager(),
 				];
 				$this->addOrderLog($logData);
 				
 				\DB::commit();
 				return true;
+			} else {
+				return false;
 			}
 			
 		} catch (\Exception $e) {
@@ -253,6 +371,52 @@ class OrderService extends BaseService {
 			return false;
 		}
 		
+	}
+	
+	/**
+	 * 上传洗车前后照片
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-8-5 14:29:33
+	 * @return bool
+	 */
+	public function uploadImages(array $post = []) {
+		
+		if (!empty($post['wash_order_id'])) {
+			if ($post['images'][0]) {
+				$value = ToolService::uploadFiles($post['images']);
+				$where = [
+					'wash_order_id' => $post['wash_order_id'],
+					'type'          => $post['type'],
+				];
+				\DB::table('wash_image')->where($where)->update(['status' => '-1']);
+				$imageData = [
+					'wash_order_id' => $post['wash_order_id'],
+					'type'          => $post['type'],
+					'images'        => $value,
+					'create_at'     => time(),
+					'create_by'     => $this->_getFormatManager(),
+				];
+				$id        = \DB::table('wash_image')->insertGetId($imageData);
+				return $id;
+			} else {
+				return true;
+			}
+			
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * 获取格式化的管理员名称
+	 * @author 李小同
+	 * @date   2018-8-5 14:08:29
+	 * @return string
+	 */
+	private function _getFormatManager() {
+		
+		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
 	}
 	# endregion
 	
@@ -401,6 +565,7 @@ class OrderService extends BaseService {
 			$logData = [
 				'wash_order_id' => $orderData['order_id'],
 				'action'        => 'add_order',
+				'order_status'  => 1,
 				'operator'      => '【'.trans('common.user').'】'.\UserService::getUserInfo('nickname'),
 			];
 			$this->addOrderLog($logData);
@@ -494,6 +659,7 @@ class OrderService extends BaseService {
 			'wash_order_id' => $logData['wash_order_id'],
 			'action'        => $logData['action'],
 			'operator'      => $logData['operator'],
+			'order_status'  => $logData['order_status'],
 			'create_at'     => time(),
 		];
 		$id   = \DB::table('wash_order_log')->insertGetId($data);

@@ -53,6 +53,7 @@ return [
 	'order_id'                 => '订单号',
 	'order_status'             => '订单状态',
 	'payment_status'           => '支付状态',
+	'picture'                  => '图片',
 	
 	# 属性
 	'gender_0'                 => '',
@@ -81,6 +82,7 @@ return [
 	'search'                   => '搜索',
 	'preview'                  => '预览',
 	'back'                     => '后退',
+	'upload'                   => '上传',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',
@@ -110,4 +112,6 @@ return [
 	'place_order_failed'       => '提交失败，请稍后重试！',
 	'sale_count'               => '已售%s单',
 	'take_order'               => '接单',
+	'serve_start'              => '开始服务',
+	'serve_finish'             => '完成服务',
 ];

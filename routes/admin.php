@@ -25,7 +25,8 @@ Route::group(['namespace' => 'Admin'], function () {
 			'uses' => 'OrderController@washOrderChangeStatus',
 			'as'   => 'washOrderChangeStatus',
 		]);
-		
+		# 上传清洗前后照片
+		Route::post('uploadWashImages', ['uses' => 'OrderController@uploadWashImages', 'as' => 'uploadWashImages']);
 	});
 	
 	# 车辆

@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\ContentTypeService;
 
 class BaseController extends Controller {
 	
@@ -91,28 +90,6 @@ class BaseController extends Controller {
 		} else {
 			json_msg(trans('validation.no_one_selected'), 40001);
 		}
-	}
-	
-	/**
-	 * 获取表单html
-	 * @param array $detail
-	 * @param array $structure
-	 * @author 李小同
-	 * @date
-	 * @return string
-	 */
-	public function getFormHtml(array $detail = [], array $structure = []) {
-		
-		$html               = '';
-		$contentTypeService = new ContentTypeService();
-		foreach ($structure as $field) {
-			
-			$value    = isset($detail[$field['name']]) ? $detail[$field['name']] : ($field['type'] == 'checkbox' ? [] : '');
-			$funcName = $field['type'].'FormElement';
-			if (method_exists($contentTypeService, $funcName)) $html .= $contentTypeService->$funcName($field, $value);
-		}
-		
-		return $html;
 	}
 	
 	/**

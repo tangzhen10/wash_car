@@ -73,7 +73,7 @@ class OrderController extends BaseController {
 				],
 			];
 			$detail                       = $this->service->getWashOrderDetail($orderId);
-			$this->data['html']           = $this->getFormHtml($detail, $structure);
+			$this->data['html']           = $this->service->getFormHtmlByStructure($structure, $detail);
 			$this->data['detail']         = $detail;
 			$this->data['wash_time_list'] = array_column($this->service->getWashTimeList(), 'value');
 			
@@ -101,7 +101,20 @@ class OrderController extends BaseController {
 	public function washOrderChangeStatus() {
 		
 		$orderId = \Request::input('order_id');
-		$res     = $this->service->washOrderChangeStatus($orderId);
+		$status  = \Request::input('status');
+		$res     = $this->service->washOrderChangeStatus($orderId, $status);
+		$this->render($res);
+	}
+	
+	/**
+	 * 上传洗车前后照片
+	 * @author 李小同
+	 * @date   2018-8-5 14:12:34
+	 */
+	public function uploadWashImages() {
+		
+		$post = request_all();
+		$res  = $this->service->uploadImages($post);
 		$this->render($res);
 	}
 	

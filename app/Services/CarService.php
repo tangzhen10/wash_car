@@ -300,7 +300,12 @@ class CarService extends BaseService {
 	 */
 	public function getColorList() {
 		
-		$list = \DB::table('car_color')->get(['id', 'name', 'code', 'status'])->where('status', '!=', '-1')->toArray();
+		$fields = ['id', 'name', 'code', 'sort', 'status'];
+		$list   = \DB::table('car_color')
+		             ->where('status', '!=', '-1')
+		             ->orderBy('sort', 'desc')
+		             ->get($fields)
+		             ->toArray();
 		$this->addStatusText($list);
 		
 		return $list;
@@ -595,7 +600,7 @@ class CarService extends BaseService {
 			$fields = ['id', 'name', 'code'];
 			$list   = \DB::table('car_color')
 			             ->where('status', '1')
-			             ->orderBy('id', 'desc')
+			             ->orderBy('sort', 'desc')
 			             ->limit(12)
 			             ->get($fields)
 			             ->toArray();

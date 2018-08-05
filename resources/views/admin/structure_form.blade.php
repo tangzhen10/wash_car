@@ -6,7 +6,7 @@
 	<article class="cl pd-20">
 		<form enctype="multipart/form-data" class="form form-horizontal" id="form">
 			@yield('extra')
-			<?= $html ?>
+			{!! $html !!}
 			@yield('extra_bottom')
 			<div class="row cl">
 				<div class="mt-5 text-c">

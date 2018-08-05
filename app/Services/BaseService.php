@@ -174,6 +174,34 @@ class BaseService {
 	}
 	
 	/**
+	 * 获取表单html
+	 * @param array $structure 表单结构
+	 * @param array $detail    文章数据
+	 * @author 李小同
+	 * @date
+	 * @return string
+	 */
+	public function getFormHtmlByStructure(array $structure = [], array $detail = []) {
+		
+		$html = '';
+		foreach ($structure as $field) {
+			
+			if (isset($detail[$field['name']])) {
+				$value = $detail[$field['name']];
+			} else {
+				$value = in_array($field['type'], ['checkbox', 'images']) ? [] : '';
+			}
+			
+			$funcName = $field['type'].'FormElement';
+			if (method_exists(ContentTypeService::class, $funcName)) {
+				$html .= \ContentTypeService::$funcName($field, $value);
+			}
+		}
+		
+		return $html;
+	}
+	
+	/**
 	 * 检测新状态值是否合法
 	 * @param $status
 	 * @author 李小同

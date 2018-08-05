@@ -137,7 +137,7 @@ class CarController extends BaseController {
 			];
 			$detail    = $this->service->getBrandDetailById($id);
 			
-			$this->data['html'] = $this->getFormHtml($detail, $structure);
+			$this->data['html'] = $this->service->getFormHtmlByStructure($structure, $detail);
 			
 			return view('admin/car/brand/form', $this->data);
 		}
@@ -219,7 +219,7 @@ class CarController extends BaseController {
 				],
 			];
 			$detail             = $this->service->getModelDetailById($id);
-			$this->data['html'] = $this->getFormHtml($detail, $structure);
+			$this->data['html'] = $this->service->getFormHtmlByStructure($structure, $detail);
 			
 			if (empty($detail['brand_id']) && !empty(\Request::input('brand_id'))) {
 				$detail['brand_id'] = \Request::input('brand_id');
@@ -297,6 +297,12 @@ class CarController extends BaseController {
 					'value'     => '',
 				],
 				[
+					'name_text' => trans('common.sort'),
+					'type'      => 'number',
+					'name'      => 'sort',
+					'value'     => '值越大，越靠前',
+				],
+				[
 					'name_text' => trans('common.status'),
 					'type'      => 'radio',
 					'name'      => 'status',
@@ -305,7 +311,7 @@ class CarController extends BaseController {
 			];
 			$detail    = $this->service->getColorDetailById($id);
 			
-			$this->data['html']   = $this->getFormHtml($detail, $structure);
+			$this->data['html']   = $this->service->getFormHtmlByStructure($structure, $detail);
 			$this->data['detail'] = $detail;
 			
 			return view('admin/car/color/form', $this->data);

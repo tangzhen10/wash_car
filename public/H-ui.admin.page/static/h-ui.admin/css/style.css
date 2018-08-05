@@ -57,7 +57,7 @@
 	display: block;
 }
 .J_image_preview img {
-	max-width: 350px;
+	max-width: 300px;
 	max-height: 300px;
 	box-shadow: #ccc 1px 1px 5px;
 	margin: 5px;

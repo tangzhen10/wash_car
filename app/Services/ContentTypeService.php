@@ -214,16 +214,16 @@ class ContentTypeService extends BaseService {
 	# region formElement
 	/**
 	 * 获取自定义的表单元素
-	 * @param $id
+	 * @param $contentTypeId
 	 * @param $articleId
 	 * @author 李小同
 	 * @date   2018-7-14 15:24:29
 	 * @return string
 	 */
-	public function getFormHtml($id, $articleId) {
+	public function getFormHtml($contentTypeId, $articleId) {
 		
 		$html        = '';
-		$contentType = $this->getDetailById($id);
+		$contentType = $this->getDetailById($contentTypeId);
 		$article     = \ArticleService::getDetailById($articleId);
 		if (!empty($contentType['structure'])) {
 			foreach ($contentType['structure'] as $field) {
@@ -464,7 +464,7 @@ class ContentTypeService extends BaseService {
 		$html = '<p class="J_image">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<span class="btn-upload form-group">
-						<input class="input-text upload-url radius" type="text" style="width: 600px" value="'.$value.'"   
+						<input class="input-text upload-url radius" type="text" style="width: 500px" value="'.$value.'"   
 							   name="uploadfile_'.$field['name'].'" readonly placeholder="'.$field['value'].'">
 						<a href="javascript:void();" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
@@ -481,9 +481,9 @@ class ContentTypeService extends BaseService {
 						var files = this.files   // 获取input上传的图片数据;						
 						$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(\'\');
 						for(var i = 0; i < files.length; i++) {
-							var img = new Image();						
-							url = window.URL.createObjectURL(files[i])  // 得到bolb对象路径，可当成普通的文件路径一样使用，赋值给src;
-							img.src = url;						
+							var img = new Image(),						
+								url = window.URL.createObjectURL(files[i]);
+							img.src = url;
 							$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(img);
 						}
 					});
@@ -505,7 +505,7 @@ class ContentTypeService extends BaseService {
 		$html = '<p class="J_image">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<span class="btn-upload form-group">
-						<input class="input-text upload-url radius" type="text" style="width: 600px" value="'.implode(',', $value).'"   
+						<input class="input-text upload-url radius" type="text" style="width: 500px" value="'.implode(',', $value).'"   
 							   name="uploadfile_'.$field['name'].'" readonly placeholder="'.$field['value'].'">
 						<a href="javascript:void();" class="btn btn-primary radius">
 							<i class="Hui-iconfont">&#xe642;</i> 浏览文件
@@ -525,8 +525,8 @@ class ContentTypeService extends BaseService {
 						$(this).parents(\'.J_image\').find(\'.J_image_preview\').html(\'\');
 						for(var i = 0; i < files.length; i++) {
 							var img = new Image(),						
-								url = window.URL.createObjectURL(files[i]); // 得到对象路径，可当成普通的文件路径一样使用，赋值给src;
-							img.src = url;			
+								url = window.URL.createObjectURL(files[i]);
+							img.src = url;
 							$(\'.J_image_preview\').append(img);
 						}
 					});
