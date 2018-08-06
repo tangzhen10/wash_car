@@ -21,7 +21,8 @@ class ToolController extends BaseController {
 	 */
 	public function sendSMSCode() {
 		
-		echo \ToolService::sendSMSCode();
-		echo '，验证码有效期为5分钟，请尽快输入。';
+		$res = \ToolService::sendSMSCode();
+		$msg = $res.'，验证码有效期为5分钟，请尽快输入。';
+		json_msg($msg);
 	}
 }

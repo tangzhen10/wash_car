@@ -61,7 +61,7 @@ class OrderService extends BaseService {
 			'a.status',
 			'b.plate_number',
 			'c.name AS brand',
-			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
+			'd.name AS model',
 			'e.name AS color',
 		];
 		$listPage = \DB::table('wash_order AS a')
@@ -123,7 +123,7 @@ class OrderService extends BaseService {
 			'a.create_at',
 			'b.plate_number',
 			'c.name AS brand',
-			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
+			'd.name AS model',
 			'e.name AS color',
 			'f.nickname AS username',
 			'f.phone AS phone',
@@ -197,7 +197,8 @@ class OrderService extends BaseService {
 	 */
 	public function getWashImages($orderId, $status) {
 		
-		foreach (['before', 'after'] as $type) {
+		$types = ['before', 'after'];
+		foreach ($types as $type) {
 			$imagesHtml[$type] = '';
 			$images[$type]     = [];
 			
@@ -231,7 +232,7 @@ class OrderService extends BaseService {
 					$images[$row['type']] = explode(',', $row['images']);
 				}
 			}
-			foreach (['before', 'after'] as $type) {
+			foreach ($types as $type) {
 				$imagesInfo = [
 					'wash_order_id' => $orderId,
 					'type'          => $type,
@@ -241,7 +242,23 @@ class OrderService extends BaseService {
 				
 				$imagesHtml[$type] = $html;
 			}
-			if ($status == 3) $imagesHtml['after'] = ''; # 接单时不允许上传清洗后照片
+			if ($status == 3) { # 接单时不允许上传清洗后照片
+				$imagesHtml['after'] = '';
+			} elseif ($status == 4) {
+				$imagesHtml['before'] = '<span class="J_image_preview">';
+				foreach ($images['before'] as $image) {
+					$imagesHtml['before'] .= '<img src="'.\URL::asset($image).'" />';
+				}
+				$imagesHtml['before'] .= '</span>';
+			} elseif (!in_array($status, [1, 2])) {
+				foreach ($types as $type) {
+					$imagesHtml[$type] = '<span class="J_image_preview">';
+					foreach ($images[$type] as $image) {
+						$imagesHtml[$type] .= '<img src="'.\URL::asset($image).'" />';
+					}
+					$imagesHtml[$type] .= '</span>';
+				}
+			}
 		}
 		
 		return compact('imagesHtml', 'images');
@@ -492,7 +509,7 @@ class OrderService extends BaseService {
 			'a.create_at',
 			'b.plate_number',
 			'c.name AS brand',
-			\DB::raw('IF(t_b.model_id = 0, \'其他\', t_d.name) AS model'),
+			'd.name AS model',
 			'e.name AS color',
 		];
 		$rows   = \DB::table('wash_order AS a')

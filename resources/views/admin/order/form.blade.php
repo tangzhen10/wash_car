@@ -94,9 +94,7 @@
 					<p>
 						<span class="form_filed_row">{{trans('common.car_info')}}：</span>
 						<span>
-							{{$detail['plate_number']}}
-							| {{$detail['brand']}} - {{$detail['model']}}
-							| {{$detail['color']}}
+							{{$detail['plate_number']}} | {{$detail['brand']}} {{$detail['model']}} | {{$detail['color']}}
 						</span>
 					</p>
 					@if ($detail['status'] < 3)
@@ -166,12 +164,8 @@
 				{{--接单后才可以上传清洗前照片--}}
 				@if ($detail['status'] == 3)
 					<p class="text-c">
-						<span class="btn btn-primary radius J_upload" data_type="before_wash">{{trans('common.upload')}}</span>
+						<span class="btn btn-primary radius J_upload">{{trans('common.upload')}}</span>
 					</p>
-				@elseif (!in_array($detail['status'], [1,2]))
-					<script>
-						$('input,select,textarea').attr('disabled', 'disabled');
-					</script>
 				@endif
 			</form>
 		</div>
@@ -181,12 +175,8 @@
 				{{--开始服务后才可以上传清洗后照片--}}
 				@if ($detail['status'] == 4)
 					<p class="text-c">
-						<span class="btn btn-primary radius J_upload" data_type="before_wash">{{trans('common.upload')}}</span>
+						<span class="btn btn-primary radius J_upload">{{trans('common.upload')}}</span>
 					</p>
-				@elseif (!in_array($detail['status'], [1,2]))
-					<script>
-//						$('input,select,textarea').attr('disabled', 'disabled');
-					</script>
 				@endif
 			</form>
 		</div>
@@ -225,7 +215,7 @@
 			// 订单操作
 			$('.J_action').click(function () {
 				var action_text = $(this).text(),
-				    new_status  = $(this).attr('data-status');
+					new_status  = $(this).attr('data-status');
 				layer.confirm('<strong>确认'+action_text+'？', {
 					title : action_text,
 				}, function () {
@@ -280,6 +270,10 @@
 						} else {
 							layer.msg(data.error, function () {});
 						}
+					},
+					error      : function () {
+						layer.close(layer.load());
+						layer.msg('请检查图片是否尺寸过大或手动修改过原图格式！', function () {});
 					}
 				});
 			});

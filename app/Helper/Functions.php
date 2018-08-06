@@ -264,12 +264,13 @@ function create_thumb($srcPath, $flag = true) {
 	
 	//拼接打开图片的函数
 	$open_fn = 'imagecreatefrom'.$type;
+	
 	//打开源图
 	$src = $open_fn($srcPath);
+	
 	//创建目标图
 	$maxW = config('project.THUMB_WIDTH'); # 画布的宽度
 	$maxH = config('project.THUMB_HEIGHT'); # 画布的高度
-	$dst  = imagecreatetruecolor($maxW, $maxH);
 	
 	//源图的宽
 	$srcW = imagesx($src);
@@ -291,19 +292,37 @@ function create_thumb($srcPath, $flag = true) {
 			$dstH = $maxH;
 			$dstW = $maxH * $srcW / $srcH;
 		}
-		//在目标图上显示的位置
-		$dstX = (int)(($maxW - $dstW) / 2);
-		$dstY = (int)(($maxH - $dstH) / 2);
+		# 在原图上切割的位置
+		$srcX = 0;
+		$srcY = 0;
 	} else {    //不等比
 		
-		$dstX = 0;
-		$dstY = 0;
 		$dstW = $maxW;
 		$dstH = $maxH;
+		
+		//求目标图片的宽高
+		if ($maxW / $maxH < $srcW / $srcH) {
+			
+			//横屏图片以宽为标准
+			$srcX = ($srcW - ($srcH / $dstH) * $dstW) / 2;
+			$srcY = 0;
+		} else {
+			
+			//竖屏图片以高为标准
+			$srcX = 0;
+			$srcY = ($srcH - ($srcW / $dstW) * $dstH) / 2;
+		}
 	}
+	$dst = imagecreatetruecolor($dstW, $dstH);
+	
+	// 启用混色模式
+	imagealphablending($dst, false);
+	
+	// 保存PNG alpha通道信息
+	imagesavealpha($dst, true);
 	
 	//生成缩略图
-	imagecopyresampled($dst, $src, $dstX, $dstY, 0, 0, $dstW, $dstH, $srcW, $srcH);
+	imagecopyresampled($dst, $src, 0, 0, $srcX, $srcY, $dstW, $dstH, $srcW, $srcH);
 	
 	//文件名
 	$filename = basename($srcPath);

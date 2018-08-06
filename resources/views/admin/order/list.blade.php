@@ -33,7 +33,7 @@
 			<tr class="text-c">
 				<td>{{$row['order_id']}}</td>
 				<td>{{$row['wash_product']}}</td>
-				<td>{{$row['plate_number']}} | {{$row['brand']}} - {{$row['model']}} | {{$row['color']}}</td>
+				<td>{{$row['plate_number']}} | {{$row['brand']}} {{$row['model']}} | {{$row['color']}}</td>
 				<td>{{$row['wash_time']}}</td>
 				<td style="width:15%;" title="{{$row['address']}}">{{$row['address']}}</td>
 				<td>{{$row['create_at']}}</td>

@@ -109,7 +109,7 @@ class ToolService {
 			if (!$file->move($uploadStoragePath, $fileName)) die(json_encode(['error' => '保存文件失败！']));
 			
 			# 缩略图
-			create_thumb($uploadStoragePath.$fileName, false);
+			create_thumb($uploadStoragePath.$fileName);
 			
 			$uploadedFiles[] = $uploadPath.$fileName;
 		}
