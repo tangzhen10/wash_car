@@ -51,7 +51,7 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		# 品牌
 		Route::post('brand', ['uses' => 'CarController@brand', 'as' => 'apiCarBrand']);
 		# 车型
-		Route::post('model/{brand_id}', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
+		Route::post('model', ['uses' => 'CarController@model', 'as' => 'apiCarModel']);
 		# 车牌省份
 		Route::post('province', ['uses' => 'CarController@province', 'as' => 'apiCarProvince']);
 		# 颜色
