@@ -232,7 +232,7 @@ class ContentTypeService extends BaseService {
 				if (isset($article['detail'][$field['name']])) $value = $article['detail'][$field['name']];
 				
 				$funcName = $field['type'].'FormElement';
-				if (method_exists($this, $funcName)) $html .= $this->$funcName($field, $value, $id);
+				if (method_exists($this, $funcName)) $html .= $this->$funcName($field, $value);
 			}
 		}
 		

@@ -151,12 +151,14 @@ class MemberService extends BaseService {
 			$post['nickname'] = trim($post['nickname']);
 			$existNickName    = \DB::table('user')
 			                       ->where('user_id', $post['user_id'])
-			                       ->where('nickname', '!=', $post['nickname'])
+			                       ->where('nickname', '=', $post['nickname'])
 			                       ->count();
 			if ($existNickName) {
 				$errorMsg = trans('validation.has_been_registered', ['attr' => trans('common.username')]);
 				json_msg($errorMsg, 40002);
 			}
+		} else {
+			$post['nickname'] = '';
 		}
 		
 		# 检测手机号码格式
@@ -173,6 +175,8 @@ class MemberService extends BaseService {
 				$errorMsg = trans('validation.invalid', ['attr' => trans('common.email')]);
 				json_msg($errorMsg, 40003);
 			}
+		} else {
+			$post['email'] = '';
 		}
 		
 		# 生日转换成时间戳
