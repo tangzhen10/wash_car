@@ -150,8 +150,8 @@ class MemberService extends BaseService {
 		if (!empty($post['nickname'])) {
 			$post['nickname'] = trim($post['nickname']);
 			$existNickName    = \DB::table('user')
-			                       ->where('user_id', $post['user_id'])
-			                       ->where('nickname', '=', $post['nickname'])
+			                       ->where('nickname', $post['nickname'])
+			                       ->where('user_id', '!=', $post['user_id'])
 			                       ->count();
 			if ($existNickName) {
 				$errorMsg = trans('validation.has_been_registered', ['attr' => trans('common.username')]);
