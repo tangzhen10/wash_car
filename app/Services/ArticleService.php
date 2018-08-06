@@ -205,6 +205,7 @@ class ArticleService extends BaseService {
 		# 精确筛选
 		$where = [];
 		# 按类型筛选
+		if (!empty($filter['filter_id'])) $where['a.id'] = $filter['filter_id'];
 		if (!empty($filter['filter_content_type'])) $where['a.content_type'] = $filter['filter_content_type'];
 		
 		$listPage = $listPage->where($where)

@@ -718,7 +718,7 @@ class OrderService extends BaseService {
 		} else {
 			$filter  = [
 				'id'           => $data['wash_product_id'],
-				'content_type' => config('project.CONTENT_TYPE.WASH_PRODUCT'),
+				'content_type' => \SettingService::getValue('product_content_type'),
 			];
 			$product = \ArticleService::getArticlePublicInfo($filter)->count('id');
 			if (!$product) json_msg(trans('validation.invalid', ['attr' => trans('common.wash_product')]), 40003);

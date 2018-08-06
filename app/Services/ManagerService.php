@@ -269,7 +269,6 @@ class ManagerService extends BaseService {
 		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')
 		               ->leftJoin('role AS c', 'c.id', '=', 'b.role_id')
 		               ->where('a.status', '!=', '-1')
-		               ->where('c.status', '1')
 		               ->groupBy('a.id')
 		               ->get($fields)
 		               ->toArray();

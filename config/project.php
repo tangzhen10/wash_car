@@ -24,7 +24,6 @@ return [
 	'ALLOW_TYPE_OF_CONTENT_TYPE' => ['1', '2'], # 合法的文档类型的类型
 	'FIRST_LETTER'               => 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', # 车辆品牌首字母
 	'CONTENT_TYPE'               => [
-		'INVEST'            => 21, # 理财产品
 		'WASH_PRODUCT'      => 24, # 洗车服务项目
 		'WASH_INDEX_BANNER' => 25, # 洗车服务首页banner
 	],

@@ -78,7 +78,7 @@
 					<p>
 						<span class="form_filed_row">{{trans('common.wash_product')}}：</span>
 						<span>
-						<a href="{{route('productList')}}?filter_wash_product_id={{$detail['wash_product_id']}}" target="_blank">
+						<a href="{{route('productList')}}?filter_id={{$detail['wash_product_id']}}" target="_blank">
 							{{$detail['wash_product']}}
 						</a>
 					</span>

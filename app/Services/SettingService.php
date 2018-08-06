@@ -68,6 +68,7 @@ class SettingService extends BaseService {
 	public function handleAfterUpdate() {
 		
 		$cacheKey = config('cache.SETTING');
+		
 		return redisDel($cacheKey);
 	}
 	
@@ -85,17 +86,17 @@ class SettingService extends BaseService {
 		                   ->whereIn('content_type', $categoryInfo)
 		                   ->where('status', '1')
 		                   ->pluck('id');
-		$productInfo  = \DB::table('article')
+		$productCount = \DB::table('article')
 		                   ->where('content_type', \SettingService::getValue('product_content_type'))
 		                   ->where('status', '1')
-		                   ->pluck('id');
-		$managerInfo  = \DB::table('manager')->where('status', '1')->pluck('id');
+		                   ->count('id');
+		$managerCount = \DB::table('manager')->where('status', '1')->count('id');
 		
 		$total = [
 			'category' => count($categoryInfo),
 			'tab'      => count($tabInfo),
-			'product'  => count($productInfo),
-			'manager'  => count($managerInfo),
+			'product'  => $productCount,
+			'manager'  => $managerCount,
 		];
 		
 		return $total;

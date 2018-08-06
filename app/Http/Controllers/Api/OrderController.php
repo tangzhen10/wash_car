@@ -20,7 +20,7 @@ class OrderController extends BaseController {
 		$banners = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_INDEX_BANNER')], false);
 		
 		# 默认服务项目
-		$products = \ArticleService::getArticleList(['content_type' => config('project.CONTENT_TYPE.WASH_PRODUCT')], false);
+		$products = \ArticleService::getArticleList(['content_type' => \SettingService::getValue('product_content_type')], false);
 		$product  = $products[0];
 		$total    = $product['detail']['price'] * 1;
 		$totalOri = $product['detail']['price_ori'] * 1;

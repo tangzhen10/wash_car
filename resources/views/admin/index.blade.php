@@ -20,8 +20,8 @@
 			<td>总数</td>
 			<td>{{$total['category']}}</td>
 			<td>{{$total['tab']}}</td>
-			<td>{{$total['product']}}</td>
-			<td>{{$total['manager']}}</td>
+			<td><a href="{{route('productList')}}">{{$total['product']}}</a></td>
+			<td><a href="{{route('managerList')}}">{{$total['manager']}}</a></td>
 		</tr>
 		</tbody>
 	</table>
