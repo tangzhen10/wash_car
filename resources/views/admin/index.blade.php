@@ -8,19 +8,20 @@
 			<th colspan="7" scope="col">信息统计</th>
 		</tr>
 		<tr class="text-c">
-			<th>统计</th>
-			<th>产品分类</th>
-			<th>产品栏目</th>
+			<th>订单总量</th>
+			<th>今日订单量</th>
 			<th>产品</th>
+			<th>会员</th>
 			<th>管理员</th>
 		</tr>
 		</thead>
 		<tbody>
 		<tr class="text-c">
-			<td>总数</td>
-			<td>{{$total['category']}}</td>
-			<td>{{$total['tab']}}</td>
+			<td><a href="{{route('washOrderList')}}">{{$total['order']}}</a></td>
+			<td><a href="{{route('washOrderList')}}?filter_date_from={{date('Y-m-d')}}&filter_date_to={{date('Y-m-d')}}">
+					{{$total['order_today']}}</a></td>
 			<td><a href="{{route('productList')}}">{{$total['product']}}</a></td>
+			<td><a href="{{route('memberList')}}">{{$total['member']}}</a></td>
 			<td><a href="{{route('managerList')}}">{{$total['manager']}}</a></td>
 		</tr>
 		</tbody>

@@ -73,8 +73,12 @@ class OrderService extends BaseService {
 		               ->leftJoin('article AS g', 'g.id', '=', 'a.wash_product_id');
 		
 		if (!empty($filter['filter_order_id'])) $listPage = $listPage->where('a.order_id', '=', $filter['filter_order_id']);
-		if (!empty($filter['filter_date_from'])) $listPage = $listPage->where('a.create_at', '>=', strtotime($filter['filter_date_from']));
-		if (!empty($filter['filter_date_to'])) $listPage = $listPage->where('a.create_at', '<=', strtotime($filter['filter_date_to']));
+		if (!empty($filter['filter_date_from'])) {
+			$listPage = $listPage->where('a.create_at', '>=', strtotime($filter['filter_date_from'].' 00:00:00'));
+		}
+		if (!empty($filter['filter_date_to'])) {
+			$listPage = $listPage->where('a.create_at', '<=', strtotime($filter['filter_date_to'].' 23:59:59'));
+		}
 		if (!empty($filter['filter_account'])) {
 			$listPage = $listPage->where(function ($query) use ($filter) {
 				
@@ -101,107 +105,19 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 获取洗车订单详情
-	 * @param $orderId
-	 * @author 李小同
-	 * @date   2018-8-4 10:03:18
-	 * @return array
-	 */
-	public function getWashOrderDetail($orderId) {
-		
-		$fields = [
-			'a.id',
-			'a.order_id',
-			'a.user_id',
-			'a.wash_product_id',
-			'a.contact_user',
-			'a.contact_phone',
-			'a.address',
-			'a.wash_time',
-			'a.payment_status',
-			'a.status',
-			'a.create_at',
-			'b.plate_number',
-			'c.name AS brand',
-			'd.name AS model',
-			'e.name AS color',
-			'f.nickname AS username',
-			'f.phone AS phone',
-			'g.name AS wash_product',
-		];
-		$detail = \DB::table('wash_order AS a')
-		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
-		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
-		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
-		             ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
-		             ->leftJoin('user AS f', 'f.user_id', '=', 'a.user_id')
-		             ->leftJoin('article AS g', 'g.id', '=', 'a.wash_product_id')
-		             ->select($fields)
-		             ->where('order_id', $orderId)
-		             ->where('a.status', '!=', '-1')
-		             ->first();
-		# 订单状态信息
-		$orderStatusMsg = '';
-		switch ($detail['status']) {
-			case 1 :
-				# 未付款，1小时倒计时
-				$cancelAt       = $detail['create_at'] + 3600;
-				$orderStatusMsg = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
-		}
-		$detail['order_status_msg'] = $orderStatusMsg;
-		
-		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
-		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
-		$detail['create_at']   = intToTime($detail['create_at']);
-		
-		# 操作日志
-		$logs           = $this->getOrderLogs($orderId);
-		$detail['logs'] = $logs;
-		
-		# 清洗前后照片表单
-		$washImages                 = $this->getWashImages($orderId, $detail['status']);
-		$detail['wash_images_html'] = $washImages['imagesHtml'];
-		$detail['wash_images']      = $washImages['images'];
-		
-		return $detail;
-	}
-	
-	/**
-	 * 获取订单操作日志
-	 * @param $orderId
-	 * @author 李小同
-	 * @date   2018-8-5 08:11:41
-	 * @return array
-	 */
-	public function getOrderLogs($orderId) {
-		
-		$fields = ['action', 'create_at', 'order_status', 'operator'];
-		$logs   = \DB::table('wash_order_log')->where('wash_order_id', $orderId)->get($fields)->toArray();
-		foreach ($logs as &$log) {
-			$log['create_at']    = intToTime($log['create_at']);
-			$log['action']       = self::ORDER_ACTION[$log['action']];
-			$log['order_status'] = self::ORDER_STATUS[$log['order_status']];
-		}
-		unset($log);
-		
-		return $logs;
-	}
-	
-	/**
-	 * 获取清洗前后照片的表单及图片
+	 * 获取清洗前后照片的图片及表单
 	 * @param int $orderId
 	 * @param int $status 订单状态
 	 * @author 李小同
 	 * @date   2018-8-5 14:53:40
 	 * @return array
 	 */
-	public function getWashImages($orderId, $status) {
+	public function getWashImagesAndHtml($orderId, $status) {
 		
 		$types = ['before', 'after'];
 		foreach ($types as $type) {
 			$imagesHtml[$type] = '';
 			$images[$type]     = [];
-			
 		}
 		if (!in_array($status, [1, 2])) {
 			$structure = [
@@ -225,13 +141,7 @@ class OrderService extends BaseService {
 				],
 			];
 			
-			$where = ['wash_order_id' => $orderId, 'status' => '1'];
-			$rows  = \DB::table('wash_image')->where($where)->get(['images', 'type'])->toArray();
-			if (!empty($rows)) {
-				foreach ($rows as $row) {
-					$images[$row['type']] = explode(',', $row['images']);
-				}
-			}
+			$images = $this->getWashImages($orderId);
 			foreach ($types as $type) {
 				$imagesInfo = [
 					'wash_order_id' => $orderId,
@@ -489,6 +399,109 @@ class OrderService extends BaseService {
 			json_msg(trans('error.wrong_wash_time'), 40003);
 		}
 	}
+	
+	/**
+	 * 获取洗车订单详情
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-4 10:03:18
+	 * @return array
+	 */
+	public function getWashOrderDetail($orderId) {
+		
+		$fields = [
+			'a.id',
+			'a.order_id',
+			'a.user_id',
+			'a.wash_product_id',
+			'a.contact_user',
+			'a.contact_phone',
+			'a.address',
+			'a.wash_time',
+			'a.payment_status',
+			'a.total',
+			'a.status',
+			'a.create_at',
+			'b.plate_number',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS color',
+			'f.nickname AS username',
+			'f.phone AS phone',
+			'g.name AS wash_product',
+		];
+		$detail = \DB::table('wash_order AS a')
+		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
+		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
+		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
+		             ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		             ->leftJoin('user AS f', 'f.user_id', '=', 'a.user_id')
+		             ->leftJoin('article AS g', 'g.id', '=', 'a.wash_product_id')
+		             ->select($fields)
+		             ->where('order_id', $orderId)
+		             ->where('a.status', '!=', '-1')
+		             ->first();
+		# 订单状态信息
+		$orderStatusMsg = '';
+		switch ($detail['status']) {
+			case 1 :
+				# 未付款，1小时倒计时
+				$cancelAt       = $detail['create_at'] + 3600;
+				$orderStatusMsg = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				break;
+			
+		}
+		$detail['order_status_msg'] = $orderStatusMsg;
+		
+		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
+		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
+		$detail['create_at']   = intToTime($detail['create_at']);
+		$detail['total']       = currencyFormat($detail['total']);
+		
+		return $detail;
+	}
+	
+	/**
+	 * 获取订单中的清洗前后照片
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-7 20:44:33
+	 * @return array
+	 */
+	public function getWashImages($orderId) {
+		
+		$images = ['before' => [], 'after' => []];
+		$where  = ['wash_order_id' => $orderId, 'status' => '1'];
+		$rows   = \DB::table('wash_image')->where($where)->get(['images', 'type'])->toArray();
+		if (!empty($rows)) {
+			foreach ($rows as $row) {
+				$images[$row['type']] = explode(',', $row['images']);
+			}
+		}
+		
+		return $images;
+	}
+	
+	/**
+	 * 获取订单操作日志
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-5 08:11:41
+	 * @return array
+	 */
+	public function getOrderLogs($orderId) {
+		
+		$fields = ['action', 'create_at', 'order_status', 'operator'];
+		$logs   = \DB::table('wash_order_log')->where('wash_order_id', $orderId)->get($fields)->toArray();
+		foreach ($logs as &$log) {
+			$log['create_at']    = intToTime($log['create_at']);
+			$log['action_text']  = self::ORDER_ACTION[$log['action']];
+			$log['order_status'] = self::ORDER_STATUS[$log['order_status']];
+		}
+		unset($log);
+		
+		return $logs;
+	}
 	# endregion
 	
 	# region 前台
@@ -551,7 +564,7 @@ class OrderService extends BaseService {
 					'value' => [
 						'plate_number' => $row['plate_number'],
 						'brand'        => $row['brand'],
-						'model'        => $row['model'],
+						'model'        => empty($row['model']) ? '' : $row['model'],
 						'color'        => $row['color'],
 					],
 				],

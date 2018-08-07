@@ -46,7 +46,8 @@ class OrderController extends BaseController {
 			
 		} else {
 			
-			$structure                    = [
+			# 订单详情
+			$structure            = [
 				[
 					'name_text' => '',
 					'type'      => 'hidden',
@@ -72,9 +73,19 @@ class OrderController extends BaseController {
 					'value'     => '',
 				],
 			];
-			$detail                       = $this->service->getWashOrderDetail($orderId);
-			$this->data['html']           = $this->service->getFormHtmlByStructure($structure, $detail);
-			$this->data['detail']         = $detail;
+			$detail               = $this->service->getWashOrderDetail($orderId);
+			$this->data['html']   = $this->service->getFormHtmlByStructure($structure, $detail);
+			$this->data['detail'] = $detail;
+			
+			# 操作记录
+			$this->data['logs'] = $this->service->getOrderLogs($orderId);
+			
+			# 清洗前后照片
+			$washImages                     = $this->service->getWashImagesAndHtml($orderId, $detail['status']);
+			$this->data['wash_images_html'] = $washImages['imagesHtml'];
+			$this->data['wash_images']      = $washImages['images'];
+			
+			# 当前可用清洗时间
 			$this->data['wash_time_list'] = array_column($this->service->getWashTimeList(), 'value');
 			
 			return view('admin/order/form', $this->data);

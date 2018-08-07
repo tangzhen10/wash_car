@@ -280,13 +280,17 @@ class UserService {
 	 * @date   2018-8-2 20:53:46
 	 * @return bool|mixed
 	 */
-	public function getUserInfo($field) {
+	public function getUserInfo($field = '') {
 		
 		$userInfo = $this->userInfo;
-		if (isset($userInfo[$field])) {
-			return $userInfo[$field];
+		if (!empty($field)) {
+			if (isset($userInfo[$field])) {
+				return $userInfo[$field];
+			} else {
+				return '';
+			}
 		} else {
-			return '';
+			return $userInfo;
 		}
 	}
 	

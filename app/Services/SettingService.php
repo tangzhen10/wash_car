@@ -80,23 +80,25 @@ class SettingService extends BaseService {
 	 */
 	public function getTotalInfo() {
 		
-		# 版块
-		$categoryInfo = \DB::table('content_type')->where('type', '1')->where('status', '1')->pluck('id');
-		$tabInfo      = \DB::table('article')
-		                   ->whereIn('content_type', $categoryInfo)
-		                   ->where('status', '1')
-		                   ->pluck('id');
-		$productCount = \DB::table('article')
-		                   ->where('content_type', \SettingService::getValue('product_content_type'))
-		                   ->where('status', '1')
-		                   ->count('id');
-		$managerCount = \DB::table('manager')->where('status', '1')->count('id');
+		$orderCount      = \DB::table('wash_order')->where('status', '1')->count('id');
+		$orderTodayCount = \DB::table('wash_order')->where(function ($query) {
+			
+			$query->where('create_at', '>=', strtotime(date('Y-m-d 00:00:00')))
+			      ->where('create_at', '<=', strtotime(date('Y-m-d 23:59:59')));
+		})->count('id');
+		$productCount    = \DB::table('article')
+		                      ->where('content_type', \SettingService::getValue('product_content_type'))
+		                      ->where('status', '1')
+		                      ->count('id');
+		$memberCount     = \DB::table('user')->count('user_id');
+		$managerCount    = \DB::table('manager')->where('status', '1')->count('id');
 		
 		$total = [
-			'category' => count($categoryInfo),
-			'tab'      => count($tabInfo),
-			'product'  => $productCount,
-			'manager'  => $managerCount,
+			'order'       => $orderCount,
+			'order_today' => $orderTodayCount,
+			'product'     => $productCount,
+			'member'      => $memberCount,
+			'manager'     => $managerCount,
 		];
 		
 		return $total;

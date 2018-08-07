@@ -45,10 +45,10 @@
 @section('body')
 	<div id="tab_area" class="HuiTab">
 		<div class="tabBar clearfix">
-			<span>订单信息</span>
-			<span>订单进度</span>
-			<span>服务前照片</span>
-			<span>服务后照片</span>
+			<span>{{trans('common.order_info')}}</span>
+			<span>{{trans('common.order_log')}}</span>
+			<span>{{trans('common.image_before_wash')}}</span>
+			<span>{{trans('common.image_after_wash')}}</span>
 		</div>
 		<div class="tabCon">
 			<article class="cl pd-20">
@@ -97,7 +97,7 @@
 							{{$detail['plate_number']}} | {{$detail['brand']}} {{$detail['model']}} | {{$detail['color']}}
 						</span>
 					</p>
-					@if ($detail['status'] < 3)
+					@if (in_array($detail['status'], [1,2]))
 						{!! $html !!}
 						<p>
 							<span class="form_filed_row">{{trans('common.wash_time')}}：</span>
@@ -147,20 +147,20 @@
 			</article>
 		</div>
 		<div class="tabCon">
-			@foreach($detail['logs'] as $log)
+			@foreach($logs as $log)
 				<p class="log_item">
 					<span class="create_at">
 						<i class="Hui-iconfont" style="color: #5A98DD;">&#xe619;</i> {{$log['create_at']}}
 					</span>
 					<span class="operator">{{$log['operator']}}</span>
-					<span class="action">{{$log['action']}}</span>
+					<span class="action">{{$log['action_text']}}</span>
 					<span class="label label-secondary radius" style="display: inline;">{{$log['order_status']}}</span>
 				</p>
 			@endforeach
 		</div>
 		<div class="tabCon images_html">
 			<form enctype="multipart/form-data" class="form form-horizontal">
-				{!! $detail['wash_images_html']['before'] !!}
+				{!! $wash_images_html['before'] !!}
 				{{--接单后才可以上传清洗前照片--}}
 				@if ($detail['status'] == 3)
 					<p class="text-c">
@@ -171,7 +171,7 @@
 		</div>
 		<div class="tabCon images_html">
 			<form enctype="multipart/form-data" class="form form-horizontal">
-				{!! $detail['wash_images_html']['after'] !!}
+				{!! $wash_images_html['after'] !!}
 				{{--开始服务后才可以上传清洗后照片--}}
 				@if ($detail['status'] == 4)
 					<p class="text-c">
@@ -220,13 +220,13 @@
 					title : action_text,
 				}, function () {
 					if (new_status == 4) {
-						@if (empty($detail['wash_images']['before']))
+						@if (empty($wash_images['before']))
 						layer.msg('请先上传3张清洗前照片后再开始服务！');
 						$('#tab_area .tabBar span').eq(2).click();
 						return false;
 						@endif
 					} else if (new_status == 5) {
-						@if (empty($detail['wash_images']['after']))
+						@if (empty($wash_images['after']))
 						layer.msg('请先上传3张清洗后照片后再完成服务！');
 						$('#tab_area .tabBar span').eq(3).click();
 						return false;

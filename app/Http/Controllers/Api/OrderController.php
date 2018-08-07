@@ -35,7 +35,10 @@ class OrderController extends BaseController {
 		# 默认车辆
 		$car = \CarService::getMyLastWashCar();
 		
-		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri'));
+		# 个人信息
+		$userInfo = $this->user->getUserInfo();
+		
+		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri', 'userInfo'));
 	}
 	
 	/**
@@ -80,8 +83,65 @@ class OrderController extends BaseController {
 		
 		$list = \OrderService::getMyWashOrderList();
 		
-		# todo lxt 无订单
-		
 		json_msg(['list' => $list]);
+	}
+	
+	/**
+	 * 订单详情
+	 * @author 李小同
+	 * @date   2018-8-7 20:44:13
+	 */
+	public function washOrderDetail() {
+		
+		$orderId   = \Request::input('order_id');
+		$detail    = \OrderService::getWashOrderDetail($orderId);
+		$logs      = \OrderService::getOrderLogs($orderId);
+		$washImage = \OrderService::getWashImages($orderId);
+		foreach ($logs as &$log) {
+			switch ($log['action']) {
+				case 'serve_start':
+					$images = [];
+					foreach ($washImage['before'] as $src) {
+						$thumb    = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
+						$images[] = [
+							'thumb' => \URL::asset($thumb),
+							'src'   => \URL::asset($src),
+						];
+					}
+					$log['images'] = [
+						'title'  => trans('common.image_before_wash'),
+						'images' => $images,
+					];
+					break;
+				case 'serve_finish':
+					$images = [];
+					foreach ($washImage['after'] as $src) {
+						$thumb    = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
+						$images[] = [
+							'thumb' => \URL::asset($thumb),
+							'src'   => \URL::asset($src),
+						];
+					}
+					$log['images'] = [
+						'title'  => trans('common.image_before_wash'),
+						'images' => $images,
+					];
+					break;
+			}
+			unset($log['operator'], $log['action'], $log['order_status']);
+		}
+		unset($log);
+		
+		$result = [
+			'detail' => [
+				'title' => trans('common.order_info'),
+				'data'  => $detail,
+			],
+			'log'    => [
+				'title' => trans('common.order_log'),
+				'data'  => $logs,
+			],
+		];
+		json_msg($result);
 	}
 }

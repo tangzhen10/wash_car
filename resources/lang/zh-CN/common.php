@@ -116,4 +116,8 @@ return [
 	'serve_start'              => '开始服务',
 	'serve_finish'             => '完成服务',
 	'serve_address'            => '服务地址',
+	'order_info'               => '订单信息',
+	'order_log'                => '订单进度',
+	'image_before_wash'        => '服务前照片',
+	'image_after_wash'         => '服务后照片',
 ];
