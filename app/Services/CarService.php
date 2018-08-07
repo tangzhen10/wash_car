@@ -395,6 +395,12 @@ class CarService extends BaseService {
 		             ->orderBy('a.id', 'desc')
 		             ->get($fields)
 		             ->toArray();
+		foreach ($list as &$item) {
+			if (empty($item['brand'])) $item['brand'] = trans('common.other');
+			if (empty($item['model'])) $item['model'] = '';
+		}
+		unset($item);
+		
 		return $list;
 	}
 	

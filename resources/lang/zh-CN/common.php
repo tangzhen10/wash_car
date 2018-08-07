@@ -54,6 +54,7 @@ return [
 	'order_status'             => '订单状态',
 	'payment_status'           => '支付状态',
 	'picture'                  => '图片',
+	'other'                    => '其他',
 	
 	# 属性
 	'gender_0'                 => '',
