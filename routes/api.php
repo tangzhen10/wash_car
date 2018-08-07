@@ -28,7 +28,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('loginOri', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
 		# 修改密码
 		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'apiChangePassword']);
-		
+		# 获取openid
+		Route::post('openid', ['uses' => 'UserController@getOpenid', 'as' => 'apiGetOpenid']);
 	});
 	
 	# 工具

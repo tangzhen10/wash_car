@@ -502,7 +502,6 @@ class OrderService extends BaseService {
 		
 		$fields = [
 			'a.order_id',
-			'a.wash_product_id',
 			'a.address',
 			'a.wash_time',
 			'a.status',
@@ -511,12 +510,14 @@ class OrderService extends BaseService {
 			'c.name AS brand',
 			'd.name AS model',
 			'e.name AS color',
+			'f.name AS wash_product',
 		];
 		$rows   = \DB::table('wash_order AS a')
 		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
 		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
 		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
 		             ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		             ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
 		             ->where('a.user_id', $this->userId)
 		             ->orderBy('a.id', 'desc')
 		             ->get($fields)
@@ -539,7 +540,7 @@ class OrderService extends BaseService {
 				],
 				'wash_product' => [
 					'text'  => trans('common.wash_product'),
-					'value' => $row['wash_product_id'],
+					'value' => $row['wash_product'],
 				],
 				'wash_time'    => [
 					'text'  => trans('common.wash_time'),
@@ -555,7 +556,7 @@ class OrderService extends BaseService {
 					],
 				],
 				'address'      => [
-					'text'  => trans('common.address'),
+					'text'  => trans('common.serve_address'),
 					'value' => $row['address'],
 				],
 			];

@@ -99,7 +99,7 @@ class UserController extends BaseController {
 		}
 	}
 	
-	# region 洗车
+	# region 业务
 	/**
 	 * 洗车联系人
 	 * @author 李小同
@@ -107,6 +107,17 @@ class UserController extends BaseController {
 	 */
 	public function washContact() {
 		
+	}
+	/**
+	 * 获取openid
+	 * @author 李小同
+	 * @date   2018-8-7 15:27:52
+	 */
+	public function getOpenid() {
+		
+		$code = \Request::input('code');
+		$res = \WechatService::getAccessTokenAndOpenId($code);
+		json_msg($res);
 	}
 	# endregion
 }

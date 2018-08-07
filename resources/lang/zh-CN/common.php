@@ -50,7 +50,7 @@ return [
 	'color'                    => '颜色',
 	'color_code'               => '颜色码',
 	'verify_code'              => '验证码',
-	'order_id'                 => '订单号',
+	'order_id'                 => '订单编号',
 	'order_status'             => '订单状态',
 	'payment_status'           => '支付状态',
 	'picture'                  => '图片',
@@ -107,7 +107,7 @@ return [
 	'province'                 => '省份',
 	'plate_number'             => '车牌号码',
 	'wash_time'                => '清洗时间',
-	'wash_product'             => '清洗服务项目',
+	'wash_product'             => '服务项目',
 	'lost_coordinate'          => '未获取到坐标地址',
 	'place_order_success'      => "提交成功\n正在为您派单",
 	'place_order_failed'       => '提交失败，请稍后重试！',
@@ -115,4 +115,5 @@ return [
 	'take_order'               => '接单',
 	'serve_start'              => '开始服务',
 	'serve_finish'             => '完成服务',
+	'serve_address'            => '服务地址',
 ];
