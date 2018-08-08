@@ -249,6 +249,7 @@ function create_thumb($srcPath, $flag = true) {
 	//判断文件格式
 	switch ($ext) {
 		case '.jpg':
+		case '.jpeg':
 			$type = 'jpeg';
 			break;
 		case '.gif':
