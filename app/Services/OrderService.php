@@ -502,6 +502,7 @@ class OrderService extends BaseService {
 			$detail['washer_phone'] = $washer['phone'];
 		}
 		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
+		if (empty($detail['model'])) $detail['model'] = '';
 		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
 		$detail['create_at']   = intToTime($detail['create_at']);
 		$detail['total']       = currencyFormat($detail['total']);
