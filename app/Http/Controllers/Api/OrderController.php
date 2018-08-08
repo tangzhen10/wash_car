@@ -81,7 +81,8 @@ class OrderController extends BaseController {
 	 */
 	public function washOrderList() {
 		
-		$list = \OrderService::getMyWashOrderList();
+		$page = \Request::input('page', '1');
+		$list = \OrderService::getMyWashOrderList($page);
 		
 		json_msg(['list' => $list]);
 	}
@@ -93,8 +94,14 @@ class OrderController extends BaseController {
 	 */
 	public function washOrderDetail() {
 		
-		$orderId   = \Request::input('order_id');
-		$detail    = \OrderService::getWashOrderDetail($orderId);
+		$orderId = \Request::input('order_id');
+		$detail  = \OrderService::getWashOrderDetail($orderId);
+		
+		# 不可以看别人的订单
+		if ($detail['user_id'] != $this->user->userId) {
+			json_msg(trans('error.access_denied'), 40003);
+		}
+		
 		$logs      = \OrderService::getOrderLogs($orderId);
 		$washImage = \OrderService::getWashImages($orderId);
 		foreach ($logs as &$log) {

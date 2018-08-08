@@ -84,6 +84,8 @@ return [
 	'preview'                  => '预览',
 	'back'                     => '后退',
 	'upload'                   => '上传',
+	'cancel'                   => '取消',
+	'refund'                   => '退款',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',
@@ -95,6 +97,7 @@ return [
 	'action_failed'            => '操作失败，请稍后重试。',
 	'no_more'                  => '没有更多了',
 	'no_data'                  => '暂无数据',
+	'not_exist_order'          => '不存在的订单',
 	
 	# 洗车
 	'car'                      => '车辆',

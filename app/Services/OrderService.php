@@ -441,17 +441,35 @@ class OrderService extends BaseService {
 		             ->where('order_id', $orderId)
 		             ->where('a.status', '!=', '-1')
 		             ->first();
+		
+		if (empty($detail)) json_msg(trans('common.not_exist_order'), 40003);
+		
 		# 订单状态信息
 		$orderStatusMsg = '';
 		switch ($detail['status']) {
 			case 1 :
 				# 未付款，1小时倒计时
-				$cancelAt       = $detail['create_at'] + 3600;
-				$orderStatusMsg = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$cancelAt            = $detail['create_at'] + 3600;
+				$orderStatusMsg      = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$detail['cancel_at'] = $cancelAt;
 				break;
-			
 		}
 		$detail['order_status_msg'] = $orderStatusMsg;
+		
+		# 取消 & 退款
+		if (!in_array($detail['status'], [6, 7])) {
+			if ($detail['payment_status']) {
+				$detail['button'] = [
+					'text'   => trans('common.refund'),
+					'action' => 'refund',
+				];
+			} else {
+				$detail['button'] = [
+					'text'   => trans('common.cancel'),
+					'action' => 'cancel',
+				];
+			}
+		}
 		
 		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
 		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
@@ -507,13 +525,14 @@ class OrderService extends BaseService {
 	# region 前台
 	/**
 	 * 订单列表
+	 * @param int $page
 	 * @author 李小同
 	 * @date   2018-8-3 18:01:24
 	 * @return array
 	 */
-	public function getMyWashOrderList() {
+	public function getMyWashOrderList($page = 1) {
 		
-		$fields = [
+		$fields  = [
 			'a.order_id',
 			'a.address',
 			'a.wash_time',
@@ -525,17 +544,20 @@ class OrderService extends BaseService {
 			'e.name AS color',
 			'f.name AS wash_product',
 		];
-		$rows   = \DB::table('wash_order AS a')
-		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
-		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
-		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
-		             ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
-		             ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
-		             ->where('a.user_id', $this->userId)
-		             ->orderBy('a.id', 'desc')
-		             ->get($fields)
-		             ->toArray();
-		$list   = [];
+		$perPage = \SettingService::getValue('per_page');
+		$rows    = \DB::table('wash_order AS a')
+		              ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
+		              ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
+		              ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
+		              ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		              ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
+		              ->where('a.user_id', $this->userId)
+		              ->orderBy('a.id', 'desc')
+		              ->offset(($page - 1) * $perPage)
+		              ->limit($perPage)
+		              ->get($fields)
+		              ->toArray();
+		$list    = [];
 		foreach ($rows as $row) {
 			$list[] = [
 				'order_id'     => [

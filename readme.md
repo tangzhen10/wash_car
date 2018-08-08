@@ -920,9 +920,9 @@ $md5即是sign的参数值
 
 > 请求参数
 
-| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+| 字段名  | 类型   | 是否必填 | 描述         | 示例值  |
+| ---- | ---- | ---- | ---------- | ---- |
+| page | int  | 是    | 显示的页数，默认为1 | 2    |
 
 > 响应参数
 
@@ -945,51 +945,25 @@ $md5即是sign的参数值
         "list": [
             {
                 "order_id": {
-                    "text": "订单号",
-                    "value": 1808032810
+                    "text": "订单编号",
+                    "value": 1808067316
                 },
                 "create_at": {
                     "text": "创建时间",
-                    "value": "2018-08-03 16:52:20"
+                    "value": "2018-08-06 16:09:35"
+                },
+                "status": {
+                    "text": "订单状态",
+                    "value": "未付款",
+                    "status": 1
                 },
                 "wash_product": {
-                    "text": "清洗服务项目",
-                    "value": 46
+                    "text": "服务项目",
+                    "value": "全外观清洗"
                 },
                 "wash_time": {
                     "text": "清洗时间",
-                    "value": "2018-08-03 22:00-23:00"
-                },
-                "car": {
-                    "text": "车辆信息",
-                    "value": {
-                        "plate_number": "沪BG0201",
-                        "brand": "奥迪",
-                        "model": "宝骏630",
-                        "color": "蓝色"
-                    }
-                },
-                "address": {
-                    "text": "地址",
-                    "value": "公司附近"
-                }
-            },
-            {
-                "order_id": {
-                    "text": "订单号",
-                    "value": 1808022032
-                },
-                "create_at": {
-                    "text": "创建时间",
-                    "value": "2018-08-02 22:44:50"
-                },
-                "wash_product": {
-                    "text": "清洗服务项目",
-                    "value": 46
-                },
-                "wash_time": {
-                    "text": "清洗时间",
-                    "value": "2018-07-31 22:00-23:00"
+                    "value": "2018-08-06 22:00-23:00"
                 },
                 "car": {
                     "text": "车辆信息",
@@ -1001,22 +975,27 @@ $md5即是sign的参数值
                     }
                 },
                 "address": {
-                    "text": "地址",
-                    "value": "西虹市"
+                    "text": "服务地址",
+                    "value": "公司附近"
                 }
             },
             {
                 "order_id": {
-                    "text": "订单号",
-                    "value": 1808027158
+                    "text": "订单编号",
+                    "value": 1807318633
                 },
                 "create_at": {
                     "text": "创建时间",
-                    "value": "2018-08-02 11:46:01"
+                    "value": "2018-07-31 18:35:38"
+                },
+                "status": {
+                    "text": "订单状态",
+                    "value": "未付款",
+                    "status": 1
                 },
                 "wash_product": {
-                    "text": "清洗服务项目",
-                    "value": 46
+                    "text": "服务项目",
+                    "value": "全外观清洗"
                 },
                 "wash_time": {
                     "text": "清洗时间",
@@ -1032,7 +1011,7 @@ $md5即是sign的参数值
                     }
                 },
                 "address": {
-                    "text": "地址",
+                    "text": "服务地址",
                     "value": "公司附近"
                 }
             }
@@ -1041,23 +1020,43 @@ $md5即是sign的参数值
 }
 ```
 
-##### 洗车服务项目列表
+##### 洗车订单详情
 
-| URL                         | HTTP请求方式 | 是否需要登陆 |
-| --------------------------- | -------- | ------ |
-| {domain}/api/order/washList | POST     | 是      |
+| URL                       | HTTP请求方式 | 是否需要登陆 |
+| ------------------------- | -------- | ------ |
+| {domain}/api/order/detail | POST     | 是      |
 
 > 请求参数
 
-| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+| 字段名      | 类型     | 是否必填 | 描述   | 示例值        |
+| -------- | ------ | ---- | ---- | ---------- |
+| order_id | string | 是    | 订单号  | 1808067316 |
 
 > 响应参数
 
-| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+| 字段名              | 类型     | 是否必填 | 描述     | 示例值                                      |
+| ---------------- | ------ | ---- | ------ | ---------------------------------------- |
+| detail           | object | 是    | 订单信息   |                                          |
+| L order_id       | string | 是    |        |                                          |
+| L contact_user   | string | 是    | 联系人    | Mr Zhang                                 |
+| L contact_phone  | string | 是    | 联系号码   | 18712314393                              |
+| L address        | string | 是    | 服务地址   | 公司附近                                     |
+| L wash_time      | string | 是    | 清洗时间   | 2018-08-06 22:00-23:00                   |
+| L payment_status | string | 是    | 支付状态   | 1支付 0未支付                                 |
+| L plate_number   | string | 是    | 车牌     | 沪EA77M2                                  |
+| L brand          | string | 是    | 车辆品牌   | 奥迪                                       |
+| L model          | string | 是    | 车辆型号   | 奥迪A6L                                    |
+| L color          | string | 是    | 车辆颜色   | 黑色                                       |
+| L cancel_at      | int    | 是    | 取消时间戳  | 1533546575                               |
+| L button         | string | 是    | 操作按钮   | 取消、退款或不存在此字段                             |
+| L status         | int    | 是    | 订单状态   | 1                                        |
+| L status_text    | string | 是    | 订单状态描述 | 未付款                                      |
+| log              | array  | 是    | 订单操作日志 |                                          |
+| L create_at      | string | 是    | 操作时间   | 2018-08-05 14:10:09                      |
+| L action_text    | string | 是    | 操作名称   | 派单成功                                     |
+| L images         | array  |      | 清洗前后照片 |                                          |
+| LLL thumb        | string | 否    | 缩略图    | http://www.wash.com/src/upload/image/20180805/thumb_153344944634541.png |
+| LLL src          | string | 否    | 原图     | http://www.wash.com/src/upload/image/20180805/153344944634541.png |
 
 > 响应示例
 
@@ -1065,21 +1064,100 @@ $md5即是sign的参数值
 {
     "code": 0,
     "data": {
-        "list": [
-            {
-                "id": 46,
-                "name": "全外观清洗"
-            },
-            {
-                "id": 47,
-                "name": "车窗打蜡"
+        "detail": {
+            "title": "订单信息",
+            "data": {
+                "id": 7,
+                "order_id": 1808022032,
+                "user_id": 45,
+                "wash_product_id": 46,
+                "contact_user": "李小同",
+                "contact_phone": "18512174044",
+                "address": "西虹市",
+                "wash_time": "2018-07-31 22:00-23:00",
+                "payment_status": "1",
+                "total": "￥128.00",
+                "status": 5,
+                "create_at": "2018-08-02 22:44:50",
+                "plate_number": "沪EA77M2",
+                "brand": "奥迪",
+                "model": "桑塔纳",
+                "color": "蓝色",
+                "username": "无昵称用户",
+                "phone": "18512174045",
+                "wash_product": "全外观清洗",
+                "order_status_msg": "",
+                "button": {
+                    "text": "退款",
+                    "action": "refund"
+                },
+                "status_text": "已完成"
             }
-        ]
+        },
+        "log": {
+            "title": "订单进度",
+            "data": [
+                {
+                    "create_at": "2018-08-02 22:44:50",
+                    "action_text": "提交订单"
+                },
+                {
+                    "create_at": "2018-08-05 14:10:05",
+                    "action_text": "确认支付"
+                },
+                {
+                    "create_at": "2018-08-05 14:10:09",
+                    "action_text": "派单成功"
+                },
+                {
+                    "create_at": "2018-08-05 14:58:13",
+                    "action_text": "开始服务",
+                    "images": {
+                        "title": "服务前照片",
+                        "images": [
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153344944634541.png",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153344944634541.png"
+                            },
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153344944645137.png",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153344944645137.png"
+                            },
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153344944627198.png",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153344944627198.png"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "create_at": "2018-08-05 15:03:33",
+                    "action_text": "完成服务",
+                    "images": {
+                        "title": "服务前照片",
+                        "images": [
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153345346249163.jpg",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153345346249163.jpg"
+                            },
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153345346270944.jpg",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153345346270944.jpg"
+                            },
+                            {
+                                "thumb": "http://www.wash.com/src/upload/image/20180805/thumb_153345346270266.jpg",
+                                "src": "http://www.wash.com/src/upload/image/20180805/153345346270266.jpg"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
     }
 }
 ```
 
-##### 洗车服务项目列表
+##### demo
 
 | URL                         | HTTP请求方式 | 是否需要登陆 |
 | --------------------------- | -------- | ------ |
