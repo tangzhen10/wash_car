@@ -13,6 +13,7 @@ use Monolog\Logger;
 
 class OrderService extends BaseService {
 	
+	# 订单状态
 	const ORDER_STATUS = [
 		1 => '未付款',
 		2 => '等待接单中',
@@ -23,6 +24,7 @@ class OrderService extends BaseService {
 		7 => '已关闭',
 	];
 	
+	# 动作名称
 	const ORDER_ACTION = [
 		'add_order'    => '提交订单',
 		'confirm_pay'  => '确认支付',
@@ -31,11 +33,14 @@ class OrderService extends BaseService {
 		'serve_finish' => '完成服务',
 	];
 	
-	# 订单操作对应的订单状态
+	# 订单操作对应操作后的状态
 	const ACTION_TO_STATUS = [
-		3 => 'take_order',
-		4 => 'serve_start',
-		5 => 'serve_finish',
+		'pay'          => 2,
+		'take_order'   => 3,
+		'serve_start'  => 4,
+		'serve_finish' => 5,
+		'refund_order' => 6,
+		'cancel_order' => 7,
 	];
 	
 	# region 后台
@@ -224,7 +229,7 @@ class OrderService extends BaseService {
 					'wash_order_id' => $orderId,
 					'action'        => 'confirm_pay',
 					'order_status'  => $newStatus,
-					'operator'      => $this->_getFormatManager(),
+					'operator_type' => 'manager',
 				];
 				$this->addOrderLog($logData);
 				
@@ -247,7 +252,7 @@ class OrderService extends BaseService {
 	 * @date   2018-8-5 00:25:49
 	 * @return bool
 	 */
-	public function washOrderChangeStatus($orderId, $status) {
+	public function adminWashOrderChangeStatus($orderId, $status) {
 		
 		$order  = \DB::table('wash_order')->where('order_id', $orderId)->first(['status']);
 		$status = intval($status);
@@ -257,22 +262,23 @@ class OrderService extends BaseService {
 			$flag   = false;
 			$action = '';
 			switch ($status) {
-				case 3:
-					if ($order['status'] == 2) {
+				case self::ACTION_TO_STATUS['take_order']:
+					if ($order['status'] == self::ACTION_TO_STATUS['pay']) {
 						$flag   = true;
-						$action = self::ACTION_TO_STATUS[3];
+						$action = 'take_order';
+						$this->_setWasher($orderId);
 					}
 					break;
-				case 4:
-					if ($order['status'] == 3) {
+				case self::ACTION_TO_STATUS['serve_start']:
+					if ($order['status'] == self::ACTION_TO_STATUS['take_order']) {
 						$flag   = true;
-						$action = self::ACTION_TO_STATUS[4];
+						$action = 'serve_start';
 					}
 					break;
-				case 5:
-					if ($order['status'] == 4) {
+				case self::ACTION_TO_STATUS['serve_finish']:
+					if ($order['status'] == self::ACTION_TO_STATUS['serve_start']) {
 						$flag   = true;
-						$action = self::ACTION_TO_STATUS[5];
+						$action = 'serve_finish';
 					}
 					break;
 			}
@@ -283,7 +289,7 @@ class OrderService extends BaseService {
 					'wash_order_id' => $orderId,
 					'action'        => $action,
 					'order_status'  => $status,
-					'operator'      => $this->_getFormatManager(),
+					'operator_type' => 'manager',
 				];
 				$this->addOrderLog($logData);
 				
@@ -344,6 +350,21 @@ class OrderService extends BaseService {
 	private function _getFormatManager() {
 		
 		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
+	}
+	
+	/**
+	 * 设置接单员
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-8 18:01:17
+	 * @return bool
+	 */
+	private function _setWasher($orderId) {
+		
+		$res = \DB::table('wash_order')
+		          ->where('order_id', $orderId)
+		          ->update(['washer_id' => \ManagerService::getManagerId()]);
+		return $res;
 	}
 	# endregion
 	
@@ -429,6 +450,7 @@ class OrderService extends BaseService {
 			'f.nickname AS username',
 			'f.phone AS phone',
 			'g.name AS wash_product',
+			'a.washer_id',
 		];
 		$detail = \DB::table('wash_order AS a')
 		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
@@ -441,7 +463,6 @@ class OrderService extends BaseService {
 		             ->where('order_id', $orderId)
 		             ->where('a.status', '!=', '-1')
 		             ->first();
-		
 		if (empty($detail)) json_msg(trans('common.not_exist_order'), 40003);
 		
 		# 订单状态信息
@@ -461,16 +482,25 @@ class OrderService extends BaseService {
 			if ($detail['payment_status']) {
 				$detail['button'] = [
 					'text'   => trans('common.refund'),
-					'action' => 'refund',
+					'action' => 'refund_order',
 				];
 			} else {
 				$detail['button'] = [
 					'text'   => trans('common.cancel'),
-					'action' => 'cancel',
+					'action' => 'cancel_order',
 				];
 			}
 		}
 		
+		# 服务人员
+		if (empty($detail['washer_id'])) {
+			$detail['washer']       = '';
+			$detail['washer_phone'] = '';
+		} else {
+			$washer                 = \ManagerService::getManagerInfoByManagerId($detail['washer_id']);
+			$detail['washer']       = $washer['name'];
+			$detail['washer_phone'] = $washer['phone'];
+		}
 		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
 		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
 		$detail['create_at']   = intToTime($detail['create_at']);
@@ -625,7 +655,7 @@ class OrderService extends BaseService {
 				'wash_order_id' => $orderData['order_id'],
 				'action'        => 'add_order',
 				'order_status'  => 1,
-				'operator'      => '【'.trans('common.user').'】'.\UserService::getUserInfo('nickname'),
+				'operator_type' => 'user',
 			];
 			$this->addOrderLog($logData);
 			
@@ -714,10 +744,19 @@ class OrderService extends BaseService {
 	 */
 	public function addOrderLog(array $logData) {
 		
+		if ($logData['operator_type'] == 'manager') {
+			$logData['operator_id'] = \ManagerService::getManagerId();
+			$logData['operator']    = $this->_getFormatManager();
+		} elseif ($logData['operator_type'] == 'user') {
+			$logData['operator_id'] = $this->userId;
+			$logData['operator']    = $this->_getFormatUser();
+		}
 		$data = [
 			'wash_order_id' => $logData['wash_order_id'],
 			'action'        => $logData['action'],
 			'operator'      => $logData['operator'],
+			'operator_type' => $logData['operator_type'],
+			'operator_id'   => $logData['operator_id'],
 			'order_status'  => $logData['order_status'],
 			'create_at'     => time(),
 		];
@@ -738,6 +777,82 @@ class OrderService extends BaseService {
 		$count = \DB::table('wash_order')->where('wash_product_id', intval($productId))->count('order_id');
 		
 		return $count;
+	}
+	
+	/**
+	 * 用户订单取消或退款
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-8-8 15:13:14
+	 * @return bool
+	 */
+	public function userWashOrderChangeStatus(array $post) {
+		
+		$fields = ['order_id', 'payment_status', 'status'];
+		$order  = \DB::table('wash_order')->where('order_id', $post['order_id'])->first($fields);
+		if (empty($order['order_id'])) json_msg(trans('error.illegal_action'), 40003);
+		switch ($post['action']) {
+			case 'cancel_order':
+				return $this->_cancelWashOrder($order['order_id']);
+				break;
+			case 'refund_order':
+				if (in_array($order['status'], [3, 4, 5])) {
+					return $this->_refundWashOrder($order['order_id']);
+				}
+				break;
+			default:
+				json_msg(trans('error.illegal_action'), 40003);
+		}
+		return true;
+	}
+	
+	/**
+	 * 用户取消订单
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-8 16:31:41
+	 * @return bool
+	 */
+	private function _cancelWashOrder($orderId) {
+		
+		if (in_array($orderId, [1, 2])) {
+			
+			\DB::beginTransaction();
+			try {
+				$action = 'cancel_order';
+				$status = self::ACTION_TO_STATUS['cancel_order'];
+				
+				\DB::table('wash_order')->where('order_id', $orderId)->update(['status' => $status]);
+				
+				$logData = [
+					'wash_order_id' => $orderId,
+					'action'        => $action,
+					'order_status'  => $status,
+					'operator_type' => 'user',
+				];
+				$this->addOrderLog($logData);
+				
+				\DB::commit();
+				return true;
+				
+			} catch (\Exception $e) {
+				\DB::rollback();
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * 获取格式化的用户信息
+	 * @author 李小同
+	 * @date   2018-8-8 16:30:45
+	 * @return string
+	 */
+	private function _getFormatUser() {
+		
+		return '【'.trans('common.user').'】'.\UserService::getUserInfo('phone');
 	}
 	
 	/**

@@ -97,7 +97,7 @@ class ManagerService extends BaseService {
 		
 		if ($managerId == 0) $managerId = $this->managerId;
 		
-		$fields  = ['id', 'name', 'status', 'last_login_ip', 'last_login_at'];
+		$fields  = ['id', 'name', 'phone', 'status', 'last_login_ip', 'last_login_at'];
 		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
 		
 		return $manager;

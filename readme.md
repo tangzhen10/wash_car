@@ -1034,29 +1034,31 @@ $md5即是sign的参数值
 
 > 响应参数
 
-| 字段名              | 类型     | 是否必填 | 描述     | 示例值                                      |
-| ---------------- | ------ | ---- | ------ | ---------------------------------------- |
-| detail           | object | 是    | 订单信息   |                                          |
-| L order_id       | string | 是    |        |                                          |
-| L contact_user   | string | 是    | 联系人    | Mr Zhang                                 |
-| L contact_phone  | string | 是    | 联系号码   | 18712314393                              |
-| L address        | string | 是    | 服务地址   | 公司附近                                     |
-| L wash_time      | string | 是    | 清洗时间   | 2018-08-06 22:00-23:00                   |
-| L payment_status | string | 是    | 支付状态   | 1支付 0未支付                                 |
-| L plate_number   | string | 是    | 车牌     | 沪EA77M2                                  |
-| L brand          | string | 是    | 车辆品牌   | 奥迪                                       |
-| L model          | string | 是    | 车辆型号   | 奥迪A6L                                    |
-| L color          | string | 是    | 车辆颜色   | 黑色                                       |
-| L cancel_at      | int    | 是    | 取消时间戳  | 1533546575                               |
-| L button         | string | 是    | 操作按钮   | 取消、退款或不存在此字段                             |
-| L status         | int    | 是    | 订单状态   | 1                                        |
-| L status_text    | string | 是    | 订单状态描述 | 未付款                                      |
-| log              | array  | 是    | 订单操作日志 |                                          |
-| L create_at      | string | 是    | 操作时间   | 2018-08-05 14:10:09                      |
-| L action_text    | string | 是    | 操作名称   | 派单成功                                     |
-| L images         | array  |      | 清洗前后照片 |                                          |
-| LLL thumb        | string | 否    | 缩略图    | http://www.wash.com/src/upload/image/20180805/thumb_153344944634541.png |
-| LLL src          | string | 否    | 原图     | http://www.wash.com/src/upload/image/20180805/153344944634541.png |
+| 字段名              | 类型     | 是否必填 | 描述     | 示例值                                 |
+| ---------------- | ------ | ---- | ------ | ----------------------------------- |
+| detail           | object | 是    | 订单信息   |                                     |
+| L order_id       | string | 是    |        |                                     |
+| L contact_user   | string | 是    | 联系人    | Mr Zhang                            |
+| L contact_phone  | string | 是    | 联系号码   | 18712314393                         |
+| L address        | string | 是    | 服务地址   | 公司附近                                |
+| L wash_time      | string | 是    | 清洗时间   | 2018-08-06 22:00-23:00              |
+| L payment_status | string | 是    | 支付状态   | 1支付 0未支付                            |
+| L plate_number   | string | 是    | 车牌     | 沪EA77M2                             |
+| L brand          | string | 是    | 车辆品牌   | 奥迪                                  |
+| L model          | string | 是    | 车辆型号   | 奥迪A6L                               |
+| L color          | string | 是    | 车辆颜色   | 黑色                                  |
+| L cancel_at      | int    | 是    | 取消时间戳  | 1533546575                          |
+| L button         | string | 是    | 操作按钮   | 取消、退款或不存在此字段                        |
+| L washer         | string | 否    | 服务人员   | 王梅                                  |
+| L washer_phone   | string | 否    | 服务人员电话 | 18716238273                         |
+| L status         | int    | 是    | 订单状态   | 1                                   |
+| L status_text    | string | 是    | 订单状态描述 | 未付款                                 |
+| log              | array  | 是    | 订单操作日志 |                                     |
+| L create_at      | string | 是    | 操作时间   | 2018-08-05 14:10:09                 |
+| L action_text    | string | 是    | 操作名称   | 派单成功                                |
+| L images         | array  |      | 清洗前后照片 |                                     |
+| LLL thumb        | string | 否    | 缩略图    | http://www.wash.com/src...34541.png |
+| LLL src          | string | 否    | 原图     | http://www.wash.com/sr...634541.png |
 
 > 响应示例
 
@@ -1091,6 +1093,8 @@ $md5即是sign的参数值
                     "text": "退款",
                     "action": "refund"
                 },
+                "washer": "root",
+                "washer_phone": "18512174044",
                 "status_text": "已完成"
             }
         },

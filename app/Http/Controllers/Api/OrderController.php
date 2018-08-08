@@ -151,4 +151,16 @@ class OrderController extends BaseController {
 		];
 		json_msg($result);
 	}
+	
+	/**
+	 * 用户订单取消&退款
+	 * @author 李小同
+	 * @date   2018-8-8 17:50:16
+	 */
+	public function changeStatus() {
+		
+		$post = request_all();
+		\OrderService::userWashOrderChangeStatus($post);
+	}
+	
 }

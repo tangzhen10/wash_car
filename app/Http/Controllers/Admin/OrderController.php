@@ -113,7 +113,7 @@ class OrderController extends BaseController {
 		
 		$orderId = \Request::input('order_id');
 		$status  = \Request::input('status');
-		$res     = $this->service->washOrderChangeStatus($orderId, $status);
+		$res     = $this->service->adminWashOrderChangeStatus($orderId, $status);
 		$this->render($res);
 	}
 	
