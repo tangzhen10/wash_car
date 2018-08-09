@@ -188,6 +188,15 @@
 		$(function () {
 			$("#tab_area").Huitab();
 			
+			if (is_mobile()) {
+				$('.tabBar span').css({
+					'padding'    : '0',
+					'text-align' : 'center',
+					'width'      : '25%'
+				});
+				$('.form_filed_row').css({'width':'22%'})
+			}
+			
 			// 手动确认支付
 			$('.J_confirm_pay').click(function () {
 				layer.confirm('<strong>确认用户已付款？</strong><br>当用户支付出现问题并线下支付后操作', {
