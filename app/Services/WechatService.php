@@ -10,6 +10,8 @@ namespace App\Services;
 
 class WechatService {
 	
+	# region 公众号
+	
 	/**
 	 * 基础支持access_token
 	 * 该access_token用于调用其他接口
@@ -134,5 +136,32 @@ class WechatService {
 		
 		$url = 'https://api.weixin.qq.com/sns/auth?access_token='.$accessToken.'&openid='.$openid;
 	}
+	# endregion
+	
+	
+	
+	# region 小程序
+	/**
+	 * 通过code换取用户session_key和openid
+	 * @param string $code 小程序端请求wx.login获得的code
+	 * @author 李小同
+	 * @date   2018-8-9 18:03:26
+	 * @return array|mixed
+	 */
+	public function getSessionKeyAndOpenId($code = '') {
+		
+		$url     = 'https://api.weixin.qq.com/sns/jscode2session?appid='.env('APPID').'&secret='.env('APPSECRET').'&js_code='.$code.'&grant_type=authorization_code';
+		$resJson = file_get_contents($url);
+		$res     = json_decode($resJson, 1);
+		if (empty($res['openid'])) return [];
+		
+		$res['create_at'] = time();
+		$key              = sprintf(config('cache.WECHAT.SESSION_KEY'), $res['openid']);
+		redisSet($key, $res);
+		
+		return $res;
+	}
+	
+	# endregion
 	
 }

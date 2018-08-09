@@ -98,6 +98,7 @@ return [
 	'WECHAT'               => [
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
 		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
+		'SESSION_KEY'  => env('APP_NAME').':wechat:session_key:%s@7200', # 小程序session_key
 	],
 	'TABLE_COLUMN'         => env('APP_NAME').':table_column:%s@604800', # 表结构字段
 	'CONTENT_TYPE'         => env('APP_NAME').':content_type:%s@604800', # 文档类型结构

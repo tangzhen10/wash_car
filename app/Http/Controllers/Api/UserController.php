@@ -109,14 +109,14 @@ class UserController extends BaseController {
 		
 	}
 	/**
-	 * 获取openid
+	 * 小程序获取openid
 	 * @author 李小同
 	 * @date   2018-8-7 15:27:52
 	 */
 	public function getOpenid() {
 		
 		$code = \Request::input('code');
-		$res = \WechatService::getAccessTokenAndOpenId($code);
+		$res = \WechatService::getSessionKeyAndOpenId($code);
 		json_msg($res);
 	}
 	# endregion
