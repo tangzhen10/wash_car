@@ -1,4 +1,26 @@
 @extends('admin.public_list')
+@section('css')
+	<style>
+		.status_1 {
+			color: red;
+		}
+		.status_2 {
+			color: #333;
+		}
+		.status_3 {
+			color: orange;
+		}
+		.status_4 {
+			color: green;
+		}
+		.status_5 {
+			color: dodgerblue;
+		}
+		.status_6,.status_7 {
+			color: grey;
+		}
+	</style>
+@endsection
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		{{trans('common.order_id')}}：
@@ -37,7 +59,7 @@
 				<td>{{$row['wash_time']}}</td>
 				<td style="width:15%;" title="{{$row['address']}}">{{$row['address']}}</td>
 				<td>{{$row['create_at']}}</td>
-				<td>{{$row['status_text']}}</td>
+				<td class="status_{{$row['status']}}">{{$row['status_text']}}</td>
 				<td class="td-manage" style="width: 50px;">
 					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
 					   onclick="layer_show_check_mobile($(this).attr('title'),'{{route('washOrderForm', $row['order_id'])}}','','570')">

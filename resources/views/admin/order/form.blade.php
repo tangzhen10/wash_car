@@ -20,7 +20,6 @@
 		}
 		/*日志*/
 		.log_item {
-			
 			text-indent: -18px;
 			border-left: 1px solid #5A98DD;
 			padding: 15px 10px;
@@ -128,7 +127,7 @@
 					<p>
 						<span class="form_filed_row">{{trans('common.payment_status')}}：</span>
 						<span>{{trans('common.payment_status_'.$detail['payment_status'])}}</span>
-						@if ($detail['payment_status'] == '0')
+						@if ($detail['status'] == 1)
 							<span class="btn btn-warning-outline radius ml-20 J_confirm_pay">手动确认支付</span>
 						@endif
 					</p>
@@ -136,7 +135,7 @@
 						<span class="form_filed_row">{{trans('common.create_at')}}：</span>
 						<span>{{$detail['create_at']}}</span>
 					</p>
-					@if ($detail['status'] < 3)
+					@if (in_array($detail['status'], [1, 2]))
 						<div class="row cl">
 							<div class="mt-5 text-c">
 								<span class="btn btn-success radius J_submit">{{trans('common.save')}}</span>
@@ -190,11 +189,11 @@
 			
 			if (is_mobile()) {
 				$('.tabBar span').css({
-					'padding'    : '0',
+					'padding'    : '5px 0',
 					'text-align' : 'center',
 					'width'      : '25%'
 				});
-				$('.form_filed_row').css({'width':'22%'})
+				$('.form_filed_row').css({'width' : '22%'})
 			}
 			
 			// 手动确认支付

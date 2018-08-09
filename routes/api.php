@@ -79,6 +79,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('list', ['uses' => 'OrderController@washOrderList', 'as' => 'apiWashOrderList']);
 		# 订单详情
 		Route::post('detail', ['uses' => 'OrderController@washOrderDetail', 'as' => 'apiWashOrderDetail']);
+		# 修改订单状态
+		Route::post('changeStatus', ['uses' => 'OrderController@changeStatus', 'as' => 'apiWashOrderChangeStatus']);
 		
 	});
 	

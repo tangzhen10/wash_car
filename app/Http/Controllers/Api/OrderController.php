@@ -36,7 +36,8 @@ class OrderController extends BaseController {
 		$car = \CarService::getMyLastWashCar();
 		
 		# 个人信息
-		$userInfo = $this->user->getUserInfo();
+		$userInfo          = $this->user->getUserInfo();
+		$userInfo['phone'] = substr($userInfo['phone'], 0, 3).'****'.substr($userInfo['phone'], -4);
 		
 		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri', 'userInfo'));
 	}
@@ -160,7 +161,8 @@ class OrderController extends BaseController {
 	public function changeStatus() {
 		
 		$post = request_all();
-		\OrderService::userWashOrderChangeStatus($post);
+		$res  = \OrderService::userWashOrderChangeStatus($post);
+		$this->render($res);
 	}
 	
 }

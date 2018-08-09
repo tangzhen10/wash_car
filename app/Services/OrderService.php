@@ -27,15 +27,20 @@ class OrderService extends BaseService {
 	# 动作名称
 	const ORDER_ACTION = [
 		'add_order'    => '提交订单',
+		'order_pay'    => '订单支付',
 		'confirm_pay'  => '确认支付',
 		'take_order'   => '派单成功',
 		'serve_start'  => '开始服务',
 		'serve_finish' => '完成服务',
+		'refund_order' => '订单退款',
+		'cancel_order' => '取消订单',
 	];
 	
 	# 订单操作对应操作后的状态
 	const ACTION_TO_STATUS = [
-		'pay'          => 2,
+		'add_order'    => 1,
+		'order_pay'    => 2,
+		'confirm_pay'  => 2,
 		'take_order'   => 3,
 		'serve_start'  => 4,
 		'serve_finish' => 5,
@@ -796,13 +801,11 @@ class OrderService extends BaseService {
 		$order  = \DB::table('wash_order')->where('order_id', $post['order_id'])->first($fields);
 		if (empty($order['order_id'])) json_msg(trans('error.illegal_action'), 40003);
 		switch ($post['action']) {
-			case 'cancel_order':
-				return $this->_cancelWashOrder($order['order_id']);
-				break;
 			case 'refund_order':
-				if (in_array($order['status'], [3, 4, 5])) {
-					return $this->_refundWashOrder($order['order_id']);
-				}
+				return $this->_refundWashOrder($order);
+				break;
+			case 'cancel_order':
+				return $this->_cancelWashOrder($order);
 				break;
 			default:
 				json_msg(trans('error.illegal_action'), 40003);
@@ -812,24 +815,29 @@ class OrderService extends BaseService {
 	
 	/**
 	 * 用户取消订单
-	 * @param $orderId
+	 * @param array $order
 	 * @author 李小同
 	 * @date   2018-8-8 16:31:41
 	 * @return bool
 	 */
-	private function _cancelWashOrder($orderId) {
+	private function _refundWashOrder(array $order) {
 		
-		if (in_array($orderId, [1, 2])) {
+		if (in_array($order['status'], [3, 4, 5])) {
 			
 			\DB::beginTransaction();
 			try {
-				$action = 'cancel_order';
-				$status = self::ACTION_TO_STATUS['cancel_order'];
 				
-				\DB::table('wash_order')->where('order_id', $orderId)->update(['status' => $status]);
+				# todo lxt 微信退款
+				
+				# todo lxt 余额退款
+				
+				$action = 'refund_order';
+				$status = self::ACTION_TO_STATUS['refund_order'];
+				
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
 				
 				$logData = [
-					'wash_order_id' => $orderId,
+					'wash_order_id' => $order['order_id'],
 					'action'        => $action,
 					'order_status'  => $status,
 					'operator_type' => 'user',
@@ -844,7 +852,45 @@ class OrderService extends BaseService {
 				return false;
 			}
 		} else {
-			return false;
+			json_msg(trans('error.illegal_action'), 40003);
+		}
+	}
+	
+	/**
+	 * 用户取消订单
+	 * @param array $order
+	 * @author 李小同
+	 * @date   2018-8-8 16:31:41
+	 * @return bool
+	 */
+	private function _cancelWashOrder(array $order) {
+		
+		if (in_array($order['status'], [1, 2])) {
+			
+			\DB::beginTransaction();
+			try {
+				$action = 'cancel_order';
+				$status = self::ACTION_TO_STATUS['cancel_order'];
+				
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
+				
+				$logData = [
+					'wash_order_id' => $order['order_id'],
+					'action'        => $action,
+					'order_status'  => $status,
+					'operator_type' => 'user',
+				];
+				$this->addOrderLog($logData);
+				
+				\DB::commit();
+				return true;
+				
+			} catch (\Exception $e) {
+				\DB::rollback();
+				return false;
+			}
+		} else {
+			json_msg(trans('error.illegal_action'), 40003);
 		}
 	}
 	
