@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray">
 		<span class="l">

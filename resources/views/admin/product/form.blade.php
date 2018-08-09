@@ -1,4 +1,4 @@
-@extends('admin.base')
+@extends('admin.public_form')
 @section('css')
 	<style>
 		.form_filed {

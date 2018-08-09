@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="text-c mb-10">
 		<span>{{trans('common.article_name')}}：

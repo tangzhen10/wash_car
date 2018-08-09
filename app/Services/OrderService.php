@@ -103,6 +103,8 @@ class OrderService extends BaseService {
 		foreach ($list as &$item) {
 			$item['status_text'] = self::ORDER_STATUS[$item['status']];
 			$item['create_at']   = date('Y-m-d H:i:s', $item['create_at']);
+			if (empty($item['brand'])) $item['brand'] = trans('common.other');
+			if (empty($item['model'])) $item['model'] = '';
 		}
 		unset($item);
 		
@@ -502,6 +504,7 @@ class OrderService extends BaseService {
 			$detail['washer_phone'] = $washer['phone'];
 		}
 		if (empty($detail['username'])) $detail['username'] = '无昵称用户';
+		if (empty($detail['brand'])) $detail['brand'] = trans('common.other');
 		if (empty($detail['model'])) $detail['model'] = '';
 		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
 		$detail['create_at']   = intToTime($detail['create_at']);
@@ -616,7 +619,7 @@ class OrderService extends BaseService {
 					'text'  => trans('common.car_info'),
 					'value' => [
 						'plate_number' => $row['plate_number'],
-						'brand'        => $row['brand'],
+						'brand'        => empty($row['brand']) ? trans('common.other') : $row['brand'],
 						'model'        => empty($row['model']) ? '' : $row['model'],
 						'color'        => $row['color'],
 					],

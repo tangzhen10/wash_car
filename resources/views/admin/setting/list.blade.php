@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<table class="table table-border table-bordered table-striped table-hover table-bg">
 		<thead>

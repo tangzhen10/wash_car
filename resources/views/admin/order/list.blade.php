@@ -1,15 +1,15 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		{{trans('common.order_id')}}：
 		<input style="width: 150px;" class="input-text" name="filter_order_id" value="{{$filter['filter_order_id']}}">
 		{{trans('common.create_at')}}：
 		<input type="text" name="filter_date_from" class="input-text Wdate" style="width:120px;" value="{{$filter['filter_date_from']}}"
-		       id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})"> -
+			   id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})"> -
 		<input type="text" name="filter_date_to" class="input-text Wdate" style="width:120px;" value="{{$filter['filter_date_to']}}"
-		       id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
+			   id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
 		<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、手机" name="filter_account"
-		       value="{{$filter['filter_account']}}">
+			   value="{{$filter['filter_account']}}">
 		<span class="btn btn-success radius" id="J_search">
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.filter')}}
 		</span>
@@ -40,7 +40,7 @@
 				<td>{{$row['status_text']}}</td>
 				<td class="td-manage" style="width: 50px;">
 					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
-					   onclick="layer_show($(this).attr('title'),'{{route('washOrderForm', $row['order_id'])}}','','570')">
+					   onclick="layer_show_check_mobile($(this).attr('title'),'{{route('washOrderForm', $row['order_id'])}}','','570')">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
 				</td>
@@ -52,11 +52,21 @@
 @endsection
 @section('js')
 	<script>
+		
+		function layer_show_check_mobile(title, url, width, height) {
+			
+			if (is_mobile()) {
+				window.open(url);
+			} else {
+				layer_show(title, url, width, height);
+			}
+		}
+		
 		$('#J_search').click(function () {
 			var filter_order_id  = $('input[name="filter_order_id"]').val().trim(),
-			    filter_account   = $('input[name="filter_account"]').val().trim(),
-			    filter_date_from = $('input[name="filter_date_from"]').val().trim(),
-			    filter_date_to   = $('input[name="filter_date_to"]').val().trim();
+				filter_account   = $('input[name="filter_account"]').val().trim(),
+				filter_date_from = $('input[name="filter_date_from"]').val().trim(),
+				filter_date_to   = $('input[name="filter_date_to"]').val().trim();
 			
 			if (filter_order_id || filter_account || filter_date_from || filter_date_to) {
 				

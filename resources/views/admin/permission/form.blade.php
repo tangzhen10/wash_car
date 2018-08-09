@@ -1,4 +1,4 @@
-@extends('admin.base')
+@extends('admin.public_form')
 @section('body')
 	<article class="cl pd-20">
 		<form class="form form-horizontal" id="form">

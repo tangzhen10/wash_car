@@ -1,4 +1,4 @@
-@extends('admin.base')
+@extends('admin.public_form')
 @section('css')
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('css/form.css')}}" />
 @endsection

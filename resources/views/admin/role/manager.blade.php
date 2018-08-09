@@ -1,4 +1,4 @@
-@extends('admin.base')
+@extends('admin.public_form')
 @section('body')
 	<div class="text-c">
 		<h2>{{$detail['name']}}</h2>

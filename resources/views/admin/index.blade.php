@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<p class="f-20 text-success">欢迎您，{{$manager['name']}}！</p>
 	

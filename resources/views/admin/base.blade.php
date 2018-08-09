@@ -10,58 +10,39 @@
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/static/h-ui.admin/css/H-ui.admin.css')}}" />
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/lib/Hui-iconfont/1.0.8/iconfont.css')}}" />
 	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/static/h-ui.admin/css/style.css')}}" />
+	<link rel="stylesheet" type="text/css" href="{{URL::asset('H-ui.admin.page/static/h-ui.admin/skin/default/skin.css')}}" id="skin" />
 	@yield('css')
 </head>
 <body>
-<!-- 配置文件 remind lxt 必须放在编辑器源码文件之前 -->
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.config.js')}}"></script>
-<!-- 编辑器源码文件 -->
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.all.js')}}"></script>
+@yield('header_and_menu')
+@yield('js_ueditor')
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery/1.9.1/jquery.min.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/layer/2.4/layer.js')}}"></script>
-<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui/js/H-ui.js')}}"></script>
+<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui/js/H-ui.min.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/static/h-ui.admin/js/H-ui.admin.page.js')}}"></script>
 <script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/My97DatePicker/4.8/WdatePicker.js')}}"></script>
-@yield('body')
+@yield('common_body')
 <script>
-	
 	$.ajaxSetup({headers : {vfrom : 'ajax', 'X-CSRF-TOKEN' : '{{ csrf_token() }}'}});
 	
-	$(function () {
+	// 检测是否是手机访问
+	function is_mobile() {
 		
-		// iCkeck 单选框
+		var sUserAgent = navigator.userAgent.toLowerCase();
+		
+		return sUserAgent.match(/(ipod|iphone os|midp|ucweb|android|windows ce|windows mobile)/i);
+	}
+	
+	$(function () {
+		// 单选框、复选框
 		$('.skin-minimal input').iCheck({
 			checkboxClass : 'icheckbox-blue',
 			radioClass    : 'iradio-blue',
 			increaseArea  : '20%'
 		});
-		
-		// ajax提交表单 李小同 2018-7-11 14:49:54
-		$(".J_submit").css({width: '100px'}).click(function () {
-			if (validate_form()) {
-				$('#form').ajaxSubmit({
-					type       : 'post',
-					dataType   : 'json',
-					beforeSend : function () {layer.load(3)},
-					success    : function (data) {
-						layer.close(layer.load());
-						if (data.code == 0 && data.msg == 'ok') {
-							window.parent.location.reload();
-							layer.msg('{{trans('common.action_success')}}');
-						} else {
-							layer.msg(data.error, function () {});
-						}
-					}
-				});
-			}
-		});
-		
 	});
-	
-	// 验证表单，form页面用真实的验证函数重写掉
-	function validate_form() { return true }
-
 </script>
+@yield('common_js')
 @yield('js')
 </body>
 </html>

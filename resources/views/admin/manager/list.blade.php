@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="text-c">
 		<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">

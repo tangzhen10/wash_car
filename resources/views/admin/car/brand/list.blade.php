@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="text-c">
 		
@@ -17,7 +17,7 @@
 		<input type="text" class="input-text" style="width:250px" placeholder="中英文名皆可" name="filter_name" value="{{$filter['filter_name']}}">
 		
 		{{trans('common.hot')}}：
-		<p class="check-box" style="position: relative;top: -7px;">
+		<p class="check-box skin-minimal" style="position: relative;top: -7px;">
 			<input name="filter_hot" type="checkbox" value="1" @if ($filter['filter_hot']) checked @endif>
 		</p>
 		

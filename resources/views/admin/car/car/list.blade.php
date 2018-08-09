@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('css')
 	<style>
 		.car_plate_out {

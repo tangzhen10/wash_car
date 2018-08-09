@@ -1,4 +1,4 @@
-@extends('admin.public')
+@extends('admin.public_list')
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		ID：<input type="number" class="input-text" name="filter_user_id" value="{{$filter['filter_user_id']}}">
