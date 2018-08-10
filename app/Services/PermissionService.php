@@ -219,7 +219,7 @@ class PermissionService extends BaseService {
 							],
 							[
 								'text' => $menu['name'],
-								'url'  => route('adminIndex').'/'.$menu['route'],
+								'url'  => '',
 							],
 							[
 								'text' => '>',

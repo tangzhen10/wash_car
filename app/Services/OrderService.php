@@ -771,20 +771,27 @@ class OrderService extends BaseService {
 	 */
 	public function addOrderLog(array $logData) {
 		
-		if ($logData['operator_type'] == 'manager') {
-			$logData['operator_id'] = \ManagerService::getManagerId();
-			$logData['operator']    = $this->_getFormatManager();
-		} elseif ($logData['operator_type'] == 'user') {
-			$logData['operator_id'] = $this->userId;
-			$logData['operator']    = $this->_getFormatUser();
+		switch ($logData['operator_type']) {
+			case 'manager':
+				$logData['operator_id'] = \ManagerService::getManagerId();
+				$logData['operator']    = $this->_getFormatManager();
+				break;
+			case 'user':
+				$logData['operator_id'] = $this->userId;
+				$logData['operator']    = $this->_getFormatUser();
+				break;
+			case 'system':
+				$logData['operator_id'] = 0;
+				$logData['operator']    = 'system';
+				break;
 		}
 		$data = [
 			'wash_order_id' => $logData['wash_order_id'],
 			'action'        => $logData['action'],
+			'order_status'  => $logData['order_status'],
 			'operator'      => $logData['operator'],
 			'operator_type' => $logData['operator_type'],
 			'operator_id'   => $logData['operator_id'],
-			'order_status'  => $logData['order_status'],
 			'create_at'     => time(),
 		];
 		$id   = \DB::table('wash_order_log')->insertGetId($data);

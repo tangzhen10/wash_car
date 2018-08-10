@@ -2,11 +2,15 @@
 @section('header_and_menu')
 	@include('admin.header')
 	@include('admin.menu')
-	<section class="Hui-article-box">
+	<section class="Hui-article-box" style="position: absolute;">
 		<nav class="breadcrumb">
 			<i class="Hui-iconfont">&#xe67f;</i>
 			@foreach($breadcrumbs as $breadcrumb)
-				<span class="c-gray en">{{$breadcrumb['text']}}</span>
+				@if ($breadcrumb['url'])
+					<a href="{{$breadcrumb['url']}}">{{$breadcrumb['text']}}</a>
+				@else
+					<span class="c-gray en">{{$breadcrumb['text']}}</span>
+				@endif
 			@endforeach
 			<a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="{{trans('common.refresh')}}">
 				<i class="Hui-iconfont">&#xe68f;</i>
@@ -28,7 +32,7 @@
 			
 			// 菜单栏
 			var real_url = location.href,
-				active   = false;
+			    active   = false;
 			if (!active) { // 优先定位在与权限菜单一致的url上
 				for (var x in $('.menu_item')) {
 					var href = $('.menu_item').eq(x).attr('href');
@@ -139,7 +143,7 @@
 		function batch_delete(url) {
 			
 			var select_items = $('tbody input[type=checkbox]:checked'),
-				ids          = [];
+			    ids          = [];
 			for (var i = 0; i < select_items.length; i++) {
 				ids.push($(select_items[i]).val());
 			}

@@ -10,7 +10,7 @@ return [
 		'PHONE' => '/^1[3456789]{1}[\d]{9}$/',
 		'EMAIL' => '/^[a-z0-9\-_\.]+[a-z0-9\-_\.]*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/',
 		'DATE'  => '/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|2\d|3[01])$/',
-//		'PLATE' => '/^[京沪浙苏粤鲁晋冀豫川渝辽吉黑皖鄂津贵云桂琼青新藏蒙宁甘陕闽赣湘][A-Za-z][A-Za-z0-9]{5,6}$/', # 车牌号
+		//		'PLATE' => '/^[京沪浙苏粤鲁晋冀豫川渝辽吉黑皖鄂津贵云桂琼青新藏蒙宁甘陕闽赣湘][A-Za-z][A-Za-z0-9]{5,6}$/', # 车牌号
 		'PLATE' => '/^[A-Za-z][A-Za-z0-9]{5}$/', # 车牌号
 	],
 	'ALLOW_IDENTITY_TYPE'        => ['phone'/*, 'email'*/], # 合法的注册渠道，目前只允许手机注册
@@ -28,4 +28,5 @@ return [
 		'WASH_INDEX_BANNER' => 25, # 洗车服务首页banner
 	],
 	'PATH_TO_WASH_ORDER_LOG'     => storage_path('logs/wash_order/'.date('Y-m-d').'.log'), # 洗车订单的日志位置
+	'PATH_TO_CANCEL_ORDER_LOG'   => storage_path('logs/cancel_order/'.date('Y-m-d').'.log'), # 超时自动取消洗车订单的日志位置
 ];
