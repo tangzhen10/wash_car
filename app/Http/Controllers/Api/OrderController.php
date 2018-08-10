@@ -37,7 +37,9 @@ class OrderController extends BaseController {
 		
 		# 个人信息
 		$userInfo          = $this->user->getUserInfo();
-		$userInfo['phone'] = substr($userInfo['phone'], 0, 3).'****'.substr($userInfo['phone'], -4);
+		if (!empty($userInfo['phone'])) { # 未登录不做屏蔽
+			$userInfo['phone'] = substr($userInfo['phone'], 0, 3).'****'.substr($userInfo['phone'], -4);
+		}
 		
 		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri', 'userInfo'));
 	}
