@@ -158,7 +158,7 @@ class OrderService extends BaseService {
 				$imagesInfo = [
 					'wash_order_id' => $orderId,
 					'type'          => $type,
-					'images'        => $images[$type],
+					'images'        => empty($images[$type]) ? [] : array_column($images[$type], 'thumb'),
 				];
 				$html       = $this->getFormHtmlByStructure($structure, $imagesInfo);
 				
@@ -166,17 +166,17 @@ class OrderService extends BaseService {
 			}
 			if ($status == 3) { # 接单时不允许上传清洗后照片
 				$imagesHtml['after'] = '';
-			} elseif ($status == 4) {
+			} elseif ($status == 4) { # 开始服务后，不允许修改清洗前照片
 				$imagesHtml['before'] = '<span class="J_image_preview">';
 				foreach ($images['before'] as $image) {
-					$imagesHtml['before'] .= '<img src="'.\URL::asset($image).'" />';
+					$imagesHtml['before'] .= '<img src="'.\URL::asset($image['thumb']).'" onclick="javascript:window.open(\''.\URL::asset($image['src']).'\')" />';
 				}
 				$imagesHtml['before'] .= '</span>';
-			} elseif (!in_array($status, [1, 2])) {
+			} elseif (!in_array($status, [1, 2])) { # 其他状态下，不允许修改清洗照片
 				foreach ($types as $type) {
 					$imagesHtml[$type] = '<span class="J_image_preview">';
 					foreach ($images[$type] as $image) {
-						$imagesHtml[$type] .= '<img src="'.\URL::asset($image).'" />';
+						$imagesHtml[$type] .= '<img src="'.\URL::asset($image['thumb']).'" onclick="javascript:window.open(\''.\URL::asset($image['src']).'\')" />';
 					}
 					$imagesHtml[$type] .= '</span>';
 				}
@@ -270,7 +270,7 @@ class OrderService extends BaseService {
 			$action = '';
 			switch ($status) {
 				case self::ACTION_TO_STATUS['take_order']:
-					if ($order['status'] == self::ACTION_TO_STATUS['pay']) {
+					if ($order['status'] == self::ACTION_TO_STATUS['order_pay']) {
 						$flag   = true;
 						$action = 'take_order';
 						$this->_setWasher($orderId);
@@ -307,6 +307,9 @@ class OrderService extends BaseService {
 			}
 			
 		} catch (\Exception $e) {
+			print_r($e->getMessage());
+			print_r($e->getFile());
+			print_r($e->getLine());
 			\DB::rollback();
 			return false;
 		}
@@ -532,7 +535,11 @@ class OrderService extends BaseService {
 		$rows   = \DB::table('wash_image')->where($where)->get(['images', 'type'])->toArray();
 		if (!empty($rows)) {
 			foreach ($rows as $row) {
-				$images[$row['type']] = explode(',', $row['images']);
+				$imagesArr = explode(',', $row['images']);
+				foreach ($imagesArr as $src) {
+					$thumb                  = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
+					$images[$row['type']][] = compact('thumb', 'src');
+				}
 			}
 		}
 		

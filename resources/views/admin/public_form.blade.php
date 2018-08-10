@@ -8,7 +8,7 @@
 @section('common_body')
 	@yield('body')
 @endsection
-@section('js')
+@section('common_js')
 	<script>
 		// 验证表单，form页面用真实的验证函数重写掉
 		function validate_form() { return true }

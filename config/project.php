@@ -18,8 +18,8 @@ return [
 	'UPLOAD_STORAGE_PATH'        => 'src/upload/image', # 图片上传目录
 	'ALLOW_PICTURE_TYPE'         => ['jpg', 'jpeg', 'png', 'gif'], # 允许上传文件格式
 	'MAX_SIZE_UPLOAD_FILE'       => 10240 * 1024, # 10M
-	'THUMB_WIDTH'                => '200', # 缩略图长度最大值
-	'THUMB_HEIGHT'               => '200', # 缩略图高度最大值
+	'THUMB_WIDTH'                => '300', # 缩略图长度最大值
+	'THUMB_HEIGHT'               => '300', # 缩略图高度最大值
 	'THUMB_PREFIX'               => 'thumb_', # 缩略图前缀
 	'ALLOW_TYPE_OF_CONTENT_TYPE' => ['1', '2'], # 合法的文档类型的类型
 	'FIRST_LETTER'               => 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', # 车辆品牌首字母

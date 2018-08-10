@@ -263,7 +263,7 @@ class ManagerService extends BaseService {
 	 */
 	public function getList() {
 		
-		$fields   = ['a.id', 'a.name', 'a.create_at', 'a.last_login_at', 'a.last_login_ip', 'a.status'];
+		$fields   = ['a.id', 'a.name', 'a.create_at', 'a.last_login_at', 'a.last_login_ip', 'a.status', 'phone'];
 		$fields[] = \DB::raw('GROUP_CONCAT(t_c.name) AS role');
 		$list     = \DB::table('manager AS a')
 		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')

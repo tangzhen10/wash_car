@@ -10,13 +10,19 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>密码：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{{trans('common.phone')}}：</label>
+				<div class="formControls col-xs-8 col-sm-9">
+					<input type="text" class="input-text" value="{{$detail['phone']}}" name="phone">
+				</div>
+			</div>
+			<div class="row cl">
+				<label class="form-label col-xs-4 col-sm-3">密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" name="password">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>确认密码：</label>
+				<label class="form-label col-xs-4 col-sm-3">确认密码：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="password" class="input-text" autocomplete="off" placeholder="确认密码" name="password_repeat">
 				</div>
@@ -58,14 +64,28 @@
 		function validate_form() {
 			
 			var name            = $('input[name=name]').val().trim(),
-			    password        = $('input[name=password]').val().trim(),
-			    password_repeat = $('input[name=password_repeat]').val().trim(),
-			    roles           = $('input[name="roles[]"]:checked');
+				phone           = $('input[name=phone]').val().trim(),
+				password        = $('input[name=password]').val().trim(),
+				password_repeat = $('input[name=password_repeat]').val().trim(),
+				roles           = $('input[name="roles[]"]:checked');
 			if (name == '') {
 				var error = '{{trans('validation.required', ['attr' => trans('common.name')])}}';
 				layer.tips(error, 'input[name="name"]', {tips : 1});
 				$('input[name="name"]').focus();
 				return false;
+			}
+			if (phone == '') {
+				var error = '{{trans('validation.required', ['attr' => trans('common.phone')])}}';
+				layer.tips(error, 'input[name="phone"]', {tips : 1});
+				$('input[name="phone"]').focus();
+				return false;
+			} else {
+				if (!{{config('project.PATTERN.PHONE')}}.test(phone)) {
+					var error = '{{trans('validation.invalid', ['attr' => trans('common.phone')])}}';
+					layer.tips(error, 'input[name="phone"]', {tips : 1});
+					$('input[name="phone"]').focus();
+					return false;
+				}
 			}
 			
 			if (password.length > 0 || password_repeat.length > 0) {

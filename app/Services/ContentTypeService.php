@@ -514,7 +514,13 @@ class ContentTypeService extends BaseService {
 					</span>
 					<span class="J_image_preview">';
 		if ($value) {
-			foreach ($value as $src) $html .= '<img src="'.\URL::asset($src).'" />';
+			foreach ($value as $img) {
+				$src = $img = \URL::asset($img);
+				if (strpos($img, config('project.THUMB_PREFIX')) !== false) {
+					$src = str_replace(config('project.THUMB_PREFIX'), '', $img);
+				}
+				$html .= '<img src="'.$img.'" onclick="javascript:window.open(\''.$src.'\')" />';
+			}
 		}
 		
 		$html .= '</span></p>';

@@ -108,31 +108,15 @@ class OrderController extends BaseController {
 		foreach ($logs as &$log) {
 			switch ($log['action']) {
 				case 'serve_start':
-					$images = [];
-					foreach ($washImage['before'] as $src) {
-						$thumb    = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
-						$images[] = [
-							'thumb' => \URL::asset($thumb),
-							'src'   => \URL::asset($src),
-						];
-					}
 					$log['images'] = [
 						'title'  => trans('common.image_before_wash'),
-						'images' => $images,
+						'images' => $washImage['before'],
 					];
 					break;
 				case 'serve_finish':
-					$images = [];
-					foreach ($washImage['after'] as $src) {
-						$thumb    = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
-						$images[] = [
-							'thumb' => \URL::asset($thumb),
-							'src'   => \URL::asset($src),
-						];
-					}
 					$log['images'] = [
-						'title'  => trans('common.image_before_wash'),
-						'images' => $images,
+						'title'  => trans('common.image_after_wash'),
+						'images' => $washImage['after'],
 					];
 					break;
 			}

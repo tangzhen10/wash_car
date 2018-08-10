@@ -24,6 +24,7 @@
 			<th width="40">ID</th>
 			<th>{{trans('common.name')}}</th>
 			<th>{{trans('common.role')}}</th>
+			<th>{{trans('common.phone')}}</th>
 			<th>{{trans('common.create_at')}}</th>
 			<th>上次登录时间</th>
 			<th>上次登录ip</th>
@@ -38,6 +39,7 @@
 				<td>{{$row['id']}}</td>
 				<td>{{$row['name']}}</td>
 				<td>{{$row['role']}}</td>
+				<td>{{$row['phone']}}</td>
 				<td>{{$row['create_at']}}</td>
 				<td>{{$row['last_login_at']}}</td>
 				<td>{{$row['last_login_ip']}}</td>

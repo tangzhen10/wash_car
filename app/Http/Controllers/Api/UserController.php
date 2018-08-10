@@ -99,15 +99,7 @@ class UserController extends BaseController {
 		}
 	}
 	
-	# region 业务
-	/**
-	 * 洗车联系人
-	 * @author 李小同
-	 * @date
-	 */
-	public function washContact() {
-		
-	}
+	# region 小程序
 	/**
 	 * 小程序获取openid
 	 * @author 李小同

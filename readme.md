@@ -226,6 +226,30 @@ $md5即是sign的参数值
 
 > 响应参数同 【登录】
 
+##### 小程序端获取openid
+
+| URL                      | HTTP请求方式 | 是否需要登陆 |
+| ------------------------ | -------- | ------ |
+| {domain}/api/user/openid | POST     | 否      |
+
+> 请求参数
+
+| 字段名  | 类型     | 是否必填 | 描述              | 示例值                              |
+| ---- | ------ | ---- | --------------- | -------------------------------- |
+| code | string | 是    | wx.login返回的code | 061BjJi10AcOvE16aok10Umzi10BjJih |
+
+> 响应参数
+
+```
+{
+    "code": 0,
+    "data": {
+        "session_key": "GQWFsLDNJ4aVpZHAU9kRgQ==",
+        "openid": "o2BWA4mDLdp-LxyFz42wy_kfIDR8",
+        "create_at": 1533809142
+    }
+}
+```
 
 ### 车辆  car
 
