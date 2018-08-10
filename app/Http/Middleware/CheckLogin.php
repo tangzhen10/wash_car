@@ -12,6 +12,7 @@ class CheckLogin {
 		'apiLogin',
 		'apiLoginByPhone',
 		'apiSendSMSCode',
+		'apiGetOpenid',
 	];
 	
 	/**
