@@ -39,6 +39,7 @@ class CancelOrder extends Command {
 		$orderIds = \DB::table('wash_order')
 		               ->where('status', '1')
 		               ->where('payment_status', '0')
+		               ->where('create_at', '<', time() - 3600)
 		               ->pluck('order_id')
 		               ->toArray();
 		if (count($orderIds)) {
