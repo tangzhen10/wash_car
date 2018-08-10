@@ -22,6 +22,7 @@ class OrderService extends BaseService {
 		5 => '已完成',
 		6 => '已退款',
 		7 => '已关闭',
+		8 => '申请退款中',
 	];
 	
 	# 动作名称
@@ -34,6 +35,7 @@ class OrderService extends BaseService {
 		'serve_finish' => '完成服务',
 		'refund_order' => '订单退款',
 		'cancel_order' => '取消订单',
+		'apply_refund' => '申请退款',
 	];
 	
 	# 订单操作对应操作后的状态
@@ -46,6 +48,7 @@ class OrderService extends BaseService {
 		'serve_finish' => 5,
 		'refund_order' => 6,
 		'cancel_order' => 7,
+		'apply_refund' => 8,
 	];
 	
 	# region 后台
@@ -474,31 +477,38 @@ class OrderService extends BaseService {
 		             ->first();
 		if (empty($detail)) json_msg(trans('common.not_exist_order'), 40003);
 		
-		# 订单状态信息
-		$orderStatusMsg = '';
+		# 取消 & 退款 & 申请售后
 		switch ($detail['status']) {
-			case 1 :
+			case self::ACTION_TO_STATUS['add_order']:
+				
 				# 未付款，1小时倒计时
-				$cancelAt            = $detail['create_at'] + 3600;
-				$orderStatusMsg      = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
-				$detail['cancel_at'] = $cancelAt;
-				break;
-		}
-		$detail['order_status_msg'] = $orderStatusMsg;
-		
-		# 取消 & 退款
-		if (!in_array($detail['status'], [6, 7])) {
-			if ($detail['payment_status']) {
-				$detail['button'] = [
-					'text'   => trans('common.refund'),
-					'action' => 'refund_order',
-				];
-			} else {
+				$cancelAt                   = $detail['create_at'] + 3600;
+				$orderStatusMsg             = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$detail['cancel_at']        = $cancelAt;
+				$detail['order_status_msg'] = $orderStatusMsg;
+				
 				$detail['button'] = [
 					'text'   => trans('common.cancel'),
 					'action' => 'cancel_order',
 				];
-			}
+				break;
+			case 2:
+				$detail['button'] = [
+					'text'   => trans('common.refund'),
+					'action' => 'refund_order',
+				];
+				break;
+			case 3:
+				$detail['button'] = [
+					'text'   => self::ORDER_ACTION['apply_refund'],
+					'action' => 'apply_refund',
+				];
+				break;
+			default:
+				$detail['button'] = [
+					'text'   => trans('common.after_sale'),
+					'action' => 'after_sale',
+				];
 		}
 		
 		# 服务人员

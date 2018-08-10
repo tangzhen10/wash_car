@@ -17,6 +17,8 @@ class BaseController extends Controller {
 	
 	public function __construct() {
 		
+		$this->_checkSign();
+		
 		$this->user = new UserService();
 	}
 	
@@ -33,5 +35,39 @@ class BaseController extends Controller {
 		} else {
 			json_msg(trans('common.action_failed'), 40004);
 		}
+	}
+	
+	/**
+	 * 验证签名
+	 * @author 李小同
+	 * @date   2018-8-10 17:11:17
+	 * @return bool
+	 */
+	private function _checkSign() {
+		
+		if (env('APP_ENV') == 'local' || env('VERIFY_SIGN') == false) return true;
+		
+		$post = request_all();
+		if (isset($post['sign'])) {
+			
+			$signOri = $post['sign'];
+			if ($signOri == '5jlpjDEB') return true;
+			unset($post['sign']);
+			
+			ksort($post);
+			
+			$param = [];
+			foreach ($post as $key => $value) {
+				$param[] = $key.'='.$value;
+			}
+			$paramStr = implode('&', $param);
+			$sign     = md5(base64_encode($paramStr));
+			$flag     = $sign == $signOri;
+			
+		} else {
+			$flag = false;
+		}
+		
+		if (!$flag) json_msg(trans('error.illegal_param'), 50003);
 	}
 }

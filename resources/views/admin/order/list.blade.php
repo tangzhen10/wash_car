@@ -15,9 +15,13 @@
 		}
 		.status_5 {
 			color: dodgerblue;
+			font-weight: bold;
 		}
-		.status_6,.status_7 {
+		.status_6, .status_7 {
 			color: grey;
+		}
+		.status_8 {
+			color: plum;
 		}
 	</style>
 @endsection
