@@ -104,7 +104,7 @@ class OrderController extends BaseController {
 		}
 		
 		$logs      = \OrderService::getOrderLogs($orderId);
-		$washImage = \OrderService::getWashImages($orderId);
+		$washImage = \OrderService::getWashImages($orderId, true);
 		foreach ($logs as &$log) {
 			switch ($log['action']) {
 				case 'serve_start':

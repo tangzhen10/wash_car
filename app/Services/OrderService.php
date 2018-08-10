@@ -155,13 +155,12 @@ class OrderService extends BaseService {
 			
 			$images = $this->getWashImages($orderId);
 			foreach ($types as $type) {
-				$imagesInfo = [
+				$imagesInfo        = [
 					'wash_order_id' => $orderId,
 					'type'          => $type,
 					'images'        => empty($images[$type]) ? [] : array_column($images[$type], 'thumb'),
 				];
-				$html       = $this->getFormHtmlByStructure($structure, $imagesInfo);
-				
+				$html              = $this->getFormHtmlByStructure($structure, $imagesInfo);
 				$imagesHtml[$type] = $html;
 			}
 			if ($status == 3) { # 接单时不允许上传清洗后照片
@@ -523,12 +522,13 @@ class OrderService extends BaseService {
 	
 	/**
 	 * 获取订单中的清洗前后照片
-	 * @param $orderId
+	 * @param      $orderId
+	 * @param bool $flag true：拼接domain false：不拼接
 	 * @author 李小同
 	 * @date   2018-8-7 20:44:33
 	 * @return array
 	 */
-	public function getWashImages($orderId) {
+	public function getWashImages($orderId, $flag = false) {
 		
 		$images = ['before' => [], 'after' => []];
 		$where  = ['wash_order_id' => $orderId, 'status' => '1'];
@@ -537,6 +537,7 @@ class OrderService extends BaseService {
 			foreach ($rows as $row) {
 				$imagesArr = explode(',', $row['images']);
 				foreach ($imagesArr as $src) {
+					if ($flag) $src = \URL::asset($src);
 					$thumb                  = dirname($src).'/'.config('project.THUMB_PREFIX').basename($src);
 					$images[$row['type']][] = compact('thumb', 'src');
 				}
