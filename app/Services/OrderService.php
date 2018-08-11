@@ -782,7 +782,7 @@ class OrderService extends BaseService {
 				break;
 			case 'system':
 				$logData['operator_id'] = 0;
-				$logData['operator']    = 'system';
+				$logData['operator']    = '【系统】system';
 				break;
 		}
 		$data = [

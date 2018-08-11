@@ -44,7 +44,7 @@ class CancelOrder extends Command {
 		               ->toArray();
 		if (count($orderIds)) {
 			
-			$logger = new Logger('wash_order');
+			$logger = new Logger('cancel_order');
 			$logger->pushHandler(new StreamHandler(config('project.PATH_TO_CANCEL_ORDER_LOG')));
 			
 			foreach ($orderIds as $orderId) {
@@ -68,7 +68,8 @@ class CancelOrder extends Command {
 				} catch (\Exception $e) {
 					
 					\DB::rollback();
-					$logger->error($orderId.'取消失败', $e->getMessage());
+					$error = ['msg' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()];
+					$logger->error($orderId.'取消失败', $error);
 				}
 			}
 		}
