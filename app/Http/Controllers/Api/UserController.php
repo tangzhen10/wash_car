@@ -119,4 +119,13 @@ class UserController extends BaseController {
 		json_msg($res);
 	}
 	# endregion
+	
+	public function balance() {
+		
+		# 账户余额
+		$balance = $this->user->getBalance();
+		
+		# 月卡
+		$monthCardList = \ArticleService::getArticleList();
+	}
 }

@@ -61,7 +61,7 @@ class BaseController extends Controller {
 				$param[] = $key.'='.$value;
 			}
 			$paramStr = implode('&', $param);
-			$sign     = md5(base64_encode($paramStr));
+			$sign     = strtoupper(md5($paramStr));
 			$flag     = $sign == $signOri;
 			
 		} else {
