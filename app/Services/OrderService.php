@@ -602,8 +602,7 @@ class OrderService extends BaseService {
 		              ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
 		              ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
 		              ->where('a.user_id', $this->userId)
-		              ->orderBy('a.id', 'desc')
-		              ->offset(($page - 1) * $perPage)//->limit($perPage) # todo lxt 暂时不做下拉刷新
+		              ->orderBy('a.id', 'desc')// ->offset(($page - 1) * $perPage)->limit($perPage) # todo lxt 暂时不做下拉刷新
 		              ->get($fields)
 		              ->toArray();
 		$list    = [];
