@@ -46,6 +46,13 @@ class UserController extends BaseController {
 		json_msg($loginInfo);
 	}
 	
+	public function logout() {
+		
+		$res = $this->user->logout();
+		
+		$this->render($res);
+	}
+	
 	/**
 	 * 修改密码
 	 * @author 李小同

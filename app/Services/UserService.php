@@ -238,6 +238,21 @@ class UserService {
 	}
 	
 	/**
+	 * 登出
+	 * @author 李小同
+	 * @date   2018-8-11 15:12:21
+	 * @return bool|mixed
+	 */
+	public function logout() {
+		
+		$token    = $this->getToken();
+		$cacheKey = sprintf(config('cache.USER_INFO'), $token);
+		$res      = redisDel($cacheKey);
+		
+		return $res;
+	}
+	
+	/**
 	 * 获取用户id
 	 * @author 李小同
 	 * @date   2018-7-28 10:56:17
@@ -350,8 +365,20 @@ class UserService {
 		return $res > 0 ? true : false;
 	}
 	
-	public function handelOAuthLogin($authData, $userData) {
+	/**
+	 * 获取用户余额
+	 * @param int $userId
+	 * @author 李小同
+	 * @date   2018-8-11 10:08:46
+	 * @return mixed
+	 */
+	public function getBalance($userId = 0) {
 		
+		if ($userId == 0) $userId = $this->userId;
+		$balance = \DB::table('balance_detail')->where('user_id', $userId)->sum('amount');
+		$balance = sprintf('%.2f', $balance);
+		
+		return $balance;
 	}
 	
 	/**

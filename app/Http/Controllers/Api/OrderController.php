@@ -36,12 +36,21 @@ class OrderController extends BaseController {
 		$car = \CarService::getMyLastWashCar();
 		
 		# 个人信息
-		$userInfo          = $this->user->getUserInfo();
+		$userInfo = $this->user->getUserInfo();
 		if (!empty($userInfo['phone'])) { # 未登录不做屏蔽
 			$userInfo['phone'] = substr($userInfo['phone'], 0, 3).'****'.substr($userInfo['phone'], -4);
 		}
 		
-		json_msg(compact('banners', 'product', 'contact', 'car', 'total', 'totalOri', 'userInfo'));
+		# 余额
+		$userInfo['balance'] = $this->user->getBalance();
+		
+		# 支付方式
+		$paymentMethod = ['wechat'];
+		if ($userInfo['balance'] > 0) {
+			$paymentMethod[] = 'balance';
+		}
+		
+		json_msg(compact('banners', 'product', 'contact', 'car', 'paymentMethod', 'total', 'totalOri', 'userInfo'));
 	}
 	
 	/**

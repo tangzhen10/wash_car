@@ -433,6 +433,8 @@ class CarService extends BaseService {
 			                    ->where('a.status', '1')
 			                    ->where('a.id', $lastWashCarId)
 			                    ->first($fields);
+			if (empty($lastWashCar['brand'])) $lastWashCar['brand'] = trans('common.other');
+			if (empty($lastWashCar['model'])) $lastWashCar['model'] = '';
 			return $lastWashCar;
 			
 		} else {

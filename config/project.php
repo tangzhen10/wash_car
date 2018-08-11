@@ -24,8 +24,7 @@ return [
 	'ALLOW_TYPE_OF_CONTENT_TYPE' => ['1', '2'], # 合法的文档类型的类型
 	'FIRST_LETTER'               => 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', # 车辆品牌首字母
 	'CONTENT_TYPE'               => [
-		'WASH_PRODUCT'      => 24, # 洗车服务项目
-		'WASH_INDEX_BANNER' => 25, # 洗车服务首页banner
+		'WASH_INDEX_BANNER' => 25, # 首页banner
 	],
 	'PATH_TO_WASH_ORDER_LOG'     => storage_path('logs/wash_order/'.date('Y-m-d').'.log'), # 洗车订单的日志位置
 	'PATH_TO_CANCEL_ORDER_LOG'   => storage_path('logs/cancel_order/'.date('Y-m-d').'.log'), # 超时自动取消洗车订单的日志位置

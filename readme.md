@@ -211,6 +211,27 @@ $md5即是sign的参数值
 }
 ```
 
+##### 登出
+
+| URL                      | HTTP请求方式 | 是否需要登陆 |
+| ------------------------ | ------------ | ------------ |
+| {domain}/api/user/logout | POST         | 否           |
+
+> 请求参数
+
+| 字段名 | 类型 | 是否必填 | 描述 | 示例值 |
+| ------ | ---- | -------- | ---- | ------ |
+|        |      |          |      |        |
+
+> 响应参数
+
+```json
+{
+    "code": 0,
+    "msg": "ok"
+}
+```
+
 ##### 手机号登录
 
 | URL                            | HTTP请求方式 | 是否需要登陆 |
@@ -705,7 +726,7 @@ $md5即是sign的参数值
                 "name": "服务范围介绍",
                 "sub_name": null,
                 "detail": {
-                    "image": "http://www.wash.com/src/upload/image/20180802/153320073423832.png",
+                    "image": "http://www.wash.com/src/upload/image/20180805/153343739525151.png",
                     "link": "https://www.baidu.com"
                 }
             },
@@ -714,7 +735,7 @@ $md5即是sign的参数值
                 "name": "活动宣传",
                 "sub_name": null,
                 "detail": {
-                    "image": "http://www.wash.com/src/upload/image/20180802/153320103120059.png",
+                    "image": "http://www.wash.com/src/upload/image/20180804/153337291458660.gif",
                     "link": "https://www.jd.com"
                 }
             }
@@ -724,18 +745,41 @@ $md5即是sign的参数值
             "name": "全外观清洗"
         },
         "contact": {
-            "user": "李先生",
-            "phone": "18512174048"
+            "user": "",
+            "phone": "18512174045"
         },
         "car": {
-            "id": 3,
-            "plate_number": "沪EA77M2",
-            "brand": "奥迪",
-            "model": "桑塔纳",
-            "color": "蓝色"
+            "id": 51,
+            "plate_number": "粤AHULXT",
+            "brand": "一汽轿车",
+            "model": "",
+            "color": "黑色"
         },
+        "paymentMethod": [
+            "wechat",
+            "balance"
+        ],
         "total": 128,
-        "totalOri": 200
+        "totalOri": 200,
+        "userInfo": {
+            "user_id": 45,
+            "nickname": "",
+            "phone": "185****4045",
+            "email": "",
+            "gender": "0",
+            "avatar": "",
+            "birthday": "",
+            "country": "",
+            "province": "",
+            "city": "",
+            "language": "zh_CN",
+            "create_at": "2018-08-03 15:37:57",
+            "last_login_at": "2018-08-11 09:46:05",
+            "last_login_ip": "127.0.0.1",
+            "gender_text": "",
+            "token": "a626a96529fd1ca5eb782c5cd672e3905b6e3fdddd132",
+            "balance": "200.00"
+        }
     }
 }
 ```
@@ -754,9 +798,13 @@ $md5即是sign的参数值
 
 > 响应参数
 
-| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+| 字段名    | 类型   | 是否必填 | 描述         | 示例值     |
+| --------- | ------ | -------- | ------------ | ---------- |
+| id        | int    | 是       | 服务项目id   | 46         |
+| name      | string | 是       | 服务项目名称 | 全外观清洗 |
+| price     | object | 是       | 价格         |            |
+| price_ori | object | 是       | 原价         |            |
+| discount  | string | 是       | 折扣         | 6.4折      |
 
 > 响应示例
 
@@ -767,11 +815,29 @@ $md5即是sign的参数值
         "list": [
             {
                 "id": 46,
-                "name": "全外观清洗"
+                "name": "全外观清洗",
+                "price": {
+                    "text": "价格",
+                    "value": "128"
+                },
+                "price_ori": {
+                    "text": "原价",
+                    "value": "200"
+                },
+                "discount": "6.4折"
             },
             {
                 "id": 47,
-                "name": "车窗打蜡"
+                "name": "车窗打蜡",
+                "price": {
+                    "text": "价格",
+                    "value": "50"
+                },
+                "price_ori": {
+                    "text": "原价",
+                    "value": "80"
+                },
+                "discount": "6.3折"
             }
         ]
     }

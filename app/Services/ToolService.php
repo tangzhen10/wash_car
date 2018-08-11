@@ -32,7 +32,7 @@ class ToolService {
 		$code = $this->createVerifyCode($phoneInfo);
 		
 		# todo lxt sendCode
-		$res = '本次验证码为：'.$code;
+		$res = $code;
 		
 		return $res;
 	}
@@ -115,6 +115,33 @@ class ToolService {
 		}
 		
 		return implode(',', $uploadedFiles);
+	}
+	
+	/**
+	 * 充值
+	 * @param $amount
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-8-11 11:13:04
+	 * @return mixed
+	 */
+	public function recharge($amount, $userId) {
+		
+		if (!is_numeric($amount)) {
+			json_msg(trans('error.illegal_param'), 50004);
+		} else {
+			$amount = floatval($amount);
+		}
+		$insertData = [
+			'user_id'   => $userId,
+			'amount'    => $amount,
+			'type'      => 'recharge',
+			'comment'   => trans('common.recharge').'￥'.$amount,
+			'create_at' => time(),
+			'create_ip' => getClientIp(true),
+		];
+		$res        = \DB::table('balance_detail')->insertGetId($insertData);
+		return $res;
 	}
 	
 	/**

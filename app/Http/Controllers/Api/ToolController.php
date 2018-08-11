@@ -22,7 +22,19 @@ class ToolController extends BaseController {
 	public function sendSMSCode() {
 		
 		$res = \ToolService::sendSMSCode();
-		$msg = $res.'，验证码有效期为5分钟，请尽快输入。';
+		$msg = '本次验证码为：'.$res.'，验证码有效期为5分钟，请尽快输入。';
 		json_msg($msg);
+	}
+	
+	/**
+	 * 充值
+	 * @author 李小同
+	 * @date   2018-8-11 11:13:29
+	 */
+	public function reCharge() {
+		
+		$amount = \Request::input('amount');
+		$res    = \ToolService::recharge($amount, $this->user->userId);
+		$this->render($res);
 	}
 }

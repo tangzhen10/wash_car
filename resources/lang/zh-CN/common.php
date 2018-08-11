@@ -86,7 +86,9 @@ return [
 	'upload'                   => '上传',
 	'cancel'                   => '取消',
 	'refund'                   => '退款',
+	'apply_refund'             => '申请退款',
 	'after_sale'               => '申请售后',
+	'recharge'                 => '充值',
 	
 	# 询问
 	'dangerous_action_confirm' => '危险操作，确认要执行吗？',

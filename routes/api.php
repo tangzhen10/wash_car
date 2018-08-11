@@ -26,6 +26,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('register', ['uses' => 'UserController@register', 'as' => 'apiRegister']);
 		# 登录
 		Route::post('loginOri', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
+		# 登出
+		Route::post('logout', ['uses' => 'UserController@logout', 'as' => 'apiLogout']);
 		# 修改密码
 		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'apiChangePassword']);
 		# 获取openid
@@ -37,7 +39,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		
 		# 发送短信验证码
 		Route::post('sendSMSCode', ['uses' => 'ToolController@sendSMSCode', 'as' => 'apiSendSMSCode']);
-		
+		# 充值
+		Route::post('recharge', ['uses' => 'ToolController@recharge', 'as' => 'apiRecharge']);
 	});
 	
 	# 车辆

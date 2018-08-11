@@ -18,8 +18,15 @@ class ProductController extends BaseController {
 	 */
 	public function washList() {
 		
-		$filter = ['content_type' => 24];
-		$list   = \ArticleService::getArticleBaseInfo($filter);
+		$filter = ['content_type' => self::CONTENT_TYPE];
+		$list   = \ArticleService::getArticleList($filter);
+		foreach ($list as &$item) {
+			$item['price']     = $item['detail']['price'];
+			$item['price_ori'] = $item['detail']['price_ori'];
+			$item['discount']  = round(10 * $item['price']['value'] / $item['price_ori']['value'], 1).'折';
+			unset($item['sub_name'], $item['detail']);
+		}
+		unset($item);
 		
 		json_msg(['list' => $list]);
 	}

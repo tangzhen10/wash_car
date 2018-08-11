@@ -38,19 +38,6 @@ class OrderService extends BaseService {
 		'apply_refund' => '申请退款',
 	];
 	
-	# 订单操作对应操作后的状态
-	const ACTION_TO_STATUS = [
-		'add_order'    => 1,
-		'order_pay'    => 2,
-		'confirm_pay'  => 2,
-		'take_order'   => 3,
-		'serve_start'  => 4,
-		'serve_finish' => 5,
-		'refund_order' => 6,
-		'cancel_order' => 7,
-		'apply_refund' => 8,
-	];
-	
 	# region 后台
 	/**
 	 * 洗车订单列表
@@ -271,21 +258,21 @@ class OrderService extends BaseService {
 			$flag   = false;
 			$action = '';
 			switch ($status) {
-				case self::ACTION_TO_STATUS['take_order']:
-					if ($order['status'] == self::ACTION_TO_STATUS['order_pay']) {
+				case 3:
+					if ($order['status'] == 2) {
 						$flag   = true;
 						$action = 'take_order';
 						$this->_setWasher($orderId);
 					}
 					break;
-				case self::ACTION_TO_STATUS['serve_start']:
-					if ($order['status'] == self::ACTION_TO_STATUS['take_order']) {
+				case 4:
+					if ($order['status'] == 3) {
 						$flag   = true;
 						$action = 'serve_start';
 					}
 					break;
-				case self::ACTION_TO_STATUS['serve_finish']:
-					if ($order['status'] == self::ACTION_TO_STATUS['serve_start']) {
+				case 5:
+					if ($order['status'] == 4) {
 						$flag   = true;
 						$action = 'serve_finish';
 					}
@@ -479,12 +466,18 @@ class OrderService extends BaseService {
 		
 		# 取消 & 退款 & 申请售后
 		switch ($detail['status']) {
-			case self::ACTION_TO_STATUS['add_order']:
+			case 1:
 				
 				# 未付款，1小时倒计时
-				$cancelAt                   = $detail['create_at'] + 3600;
-				$orderStatusMsg             = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
-				$detail['cancel_at']        = $cancelAt;
+				$cancelAt              = $detail['create_at'] + 3600;
+				$orderStatusMsg        = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$detail['cancel_left'] = $cancelAt - time();
+				if ($detail['cancel_left'] <= 0) {
+					if ($this->_cancelWashOrder($detail, true)) {
+						return $this->getWashOrderDetail($orderId);
+					}
+				}
+				
 				$detail['order_status_msg'] = $orderStatusMsg;
 				
 				$detail['button'] = [
@@ -500,7 +493,7 @@ class OrderService extends BaseService {
 				break;
 			case 3:
 				$detail['button'] = [
-					'text'   => self::ORDER_ACTION['apply_refund'],
+					'text'   => trans('common.apply_refund'),
 					'action' => 'apply_refund',
 				];
 				break;
@@ -610,8 +603,7 @@ class OrderService extends BaseService {
 		              ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
 		              ->where('a.user_id', $this->userId)
 		              ->orderBy('a.id', 'desc')
-		              ->offset(($page - 1) * $perPage)
-		              ->limit($perPage)
+		              ->offset(($page - 1) * $perPage)//->limit($perPage) # todo lxt 暂时不做下拉刷新
 		              ->get($fields)
 		              ->toArray();
 		$list    = [];
@@ -857,7 +849,7 @@ class OrderService extends BaseService {
 				# todo lxt 余额退款
 				
 				$action = 'refund_order';
-				$status = self::ACTION_TO_STATUS['refund_order'];
+				$status = 6;
 				
 				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
 				
@@ -884,18 +876,19 @@ class OrderService extends BaseService {
 	/**
 	 * 用户取消订单
 	 * @param array $order
+	 * @param bool  $system 是否系统自动取消
 	 * @author 李小同
 	 * @date   2018-8-8 16:31:41
 	 * @return bool
 	 */
-	private function _cancelWashOrder(array $order) {
+	private function _cancelWashOrder(array $order, $system = false) {
 		
 		if (in_array($order['status'], [1, 2])) {
 			
 			\DB::beginTransaction();
 			try {
 				$action = 'cancel_order';
-				$status = self::ACTION_TO_STATUS['cancel_order'];
+				$status = 7;
 				
 				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
 				
@@ -903,7 +896,7 @@ class OrderService extends BaseService {
 					'wash_order_id' => $order['order_id'],
 					'action'        => $action,
 					'order_status'  => $status,
-					'operator_type' => 'user',
+					'operator_type' => $system ? 'system' : 'user',
 				];
 				$this->addOrderLog($logData);
 				
