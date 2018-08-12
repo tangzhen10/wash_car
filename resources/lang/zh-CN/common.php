@@ -65,6 +65,8 @@ return [
 	'time_status_3'            => '已过期',
 	'payment_status_1'         => '已支付',
 	'payment_status_0'         => '未支付',
+	'yes'                      => '是',
+	'no'                       => '否',
 	
 	# 动作
 	'action'                   => '操作',

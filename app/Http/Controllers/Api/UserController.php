@@ -115,17 +115,26 @@ class UserController extends BaseController {
 	public function getOpenid() {
 		
 		$code = \Request::input('code');
-		$res = \WechatService::getSessionKeyAndOpenId($code);
+		$res  = \WechatService::getSessionKeyAndOpenId($code);
 		json_msg($res);
 	}
+	
 	# endregion
 	
-	public function balance() {
+	/**
+	 * 充值|套餐卡
+	 * @author 李小同
+	 * @date   2018-8-12 20:34:34
+	 */
+	public function rechargeAndWashCard() {
 		
 		# 账户余额
 		$balance = $this->user->getBalance();
 		
-		# 月卡
-		$monthCardList = \ArticleService::getArticleList();
+		# 洗车卡
+		$filter    = ['content_type' => config('project.CONTENT_TYPE.WASH_CARD')];
+		$washCards = \ArticleService::getArticleList($filter);
+		
+		json_msg(compact('balance', 'washCards'));
 	}
 }

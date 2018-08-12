@@ -272,6 +272,99 @@ $md5即是sign的参数值
 }
 ```
 
+##### 充值|套餐卡
+
+| URL                                   | HTTP请求方式 | 是否需要登陆 |
+| ------------------------------------- | ------------ | ------------ |
+| {domain}/api/user/rechargeAndWashCard | POST         | 是           |
+
+> 请求参数
+
+| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
+| ---- | ---- | ---- | ---- | ---- |
+|      |      |      |      |      |
+
+> 响应参数
+
+| 字段名          | 类型   | 是否必填 | 描述              | 示例值         |
+| --------------- | ------ | -------- | ----------------- | -------------- |
+| balance         | string | 是       | 余额，单位：元    | 550.00         |
+| washCards       | array  | 是       | 洗车卡列表        |                |
+| L id            | int    | 是       | 洗车卡id          | 51             |
+| L name          | string | 是       | 洗车卡名称        | 猫头鹰洗车月卡 |
+| LL price        | object | 是       | 卡券价格          | 120            |
+| LL price_ori    | object | 是       | 卡券原价          | 160            |
+| LL expire_date  | object | 是       | 卡券有效期        | 30             |
+| LL hot_status   | object | 是       | 是否热销，1是 0否 | 1              |
+| LL introduction | object | 是       | 卡券介绍          |                |
+
+> 响应示例
+
+```json
+{
+    "code": 0,
+    "data": {
+        "balance": "550.00",
+        "washCards": [
+            {
+                "id": 51,
+                "name": "猫头鹰洗车月卡",
+                "sub_name": null,
+                "detail": {
+                    "price": {
+                        "text": "价格",
+                        "value": "120"
+                    },
+                    "price_ori": {
+                        "text": "原价",
+                        "value": "180"
+                    },
+                    "expire_date": {
+                        "text": "有效期",
+                        "value": "30"
+                    },
+                    "hot_status": {
+                        "text": "热销券",
+                        "value": "1"
+                    },
+                    "introduction": {
+                        "text": "介绍",
+                        "value": "没用过，想体验？首选尝鲜套餐！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1个月内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！"
+                    }
+                }
+            },
+            {
+                "id": 52,
+                "name": "猫头鹰洗车季卡",
+                "sub_name": null,
+                "detail": {
+                    "price": {
+                        "text": "价格",
+                        "value": "300"
+                    },
+                    "price_ori": {
+                        "text": "原价",
+                        "value": "500"
+                    },
+                    "expire_date": {
+                        "text": "有效期",
+                        "value": "90"
+                    },
+                    "hot_status": {
+                        "text": "热销券",
+                        "value": "0"
+                    },
+                    "introduction": {
+                        "text": "介绍",
+                        "value": "季度套餐卡，绝对划算！！！\r\n套餐内容：全外观精洗 + 车窗打蜡\r\n使用时间：购买之日起90天内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！"
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
 ### 车辆  car
 
 ##### 我的车辆

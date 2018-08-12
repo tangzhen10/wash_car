@@ -316,6 +316,16 @@ class ContentTypeService extends BaseService {
 							</span>
 						</label>';
 			}
+		} elseif (substr($field['name'], -7) == '_status') {
+			foreach ($groups as $group) {
+				$text    = $group == '1' ? trans('common.yes') : trans('common.no');
+				$checked = $group == $value ? 'checked' : '';
+				$html .= '<label>
+							<span class="radio-box">
+								<input type="radio" name="'.$field['name'].'" value="'.$group.'" '.$checked.' >'.$text.'
+							</span>
+						</label>';
+			}
 		} else {
 			foreach ($groups as $group) {
 				$checked = $group == $value ? 'checked' : '';

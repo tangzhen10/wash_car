@@ -25,6 +25,7 @@ return [
 	'FIRST_LETTER'               => 'A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', # 车辆品牌首字母
 	'CONTENT_TYPE'               => [
 		'WASH_INDEX_BANNER' => 25, # 首页banner
+		'WASH_CARD'         => 26, # 洗车卡
 	],
 	'PATH_TO_WASH_ORDER_LOG'     => storage_path('logs/wash_order/'.date('Y-m-d').'.log'), # 洗车订单的日志位置
 	'PATH_TO_CANCEL_ORDER_LOG'   => storage_path('logs/cancel_order/'.date('Y-m-d').'.log'), # 超时自动取消洗车订单的日志位置
