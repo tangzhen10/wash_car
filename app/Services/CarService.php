@@ -438,7 +438,7 @@ class CarService extends BaseService {
 			return $lastWashCar;
 			
 		} else {
-			return [];
+			return null;
 		}
 	}
 	

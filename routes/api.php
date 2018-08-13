@@ -74,10 +74,6 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('washList', ['uses' => 'ProductController@washList', 'as' => 'apiWashList']);
 		# 洗车服务项目详情
 		Route::post('washDetail', ['uses' => 'ProductController@washDetail', 'as' => 'apiWashDetail']);
-		# 联系人
-		Route::post('contact', ['uses' => 'UserController@washContact', 'as' => 'apiContactUser']);
-		# 清洗时间
-		Route::post('washTime', ['uses' => 'OrderController@washTime', 'as' => 'apiWashTime']);
 		# 下单
 		Route::post('placeOrder', ['uses' => 'OrderController@placeOrder', 'as' => 'apiPlaceOrder']);
 		# 订单列表

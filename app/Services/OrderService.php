@@ -805,6 +805,33 @@ class OrderService extends BaseService {
 	}
 	
 	/**
+	 * 获取联系人
+	 * @author 李小同
+	 * @date   2018-8-13 17:22:43
+	 * @return array
+	 */
+	public function getContact() {
+		
+		$contact = [
+			'user'  => \UserService::getUserInfo('nickname'),
+			'phone' => \UserService::getUserInfo('phone'),
+		];
+		if ($this->userId > 0) {
+			# 最新订单的联系人信息
+			$lastContact = \DB::table('wash_order')
+			                  ->where('user_id', $this->userId)
+			                  ->orderBy('id', 'desc')
+			                  ->first(['contact_user', 'contact_phone']);
+			$contact     = [
+				'user'  => $lastContact['contact_user'],
+				'phone' => $lastContact['contact_phone'],
+			];
+		}
+		
+		return $contact;
+	}
+	
+	/**
 	 * 用户订单取消或退款
 	 * @param array $post
 	 * @author 李小同

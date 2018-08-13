@@ -21,19 +21,24 @@ class OrderController extends BaseController {
 		
 		# 默认服务项目
 		$products = \ArticleService::getArticleList(['content_type' => \SettingService::getValue('product_content_type')], false);
-		$product  = $products[0];
-		$total    = $product['detail']['price'] * 1;
-		$totalOri = $product['detail']['price_ori'] * 1;
-		unset($product['sub_name'], $product['detail']);
-		
-		# 联系人电话
-		$contact = [
-			'user'  => $this->user->getUserInfo('nickname'),
-			'phone' => $this->user->getUserInfo('phone'),
-		];
+		if (!empty($products[0])) {
+			
+			$product  = $products[0];
+			$total    = $product['detail']['price'] * 1;
+			$totalOri = $product['detail']['price_ori'] * 1;
+			unset($product['sub_name'], $product['detail']);
+		} else {
+			$product = null;
+		}
 		
 		# 默认车辆
 		$car = \CarService::getMyLastWashCar();
+		
+		# 联系人及电话
+		$contact = \OrderService::getContact();
+		
+		# 默认清洗时间
+		$washTimeList = \OrderService::getWashTimeList();
 		
 		# 个人信息
 		$userInfo = $this->user->getUserInfo();
@@ -46,11 +51,9 @@ class OrderController extends BaseController {
 		
 		# 支付方式
 		$paymentMethod = ['wechat'];
-		if ($userInfo['balance'] > 0) {
-			$paymentMethod[] = 'balance';
-		}
+		if ($userInfo['balance'] > 0) $paymentMethod[] = 'balance';
 		
-		json_msg(compact('banners', 'product', 'contact', 'car', 'paymentMethod', 'total', 'totalOri', 'userInfo'));
+		json_msg(compact('banners', 'product', 'contact', 'car', 'washTimeList', 'paymentMethod', 'total', 'totalOri', 'userInfo'));
 	}
 	
 	/**
