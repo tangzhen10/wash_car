@@ -57,19 +57,6 @@ class OrderController extends BaseController {
 	}
 	
 	/**
-	 * 清洗时间
-	 * @author 李小同
-	 * @date   2018-7-28 21:21:52
-	 * @return array
-	 */
-	public function washTime() {
-		
-		$list = \OrderService::getWashTimeList();
-		
-		json_msg(['list' => $list]);
-	}
-	
-	/**
 	 * 下单
 	 * @author 李小同
 	 * @date   2018-8-1 22:46:09
