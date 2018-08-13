@@ -146,7 +146,9 @@
 				}
 			});
 			
-			$('.J_content_type').val('{{$detail['content_type']}}').change();
+			setTimeout(function () {
+				$('.J_content_type').val('{{$detail['content_type']}}').change();
+			}, 100);
 			
 		});
 	</script>

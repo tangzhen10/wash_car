@@ -24,7 +24,7 @@ return [
 	'value_check_element'      => '单选框和复选框的值',
 	'start_time'               => '开始时间',
 	'end_time'                 => '结束时间',
-	'content_type'             => '文档类型',
+	'content_type'             => '文章模板',
 	'article'                  => '文章',
 	'article_name'             => '标题',
 	'gender'                   => '性别',
