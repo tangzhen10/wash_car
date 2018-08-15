@@ -103,6 +103,7 @@ class OrderController extends BaseController {
 		if ($detail['user_id'] != $this->user->userId) {
 			json_msg(trans('error.access_denied'), 40003);
 		}
+		unset($detail['username'], $detail['phone']);
 		
 		$logs      = \OrderService::getOrderLogs($orderId);
 		$washImage = \OrderService::getWashImages($orderId, true);

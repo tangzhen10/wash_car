@@ -1271,8 +1271,6 @@ const ORDER_ACTION = [
                 "brand": "奥迪",
                 "model": "桑塔纳",
                 "color": "蓝色",
-                "username": "无昵称用户",
-                "phone": "18512174045",
                 "wash_product": "全外观清洗",
                 "order_status_msg": "",
                 "button": {
