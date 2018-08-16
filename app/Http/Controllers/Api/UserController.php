@@ -71,7 +71,9 @@ class UserController extends BaseController {
 	 */
 	public function loginByPhone() {
 		
-		$phone            = trim(\Request::input('account'));
+		$phone = trim(\Request::input('account'));
+		\ToolService::validatePhone($phone);
+		
 		$useType          = 'login_by_phone';
 		$cacheKey         = \ToolService::getVerifyCodeCacheKey(compact('phone', 'useType'));
 		$serverVerifyCode = redisGet($cacheKey);

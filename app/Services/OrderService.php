@@ -196,9 +196,6 @@ class OrderService extends BaseService {
 		$this->validateWashTime($post['wash_time']);
 		
 		$where = ['id' => $post['id']];
-		if ($post['payment_status'] == 1) {
-			$post['status'] = 2;
-		}
 		\DB::table('wash_order')->where($where)->update($post);
 		
 		return true;

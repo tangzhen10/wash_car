@@ -145,6 +145,19 @@ class ToolService {
 	}
 	
 	/**
+	 * 验证手机号码格式是否正确
+	 * @param $phone
+	 * @author 李小同
+	 * @date   2018-08-16 17:58:57
+	 */
+	public function validatePhone($phone) {
+		
+		if (!preg_match(config('project.PATTERN.PHONE'), $phone)) {
+			json_msg(trans('validation.invalid', ['attr' => trans('common.phone')]), 40003);
+		}
+	}
+	
+	/**
 	 * 验证手机号是否可用
 	 * @author 李小同
 	 * @date   2018-6-29 18:13:37
@@ -156,9 +169,7 @@ class ToolService {
 		$useType = \Request::input('use_type'); # 短信用途
 		
 		# 验证手机号码格式
-		if (!preg_match(config('project.PATTERN.PHONE'), $phone)) {
-			json_msg(trans('validation.invalid', ['attr' => trans('common.phone')]), 40003);
-		}
+		$this->validatePhone($phone);
 		
 		# 验证是否是合法的使用用途
 		if (!in_array($useType, $this->_validSMSCodeUseTypes)) json_msg(trans('error.illegal_param'), 40003);

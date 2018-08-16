@@ -162,12 +162,7 @@ class MemberService extends BaseService {
 		}
 		
 		# 检测手机号码格式
-		if (!empty($post['phone'])) {
-			if (!preg_match(config('project.PATTERN.PHONE'), $post['phone'])) {
-				$errorMsg = trans('validation.invalid', ['attr' => trans('common.phone')]);
-				json_msg($errorMsg, 40003);
-			}
-		}
+		if (!empty($post['phone'])) \ToolService::validatePhone($post['phone']);
 		
 		# 检测邮箱格式
 		if (!empty($post['email'])) {
