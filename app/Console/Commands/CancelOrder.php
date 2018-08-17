@@ -42,10 +42,9 @@ class CancelOrder extends Command {
 		               ->where('create_at', '<', time() - 3600)
 		               ->pluck('order_id')
 		               ->toArray();
+		$logger = new Logger('cancel_order');
+		$logger->pushHandler(new StreamHandler(config('project.PATH_TO_CANCEL_ORDER_LOG')));
 		if (count($orderIds)) {
-			
-			$logger = new Logger('cancel_order');
-			$logger->pushHandler(new StreamHandler(config('project.PATH_TO_CANCEL_ORDER_LOG')));
 			
 			foreach ($orderIds as $orderId) {
 				
@@ -72,6 +71,8 @@ class CancelOrder extends Command {
 					$logger->error($orderId.'取消失败', $error);
 				}
 			}
+		} else {
+			$logger->info('无订单可取消');
 		}
 	}
 }

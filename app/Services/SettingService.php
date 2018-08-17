@@ -80,7 +80,7 @@ class SettingService extends BaseService {
 	 */
 	public function getTotalInfo() {
 		
-		$orderCount      = \DB::table('wash_order')->where('status', '1')->count('id');
+		$orderCount      = \DB::table('wash_order')->count('id');
 		$orderTodayCount = \DB::table('wash_order')->where(function ($query) {
 			
 			$query->where('create_at', '>=', strtotime(date('Y-m-d 00:00:00')))

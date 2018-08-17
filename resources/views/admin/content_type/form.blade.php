@@ -192,5 +192,23 @@
 				row.next().after(row);
 			});
 		});
+		
+		function validate_form() {
+			
+			var fields    = $('#form input[name="field_name[]"]'),
+			    keyFields = '{{$keyFields}}'.split(',');
+			for (var x in fields) {
+				var field = fields.eq(x).val();
+				if (field == '') {
+					layer.tips('name不得为空', fields.eq(x));
+					return false;
+				}
+				if ($.inArray(field, keyFields) > -1) {
+					layer.tips('不得使用公共属性name', fields.eq(x));
+					return false;
+				}
+			}
+			return true;
+		}
 	</script>
 @endsection
