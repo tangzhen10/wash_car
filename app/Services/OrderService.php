@@ -843,16 +843,58 @@ class OrderService extends BaseService {
 		$order  = \DB::table('wash_order')->where('order_id', $post['order_id'])->first($fields);
 		if (empty($order['order_id'])) json_msg(trans('error.illegal_action'), 40003);
 		switch ($post['action']) {
+			case 'cancel_order':
+				return $this->_cancelWashOrder($order);
+				break;
 			case 'refund_order':
 				return $this->_refundWashOrder($order);
 				break;
-			case 'cancel_order':
-				return $this->_cancelWashOrder($order);
+			case 'apply_refund':
+				return $this->_applyRefundWashOrder($order);
 				break;
 			default:
 				json_msg(trans('error.illegal_action'), 40003);
 		}
 		return true;
+	}
+	
+	/**
+	 * 用户取消订单
+	 * @param array $order
+	 * @param bool  $system 是否系统自动取消
+	 * @author 李小同
+	 * @date   2018-8-8 16:31:41
+	 * @return bool
+	 */
+	private function _cancelWashOrder(array $order, $system = false) {
+		
+		if ($order['status'] == 1) {
+			
+			\DB::beginTransaction();
+			try {
+				$action = 'cancel_order';
+				$status = 7;
+				
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
+				
+				$logData = [
+					'wash_order_id' => $order['order_id'],
+					'action'        => $action,
+					'order_status'  => $status,
+					'operator_type' => $system ? 'system' : 'user',
+				];
+				$this->addOrderLog($logData);
+				
+				\DB::commit();
+				return true;
+				
+			} catch (\Exception $e) {
+				\DB::rollback();
+				return false;
+			}
+		} else {
+			json_msg(trans('error.illegal_action'), 40003);
+		}
 	}
 	
 	/**
@@ -864,7 +906,7 @@ class OrderService extends BaseService {
 	 */
 	private function _refundWashOrder(array $order) {
 		
-		if (in_array($order['status'], [3, 4, 5])) {
+		if ($order['status'] == 2) {
 			
 			\DB::beginTransaction();
 			try {
@@ -899,21 +941,21 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 用户取消订单
+	 * 申请退款
 	 * @param array $order
-	 * @param bool  $system 是否系统自动取消
 	 * @author 李小同
-	 * @date   2018-8-8 16:31:41
+	 * @date   2018-08-17 14:52:10
 	 * @return bool
 	 */
-	private function _cancelWashOrder(array $order, $system = false) {
+	private function _applyRefundWashOrder(array $order) {
 		
-		if (in_array($order['status'], [1, 2])) {
+		if ($order['status'] == 3) {
 			
 			\DB::beginTransaction();
 			try {
-				$action = 'cancel_order';
-				$status = 7;
+				
+				$action = 'apply_refund';
+				$status = 8;
 				
 				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
 				
@@ -921,7 +963,7 @@ class OrderService extends BaseService {
 					'wash_order_id' => $order['order_id'],
 					'action'        => $action,
 					'order_status'  => $status,
-					'operator_type' => $system ? 'system' : 'user',
+					'operator_type' => 'user',
 				];
 				$this->addOrderLog($logData);
 				
