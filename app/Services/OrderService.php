@@ -600,6 +600,83 @@ class OrderService extends BaseService {
 		              ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
 		              ->where('a.user_id', $this->userId)
 		              ->orderBy('a.id', 'desc')
+		              ->offset(0)
+		              ->limit($page * $perPage)
+		              ->get($fields)
+		              ->toArray();
+		$list    = [];
+		foreach ($rows as $row) {
+			$list[] = [
+				'order_id'     => [
+					'text'  => trans('common.order_id'),
+					'value' => $row['order_id'],
+				],
+				'create_at'    => [
+					'text'  => trans('common.create_at'),
+					'value' => intToTime($row['create_at']),
+				],
+				'status'       => [
+					'text'   => trans('common.order_status'),
+					'value'  => self::ORDER_STATUS[$row['status']],
+					'status' => $row['status'], # 给客户端显示颜色用
+				],
+				'wash_product' => [
+					'text'  => trans('common.wash_product'),
+					'value' => $row['wash_product'],
+				],
+				'wash_time'    => [
+					'text'  => trans('common.wash_time'),
+					'value' => $row['wash_time'],
+				],
+				'car'          => [
+					'text'  => trans('common.car_info'),
+					'value' => [
+						'plate_number' => $row['plate_number'],
+						'brand'        => empty($row['brand']) ? trans('common.other') : $row['brand'],
+						'model'        => empty($row['model']) ? '' : $row['model'],
+						'color'        => $row['color'],
+					],
+				],
+				'address'      => [
+					'text'  => trans('common.serve_address'),
+					'value' => $row['address'],
+				],
+			];
+		}
+		
+		return $list;
+	}
+	
+	/**
+	 * 订单列表
+	 * @param int $page
+	 * @author 李小同
+	 * @date   2018-8-3 18:01:24
+	 * @return array
+	 */
+	public function getMyWashOrderListBak($page = 1) {
+		
+		$fields  = [
+			'a.order_id',
+			'a.address',
+			'a.wash_time',
+			'a.status',
+			'a.create_at',
+			'b.plate_number',
+			'c.name AS brand',
+			'd.name AS model',
+			'e.name AS color',
+			'f.name AS wash_product',
+		];
+		$perPage = \SettingService::getValue('per_page');
+		$rows    = \DB::table('wash_order AS a')
+		              ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
+		              ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
+		              ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
+		              ->leftJoin('car_color AS e', 'e.id', '=', 'b.color_id')
+		              ->leftJoin('article AS f', 'f.id', '=', 'a.wash_product_id')
+		              ->where('a.user_id', $this->userId)
+		              ->orderBy('a.id', 'desc')
 		              ->offset(($page - 1) * $perPage)
 		              ->limit($perPage)
 		              ->get($fields)
