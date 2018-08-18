@@ -299,7 +299,7 @@ class UserService {
 		
 		$userInfo = $this->userInfo;
 		if (!empty($field)) {
-			if (isset($userInfo[$field])) {
+			if (!empty($userInfo[$field])) {
 				return $userInfo[$field];
 			} else {
 				return '';

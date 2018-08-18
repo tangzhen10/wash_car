@@ -835,10 +835,12 @@ class OrderService extends BaseService {
 			                  ->where('user_id', $this->userId)
 			                  ->orderBy('id', 'desc')
 			                  ->first(['contact_user', 'contact_phone']);
-			$contact     = [
-				'user'  => $lastContact['contact_user'],
-				'phone' => $lastContact['contact_phone'],
-			];
+			if ($lastContact) {
+				$contact = [
+					'user'  => $lastContact['contact_user'],
+					'phone' => $lastContact['contact_phone'],
+				];
+			}
 		}
 		
 		return $contact;
