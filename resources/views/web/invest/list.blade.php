@@ -21,12 +21,16 @@
 									<div class="col" onclick="window.location.href = '{{route('webInvestDetail', ['id' => $item['id']])}}'">
 										<div class="ad-row1 ">
 											<div class="ad-name flex">
-												<div class="ad-logo flex-item">
-													<img src="{{$item['detail']['logo']['value']}}" alt="{{$item['name']}}">
-												</div>
+												@if (!empty($item['detail']['logo']['value']))
+													<div class="ad-logo flex-item">
+														<img src="{{$item['detail']['logo']['value']}}" alt="{{$item['name']}}">
+													</div>
+												@endif
 												
 												<div class="ad-icon flex flex-item">
-													<span class="level levelA">{{$item['detail']['level']['value']}}</span>
+													@if (!empty($item['detail']['level']['value']))
+														<span class="level levelA">{{$item['detail']['level']['value']}}</span>
+													@endif
 													@if (!empty($item['detail']['label']))
 														@foreach($item['detail']['label']['value'] as $label)
 															<span class="label">{{$label}}</span>
@@ -35,26 +39,34 @@
 												</div>
 											</div>
 											
-											<div class="ad-des">{{$item['sub_name']}}</div>
+											@if (!empty($item['sub_name']))
+												<div class="ad-des">{{$item['sub_name']}}</div>
+											@endif
 										</div>
 										<div class="ad-row2 flex">
 											<div class="item-box rate-left">
-												<div>
-													<span class="highlight">{{$item['detail']['first_refund_max']['value']}}</span>元
-												</div>
-												<div>{{$item['detail']['first_refund_max']['text']}}</div>
+												@if (!empty($item['detail']['first_refund_max']))
+													<div>
+														<span class="highlight">{{$item['detail']['first_refund_max']['value']}}</span>元
+													</div>
+													<div>{{$item['detail']['first_refund_max']['text']}}</div>
+												@endif
 											</div>
 											<div class="item-box rate-center">
-												<div>
-													<span class="highlight">{{$item['detail']['platform_rate']['value']}}</span>%
-												</div>
-												<div>{{$item['detail']['platform_rate']['text']}}</div>
+												@if (!empty($item['detail']['platform_rate']))
+													<div>
+														<span class="highlight">{{$item['detail']['platform_rate']['value']}}</span>%
+													</div>
+													<div>{{$item['detail']['platform_rate']['text']}}</div>
+												@endif
 											</div>
 											<div class="item-box rate-right">
-												<div>
-													<span class="highlight">{{$item['detail']['comprehensive_rate']['value']}}</span>%
-												</div>
-												<div>{{$item['detail']['comprehensive_rate']['text']}}</div>
+												@if (!empty($item['detail']['comprehensive_rate']))
+													<div>
+														<span class="highlight">{{$item['detail']['comprehensive_rate']['value']}}</span>%
+													</div>
+													<div>{{$item['detail']['comprehensive_rate']['text']}}</div>
+												@endif
 											</div>
 										</div>
 									</div>

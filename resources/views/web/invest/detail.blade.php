@@ -3,7 +3,9 @@
 	<body class="bggrey">
 	<div class="container">
 		<div class="banner">
-			<img src="{{$detail['detail']['top_image']}}" alt="{{$detail['name']}}">
+			@if (!empty($detail['detail']['top_image']))
+				<img src="{{$detail['detail']['top_image']}}" alt="{{$detail['name']}}">
+			@endif
 		</div>
 		<div class="content">
 			<div class="info-block">
@@ -11,7 +13,9 @@
 					<h3>{{$detail['name']}}</h3>
 				</div>
 				<div class="info-detail">
-					<p>{{$detail['detail']['introduction']}}</p>
+					@if (!empty($detail['detail']['introduction']))
+						<p>{{$detail['detail']['introduction']}}</p>
+					@endif
 				</div>
 			</div>
 			<div class="info-block">
@@ -20,7 +24,9 @@
 		
 		</div>
 		<div class="fixed-bottom">
-			<a href="{{$detail['detail']['link']}}" class="fixed-btn">前往投资</a>
+			@if (!empty($detail['detail']['link']))
+				<a href="{{$detail['detail']['link']}}" class="fixed-btn">前往投资</a>
+			@endif
 		</div>
 	</div>
 	
