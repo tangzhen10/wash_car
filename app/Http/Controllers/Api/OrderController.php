@@ -85,8 +85,9 @@ class OrderController extends BaseController {
 		
 		$page = \Request::input('page', '1');
 		$list = \OrderService::getMyWashOrderList($page);
+		$totalPage = \OrderService::getMyWashOrderTotalPage();
 		
-		json_msg(['list' => $list]);
+		json_msg(compact('list', 'totalPage'));
 	}
 	
 	/**

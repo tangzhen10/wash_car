@@ -648,6 +648,20 @@ class OrderService extends BaseService {
 	}
 	
 	/**
+	 * 我的订单列表总页数
+	 * @author 李小同
+	 * @date   2018-08-18 10:58:54
+	 * @return int
+	 */
+	public function getMyWashOrderTotalPage() {
+		
+		$perPage    = \SettingService::getValue('per_page');
+		$totalCount = \DB::table('wash_order')->where('user_id', $this->userId)->count('order_id');
+		
+		return ceil($totalCount / $perPage);
+	}
+	
+	/**
 	 * 创建洗车订单
 	 * @author 李小同
 	 * @date   2018-7-31 18:36:31
