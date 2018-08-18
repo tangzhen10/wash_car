@@ -36,6 +36,7 @@ class OrderService extends BaseService {
 		'refund_order' => '订单退款',
 		'cancel_order' => '取消订单',
 		'apply_refund' => '申请退款',
+		'agree_refund' => '同意退款',
 	];
 	
 	# region 后台
@@ -215,7 +216,7 @@ class OrderService extends BaseService {
 		try {
 			if ($order['payment_status'] == '0') {
 				$newStatus  = 2;
-				$updateData = ['payment_status' => '1', 'status' => $newStatus];
+				$updateData = ['payment_status' => '1', 'status' => $newStatus, 'update_at' => time()];
 				\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 				
 				$logData = [
@@ -247,7 +248,7 @@ class OrderService extends BaseService {
 	 */
 	public function adminWashOrderChangeStatus($orderId, $status) {
 		
-		$order  = \DB::table('wash_order')->where('order_id', $orderId)->first(['status']);
+		$order  = \DB::table('wash_order')->where('order_id', $orderId)->first(['status', 'payment_status']);
 		$status = intval($status);
 		
 		\DB::beginTransaction();
@@ -274,9 +275,17 @@ class OrderService extends BaseService {
 						$action = 'serve_finish';
 					}
 					break;
+				case 6: # 同意退款
+					if ($order['status'] == 8 && $order['payment_status'] == '1') {
+						$flag   = true;
+						$action = 'agree_refund';
+						# todo lxt 退款
+					}
+					break;
 			}
 			if ($flag) {
-				\DB::table('wash_order')->where('order_id', $orderId)->update(['status' => $status]);
+				$updateData = ['status' => $status, 'update_at' => time()];
+				\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 				
 				$logData = [
 					'wash_order_id' => $orderId,
@@ -968,7 +977,8 @@ class OrderService extends BaseService {
 				$action = 'cancel_order';
 				$status = 7;
 				
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
+				$updateData = ['status' => $status, 'update_at' => time()];
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
 				
 				$logData = [
 					'wash_order_id' => $order['order_id'],
@@ -1011,7 +1021,8 @@ class OrderService extends BaseService {
 				$action = 'refund_order';
 				$status = 6;
 				
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
+				$updateData = ['status' => $status, 'update_at' => time()];
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
 				
 				$logData = [
 					'wash_order_id' => $order['order_id'],
@@ -1050,7 +1061,8 @@ class OrderService extends BaseService {
 				$action = 'apply_refund';
 				$status = 8;
 				
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update(['status' => $status]);
+				$updateData = ['status' => $status, 'update_at' => time()];
+				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
 				
 				$logData = [
 					'wash_order_id' => $order['order_id'],

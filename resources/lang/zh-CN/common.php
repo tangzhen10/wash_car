@@ -89,6 +89,7 @@ return [
 	'cancel'                   => '取消',
 	'refund'                   => '退款',
 	'apply_refund'             => '申请退款',
+	'agree_refund'             => '同意退款',
 	'after_sale'               => '申请售后',
 	'recharge'                 => '充值',
 	

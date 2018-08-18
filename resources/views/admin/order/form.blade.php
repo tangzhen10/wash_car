@@ -72,6 +72,9 @@
 						@case(4)
 						<span class="btn btn-secondary-outline radius J_action" data-status="5">{{trans('common.serve_finish')}}</span>
 						@break
+						@case(8)
+						<span class="btn btn-warning-outline radius J_action" data-status="6">{{trans('common.agree_refund')}}</span>
+						@break
 						@endswitch
 					</p>
 					<p>
