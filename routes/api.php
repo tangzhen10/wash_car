@@ -32,8 +32,11 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('changePassword', ['uses' => 'UserController@changePassword', 'as' => 'apiChangePassword']);
 		# 获取openid
 		Route::post('openid', ['uses' => 'UserController@getOpenid', 'as' => 'apiGetOpenid']);
-		# 充值|套餐卡
-		Route::post('rechargeAndWashCard', ['uses' => 'UserController@rechargeAndWashCard', 'as' => 'apiRechargeAndWashCard']);
+		# 钱包
+		Route::post('wallet', ['uses' => 'UserController@wallet', 'as' => 'apiWallet']);
+		# 我的卡券
+		Route::post('myCard', ['uses' => 'UserController@myCard', 'as' => 'apiMyCard']);
+		
 	});
 	
 	# 工具

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Services\OrderService;
+
 class OrderController extends BaseController {
 	
 	const MODULE = 'order';
@@ -14,18 +16,21 @@ class OrderController extends BaseController {
 	 */
 	public function washOrderList() {
 		
-		$filter                   = [
+		$filter                    = [
 			'filter_order_id'  => \Request::input('filter_order_id', ''),
+			'filter_status'    => \Request::input('filter_status', ''),
 			'filter_date_from' => \Request::input('filter_date_from', ''),
 			'filter_date_to'   => \Request::input('filter_date_to', ''),
 			'filter_account'   => \Request::input('filter_account', ''),
 			'perPage'          => $this->getPerPage(),
 		];
-		$list                     = $this->service->getOrderList($filter);
-		$this->data['list']       = $list['list'];
-		$this->data['pagination'] = $list['listPage'];
-		$this->data['total']      = $list['total'];
-		$this->data['filter']     = $filter;
+		$list                      = $this->service->getOrderList($filter);
+		$this->data['list']        = $list['list'];
+		$this->data['pagination']  = $list['listPage'];
+		$this->data['total']       = $list['total'];
+		$this->data['status_list'] = OrderService::ORDER_STATUS;
+		
+		$this->data['filter'] = $filter;
 		
 		return view('admin/order/list', $this->data);
 	}

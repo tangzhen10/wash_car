@@ -7,7 +7,7 @@
 		<form enctype="multipart/form-data" class="form form-horizontal" id="form">
 			<input type="hidden" name="id" value="{{$detail['id']}}" />
 			<div class="public_attr">
-				<h3>公共属性</h3>
+				<h3>基本属性</h3>
 				<p>
 					<span class="form_filed"><span class="c-red">*</span>{{trans('common.article_name')}}：</span>
 					<input class="input-text radius form_value" value="{{$detail['name']}}" name="name">
@@ -42,8 +42,8 @@
 					</span>
 				</p>
 				<p>
-					<span class="form_filed fv_up"><span class="c-red">*</span>{{trans('common.content_type')}}：</span>
-					<select class="select-box radius mb-20 form_value J_content_type" name="content_type">
+					<span class="form_filed"><span class="c-red">*</span>{{trans('common.content_type')}}：</span>
+					<select class="select-box radius form_value J_content_type" name="content_type">
 						@if (\Request::input('content_type'))
 							@foreach($typeList as $type)
 								@if (\Request::input('content_type') == $type['id'])

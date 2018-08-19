@@ -99,7 +99,7 @@ class ArticleService extends BaseService {
 		\DB::beginTransaction();
 		try {
 			
-			# 公共属性
+			# 基本属性
 			$baseData = [
 				'name'         => $data['name'],
 				'sub_name'     => $data['sub_name'],
@@ -339,7 +339,7 @@ class ArticleService extends BaseService {
 	}
 	
 	/**
-	 * 获取文章公共属性（基本信息）
+	 * 获取文章基本属性（基本信息）
 	 * @param array $filter
 	 * @author 李小同
 	 * @date   2018-7-29 11:53:23
@@ -354,7 +354,7 @@ class ArticleService extends BaseService {
 	}
 	
 	/**
-	 * 获取文章公共属性（基本信息）
+	 * 获取文章基本属性（基本信息）
 	 * @param array $filter
 	 * @author 李小同
 	 * @date   2018-7-29 11:53:23
@@ -369,7 +369,7 @@ class ArticleService extends BaseService {
 			json_msg('必须指定一种文档类型', 40001);
 		}
 		
-		# 公共属性
+		# 基本属性
 		$now      = time();
 		$articles = \DB::table('article')->where($filter)->where(function ($query) use ($now) {
 			

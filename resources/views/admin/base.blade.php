@@ -25,6 +25,8 @@
 <script>
 	$.ajaxSetup({headers : {vfrom : 'ajax', 'X-CSRF-TOKEN' : '{{ csrf_token() }}'}});
 	
+	$('input,textarea').attr('autoComplete', 'off');
+	
 	// 检测是否是手机访问
 	function is_mobile() {
 		

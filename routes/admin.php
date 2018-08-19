@@ -172,6 +172,17 @@ Route::group(['namespace' => 'Admin'], function () {
 		
 	});
 	
+	# 卡券
+	Route::group(['prefix' => 'card'], function () {
+		
+		# 列表
+		Route::get('list', ['uses' => 'CardController@cardList', 'as' => 'CardList']);
+		# 增改
+		Route::match(['get', 'post'], 'form/{id?}', ['uses' => 'CardController@form', 'as' => 'cardForm']);
+		# 修改状态
+		Route::post('changeStatus', ['uses' => 'CardController@changeStatus', 'as' => 'cardChangeStatus']);
+	});
+	
 	# 设置
 	Route::group(['prefix' => 'setting'], function () {
 		

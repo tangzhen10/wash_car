@@ -1,6 +1,14 @@
 @charset "utf-8";
 /* 你自己的样式 */
 
+/*自定义的H-ui样式*/
+.width-400 {
+	width: 400px;
+}
+.width-120 {
+	width: 120px;
+}
+
 /*分页器*/
 .pagination {
 	float: right;

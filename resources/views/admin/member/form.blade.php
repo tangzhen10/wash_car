@@ -1,9 +1,6 @@
 @extends('admin.public_form')
 @section('css')
 	<style>
-		.width-400 {
-			width: 400px;
-		}
 		.tip_icon {
 			font-size: 20px;
 		}

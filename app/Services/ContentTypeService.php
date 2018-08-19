@@ -170,7 +170,7 @@ class ContentTypeService extends BaseService {
 	}
 	
 	/**
-	 * 获取文章公共属性表字段
+	 * 获取文章基本属性表字段
 	 * @author 李小同
 	 * @date   2018-7-13 21:16:55
 	 * @return array
@@ -392,11 +392,18 @@ class ContentTypeService extends BaseService {
 	public function selectFormElement(array $field, $value = '') {
 		
 		$html   = '<p><span class="form_filed_row">'.$field['name_text'].'：</span>
-		<select name="'.$field['name'].'" class="select-box radius form_value_row" style="top: 0;"><option></option>';
-		$groups = explode(',', $field['value']);
-		foreach ($groups as $group) {
-			$selected = $group == $value ? 'selected' : '';
-			$html .= '<option value="'.$group.'" '.$selected.' >'.$group.'</option>';
+		<select name="'.$field['name'].'" class="select-box radius form_value_row"><option></option>';
+		if (is_array($field['value'])) {
+			$groups = $field['value'];
+			$flagArr = true;
+		} else {
+			$groups = explode(',', $field['value']);
+			$flagArr = false;
+		}
+		foreach ($groups as $key => $text) {
+			$realValue = $flagArr ? $key : $text;
+			$selected = $realValue == $value ? 'selected' : '';
+			$html .= '<option value="'.$realValue.'" '.$selected.' >'.$text.'</option>';
 		}
 		$html .= '</select></p>';
 		
@@ -413,8 +420,8 @@ class ContentTypeService extends BaseService {
 	 */
 	public function textareaFormElement(array $field, $value = '') {
 		
-		$html = '<p>
-					<span class="form_filed_row" style="position: relative;top: -45px;">'.$field['name_text'].'：</span>
+		$html = '<p style="display: flex;">
+					<span class="form_filed_row">'.$field['name_text'].'：</span>
 					<textarea class="textarea radius form_value_row" name="'.$field['name'].'" 
 							  placeholder="'.$field['value'].'">'.$value.'</textarea>
 				</p>';
@@ -432,9 +439,11 @@ class ContentTypeService extends BaseService {
 	 */
 	public function richtextFormElement(array $field, $value = '') {
 		
-		$html = '<p>
+		$html = '<p style="display: flex;">
 					<span class="form_filed_row">'.$field['name_text'].'：</span>
-					<textarea class="richtext" id="richtext_'.$field['name'].'" name="'.$field['name'].'">'.$value.'</textarea>
+					<span class="form_value_row">
+						<textarea class="richtext" id="richtext_'.$field['name'].'" name="'.$field['name'].'">'.$value.'</textarea>
+					</span>
 				</p>
 				<script>UE.getEditor(\'richtext_'.$field['name'].'\')</script>';
 		

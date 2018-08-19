@@ -37,7 +37,7 @@
 		</p>
 		<ul class="note" style="display: none;">
 			<li>name：英文字母、数字和下划线组成，不能以纯数字开头</li>
-			<li>name：公共属性<em>【{{$keyFields}}】</em>不可以使用</li>
+			<li>name：基本属性<em>【{{$keyFields}}】</em>不可以使用</li>
 			<li>备选值：单选框、复选框、下拉菜单的值，格式为【值1,值2,值3...】</li>
 			<li>备选值：若类型不是单选框、复选框、下拉菜单，则作为提示语显示在输入框里</li>
 			<li>类型：类型为时间时，备选值为【yyyy-MM-dd HH:mm:ss】表示时间格式，不填表示使用该值作为默认值</li>
@@ -204,7 +204,7 @@
 					return false;
 				}
 				if ($.inArray(field, keyFields) > -1) {
-					layer.tips('不得使用公共属性name', fields.eq(x));
+					layer.tips('不得使用基本属性name', fields.eq(x));
 					return false;
 				}
 			}

@@ -124,19 +124,30 @@ class UserController extends BaseController {
 	# endregion
 	
 	/**
-	 * 充值|套餐卡
+	 * 我的钱包
 	 * @author 李小同
 	 * @date   2018-8-12 20:34:34
 	 */
-	public function rechargeAndWashCard() {
+	public function wallet() {
 		
 		# 账户余额
 		$balance = $this->user->getBalance();
 		
 		# 洗车卡
-		$filter    = ['content_type' => config('project.CONTENT_TYPE.WASH_CARD')];
-		$washCards = \ArticleService::getArticleList($filter);
+		$washCards = \CardService::getEnableCardList();
 		
 		json_msg(compact('balance', 'washCards'));
+	}
+	
+	/**
+	 * 我的洗车卡
+	 * @author 李小同
+	 * @date   2018-08-19 19:55:53
+	 */
+	public function myCard() {
+		
+		$myCards = \CardService::getMyCards();
+		
+		json_msg(['list' => $myCards]);
 	}
 }

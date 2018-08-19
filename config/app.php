@@ -191,6 +191,7 @@ return [
 		App\Providers\SettingServiceProvider::class,        # 设置 李小同 2018-7-22 13:02:40
 		App\Providers\CarServiceProvider::class,            # 车辆 李小同 2018-7-22 22:13:12
 		App\Providers\OrderServiceProvider::class,          # 订单 李小同 2018-7-30 20:34:27
+		App\Providers\CardServiceProvider::class,           # 卡券 李小同 2018-08-19 14:28:29
 	],
 	
 	/*
@@ -252,6 +253,7 @@ return [
 		'SettingService'     => App\Facades\SettingServiceFacade::class,        # 设置 李小同 2018-7-22 13:02:23
 		'CarService'         => App\Facades\CarServiceFacade::class,            # 车辆 李小同 2018-7-22 22:13:40
 		'OrderService'       => App\Facades\OrderServiceFacade::class,          # 订单 李小同 2018-7-30 20:33:55
+		'CardService'        => App\Facades\CardServiceFacade::class,           # 卡券 李小同 2018-08-19 14:28:04
 	],
 
 ];
