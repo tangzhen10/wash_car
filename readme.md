@@ -279,8 +279,8 @@ $md5即是sign的参数值
 ##### 我的钱包
 
 | URL                      | HTTP请求方式 | 是否需要登陆 |
-| ------------------------ | ------------ | ------------ |
-| {domain}/api/user/wallet | POST         | 是           |
+| ------------------------ | -------- | ------ |
+| {domain}/api/user/wallet | POST     | 是      |
 
 > 请求参数
 
@@ -290,21 +290,21 @@ $md5即是sign的参数值
 
 > 响应参数
 
-| 字段名         | 类型   | 是否必填 | 描述              | 示例值                           |
-| -------------- | ------ | -------- | ----------------- | -------------------------------- |
-| balance        | string | 是       | 余额，单位：元    | 550.00                           |
-| washCards      | array  | 是       | 洗车卡列表        |                                  |
-| L id           | int    | 是       | 洗车卡id          | 51                               |
-| L name         | string | 是       | 洗车卡名称        | 猫头鹰洗车月卡                   |
-| L wash_product    | string | 是       | 适用的服务项目    | 全外观清洗                       |
-| L wash_product_id | int    | 是       | 适用的服务项目id  | 46                               |
-| L price        | string | 是       | 卡券价格          | 120                              |
-| L price_ori    | string | 是       | 卡券原价          | 160                              |
-| L expire_date  | int    | 是       | 卡券有效期        | 30                               |
-| L use_times    | int    | 是       | 可用次数          | 3                                |
-| L hot_status   | string | 是       | 是否热销，1是 0否 | 1                                |
-| L introduction | string | 是       | 卡券介绍          | 见示例                           |
-| L background   | string | 是       | 背景图片          | 见示例 |
+| 字段名               | 类型     | 是否必填 | 描述         | 示例值     |
+| ----------------- | ------ | ---- | ---------- | ------- |
+| balance           | string | 是    | 余额，单位：元    | 550.00  |
+| washCards         | array  | 是    | 洗车卡列表      |         |
+| L id              | int    | 是    | 洗车卡id      | 51      |
+| L name            | string | 是    | 洗车卡名称      | 猫头鹰洗车月卡 |
+| L wash_product    | string | 是    | 适用的服务项目    | 全外观清洗   |
+| L wash_product_id | int    | 是    | 适用的服务项目id  | 46      |
+| L price           | string | 是    | 卡券价格       | 120     |
+| L price_ori       | string | 是    | 卡券原价       | 160     |
+| L expire_date     | int    | 是    | 卡券有效期      | 30      |
+| L use_times       | int    | 是    | 可用次数       | 3       |
+| L hot_status      | string | 是    | 是否热销，1是 0否 | 1       |
+| L introduction    | string | 是    | 卡券介绍       | 见示例     |
+| L background      | string | 是    | 背景图片       | 见示例     |
 
 > 响应示例
 
@@ -349,8 +349,8 @@ $md5即是sign的参数值
 ##### 我的卡券
 
 | URL                      | HTTP请求方式 | 是否需要登陆 |
-| ------------------------ | ------------ | ------------ |
-| {domain}/api/user/wallet | POST         | 是           |
+| ------------------------ | -------- | ------ |
+| {domain}/api/user/wallet | POST     | 是      |
 
 > 请求参数
 
@@ -360,21 +360,21 @@ $md5即是sign的参数值
 
 > 响应参数
 
-| 字段名          | 类型   | 是否必填 | 描述              | 示例值                           |
-| --------------- | ------ | -------- | ----------------- | -------------------------------- |
-| id              | int    | 是       | 洗车卡id          | 51                               |
-| name            | string | 是       | 洗车卡名称        | 猫头鹰洗车月卡                   |
-| wash_product    | string | 是       | 适用的服务项目    | 全外观清洗                       |
-| wash_product_id | int    | 是       | 适用的服务项目id  | 46                               |
-| price           | string | 是       | 卡券价格          | 120                              |
-| price_ori       | string | 是       | 卡券原价          | 160                              |
-| expire_date     | int    | 是       | 卡券有效期        | 30                               |
-| use_times       | int    | 是       | 可用次数          | 3                                |
-| hot_status      | string | 是       | 是否热销，1是 0否 | 1                                |
-| introduction    | string | 是       | 卡券介绍          | 见示例                           |
-| background      | string | 是       | 背景图片          | http://www.wash.com/sr...617.jpg |
-| expire_at       | string | 是       | 过期时间          | 2018-04-29 23:59:59              |
-| left_times      | int    | 是       | 剩余使用次数      | 3                                |
+| 字段名             | 类型     | 是否必填 | 描述         | 示例值                              |
+| --------------- | ------ | ---- | ---------- | -------------------------------- |
+| id              | int    | 是    | 洗车卡id      | 51                               |
+| name            | string | 是    | 洗车卡名称      | 猫头鹰洗车月卡                          |
+| wash_product    | string | 是    | 适用的服务项目    | 全外观清洗                            |
+| wash_product_id | int    | 是    | 适用的服务项目id  | 46                               |
+| price           | string | 是    | 卡券价格       | 120                              |
+| price_ori       | string | 是    | 卡券原价       | 160                              |
+| expire_date     | int    | 是    | 卡券有效期      | 30                               |
+| use_times       | int    | 是    | 可用次数       | 3                                |
+| hot_status      | string | 是    | 是否热销，1是 0否 | 1                                |
+| introduction    | string | 是    | 卡券介绍       | 见示例                              |
+| background      | string | 是    | 背景图片       | http://www.wash.com/sr...617.jpg |
+| expire_at       | string | 是    | 过期时间       | 2018-04-29 23:59:59              |
+| left_times      | int    | 是    | 剩余使用次数     | 3                                |
 
 > 响应示例
 
@@ -1148,6 +1148,7 @@ const ORDER_ACTION = [
     'refund_order' => '订单退款',
     'cancel_order' => '取消订单',
     'apply_refund' => '申请退款',
+	'agree_refund' => '同意退款',
 ];
 ```
 
@@ -1163,16 +1164,16 @@ const ORDER_ACTION = [
 
 > 响应参数
 
-| 字段名       | 类型   | 是否必填 | 描述           | 示例值 |
-| ------------ | ------ | -------- | -------------- | ------ |
-| order_id     | object | 是       | 订单号         |        |
-| create_at    | object | 是       | 创建时间       |        |
-| wash_product | object | 是       | 清洗服务项目   |        |
-| wash_time    | object | 是       | 清洗时间       |        |
-| car          | object | 是       | 车辆信息       |        |
-| address      | object | 是       | 地址           |        |
-| status       | object | 是       | 订单状态       |        |
-| totalPage    | int    | 是       | 订单列表总页数 | 3      |
+| 字段名          | 类型     | 是否必填 | 描述      | 示例值  |
+| ------------ | ------ | ---- | ------- | ---- |
+| order_id     | object | 是    | 订单号     |      |
+| create_at    | object | 是    | 创建时间    |      |
+| wash_product | object | 是    | 清洗服务项目  |      |
+| wash_time    | object | 是    | 清洗时间    |      |
+| car          | object | 是    | 车辆信息    |      |
+| address      | object | 是    | 地址      |      |
+| status       | object | 是    | 订单状态    |      |
+| totalPage    | int    | 是    | 订单列表总页数 | 3    |
 
 > 响应示例
 

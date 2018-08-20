@@ -83,8 +83,8 @@ class OrderController extends BaseController {
 	 */
 	public function washOrderList() {
 		
-		$page = \Request::input('page', '1');
-		$list = \OrderService::getMyWashOrderList($page);
+		$page      = \Request::input('page', '1');
+		$list      = \OrderService::getMyWashOrderList($page);
 		$totalPage = \OrderService::getMyWashOrderTotalPage();
 		
 		json_msg(compact('list', 'totalPage'));
@@ -106,6 +106,26 @@ class OrderController extends BaseController {
 		}
 		unset($detail['username'], $detail['phone']);
 		
+		# 支付信息
+		if ($detail['status'] == 1) {
+			
+			$paymentList = [
+				'balance' => [
+					'method' => 'balance',
+					'status' => '1',
+					'value'  => 0,
+				],
+			];
+			
+			$balance = $this->user->getBalance();
+			if ($balance > 0) {
+				//$paymentList
+			} else {
+				
+			}
+		}
+		
+		# 订单日志
 		$logs      = \OrderService::getOrderLogs($orderId);
 		$washImage = \OrderService::getWashImages($orderId, true);
 		foreach ($logs as &$log) {

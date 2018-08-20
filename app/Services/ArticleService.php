@@ -17,6 +17,7 @@ class ArticleService extends BaseService {
 	
 	public $module = 'article';
 	
+	# region 后台
 	/**
 	 * 获取详情
 	 * @param $id
@@ -125,7 +126,6 @@ class ArticleService extends BaseService {
 			
 			\DB::table('article_detail')->where('article_id', $articleId)->delete();
 			
-			$sqlFields = '';
 			foreach ($fields as $field) {
 				
 				$name = $field['name'];
@@ -147,13 +147,12 @@ class ArticleService extends BaseService {
 						break;
 				}
 				
-				$sqlFields .= sprintf('(\'%s\', \'%s\', \'%s\'),', $articleId, addslashes($name), addslashes($value));
-			}
-			
-			if ($sqlFields) {
-				$sqlDetail = 'INSERT INTO `t_article_detail` (`article_id`,`name`,`value`) VALUES '.$sqlFields;
-				$sqlDetail = substr($sqlDetail, 0, -1);
-				\DB::insert($sqlDetail);
+				$insertData = [
+					'article_id' => $articleId,
+					'name'       => $name,
+					'value'      => $value,
+				];
+				\DB::table('article_detail')->insert($insertData);
 			}
 			
 			\DB::commit();
@@ -195,7 +194,8 @@ class ArticleService extends BaseService {
 		$listPage = \DB::table('article AS a')
 		               ->join('content_type AS b', 'b.id', 'a.content_type')
 		               ->join('manager AS c', 'c.id', 'a.create_by')
-		               ->where('a.status', '!=', '-1');
+		               ->where('a.status', '!=', '-1')
+		               ->where('b.status', '=', '1');
 		
 		# 按文章标题筛选
 		if (!empty($filter['filter_article_name'])) {
@@ -261,6 +261,7 @@ class ArticleService extends BaseService {
 		
 		return $list;
 	}
+	# endregion
 	
 	# region 前台
 	/**
