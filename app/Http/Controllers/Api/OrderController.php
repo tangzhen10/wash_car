@@ -106,12 +106,19 @@ class OrderController extends BaseController {
 		}
 		unset($detail['username'], $detail['phone']);
 		
-		# 支付信息
+		# 支付方式
 		if ($detail['status'] == 1) {
 			
 			$paymentList = [
 				'balance' => [
 					'method' => 'balance',
+					'name'   => trans('common.payment.balance'),
+					'status' => '1',
+					'value'  => 0,
+				],
+				'wechat'  => [
+					'method' => 'wechat',
+					'name'   => trans('common.payment.wechat'),
 					'status' => '1',
 					'value'  => 0,
 				],
@@ -119,10 +126,12 @@ class OrderController extends BaseController {
 			
 			$balance = $this->user->getBalance();
 			if ($balance > 0) {
-				//$paymentList
+				$paymentList['balance']['value'] = $balance;
 			} else {
-				
+				$paymentList['balance']['status'] = '0';
 			}
+			
+			$detail['payment_list'] = array_values($paymentList);
 		}
 		
 		# 订单日志
@@ -161,7 +170,8 @@ class OrderController extends BaseController {
 	}
 	
 	/**
-	 * 用户订单取消&退款
+	 * 用户修改订单状态
+	 * 取消、退款、申请退款
 	 * @author 李小同
 	 * @date   2018-8-8 17:50:16
 	 */
@@ -169,6 +179,13 @@ class OrderController extends BaseController {
 		
 		$post = request_all();
 		$res  = \OrderService::userWashOrderChangeStatus($post);
+		$this->render($res);
+	}
+	
+	public function payOrder() {
+		
+		$post = request_all();
+		$res  = \OrderService::payOrder($post);
 		$this->render($res);
 	}
 	

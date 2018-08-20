@@ -85,6 +85,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('detail', ['uses' => 'OrderController@washOrderDetail', 'as' => 'apiWashOrderDetail']);
 		# 修改订单状态
 		Route::post('changeStatus', ['uses' => 'OrderController@changeStatus', 'as' => 'apiWashOrderChangeStatus']);
+		# 订单支付
+		Route::post('pay', ['uses' => 'OrderController@payOrder', 'as' => 'apiWashOrderPay']);
 		
 	});
 	

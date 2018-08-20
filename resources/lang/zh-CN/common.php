@@ -32,10 +32,15 @@ return [
 	'manager_name'             => '管理员名称',
 	'name'                     => '名称',
 	'name_en'                  => '英文名称',
+	'order'                    => '订单',
 	'order_id'                 => '订单编号',
 	'order_status'             => '订单状态',
 	'other'                    => '其他',
 	'password'                 => '密码',
+	'payment'                  => [
+		'balance' => '余额支付',
+		'wechat'  => '微信支付',
+	],
 	'payment_status'           => '支付状态',
 	'per_page'                 => '每页条数',
 	'permission'               => '权限',
@@ -107,6 +112,7 @@ return [
 	# 结果
 	'action_failed'            => '操作失败，请稍后重试。',
 	'action_success'           => '操作成功！',
+	'balance_not_enough'       => '余额不足！',
 	'no_data'                  => '暂无数据',
 	'no_more'                  => '没有更多了',
 	'not_exist_order'          => '不存在的订单',

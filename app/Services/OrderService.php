@@ -28,7 +28,7 @@ class OrderService extends BaseService {
 	# 动作名称
 	const ORDER_ACTION = [
 		'add_order'    => '提交订单',
-		'order_pay'    => '订单支付',
+		'pay_order'    => '订单支付',
 		'confirm_pay'  => '确认支付',
 		'take_order'   => '派单成功',
 		'serve_start'  => '开始服务',
@@ -525,6 +525,7 @@ class OrderService extends BaseService {
 		if (empty($detail['model'])) $detail['model'] = '';
 		$detail['status_text'] = self::ORDER_STATUS[$detail['status']];
 		$detail['create_at']   = intToTime($detail['create_at']);
+		$detail['total_value'] = $detail['total'];
 		$detail['total']       = currencyFormat($detail['total']);
 		
 		return $detail;
@@ -1082,6 +1083,61 @@ class OrderService extends BaseService {
 			}
 		} else {
 			json_msg(trans('error.illegal_action'), 40003);
+		}
+	}
+	
+	public function payOrder(array $post) {
+		
+		$orderId = $post['order_id'];
+		$order   = $this->getWashOrderDetail($orderId);
+		if (empty($order)) {
+			json_msg(trans('validation.invalid', ['attr' => trans('common.order')]), 40003);
+		} elseif ($order['status'] != 1 || $order['payment_status']) {
+			json_msg(trans('error.illegal_action'), 40003);
+		}
+		
+		$paymentMethod = $post['payment_method'];
+		if ($paymentMethod == 'balance') {
+			$balance = \UserService::getBalance();
+			if ($balance < $order['total_value']) json_msg(trans('common.balance_not_enough'), 50001);
+		}
+		
+		\DB::beginTransaction();
+		try {
+			
+			if ($paymentMethod == 'balance') {
+				$useBalanceData = [
+					'user_id'   => $this->userId,
+					'amount'    => -$order['total_value'],
+					'type'      => 'pay_order',
+					'comment'   => '支付订单'.$orderId,
+					'create_at' => time(),
+					'create_ip' => getClientIp(true),
+				];
+				\DB::table('balance_detail')->insert($useBalanceData);
+			}
+			
+			$updateData = [
+				'payment_status' => '1',
+				'status'         => 2,
+				'update_at'      => time(),
+			];
+			\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
+			
+			$logData = [
+				'wash_order_id' => $orderId,
+				'action'        => 'pay_order',
+				'order_status'  => 2,
+				'operator_type' => 'user',
+			];
+			$this->addOrderLog($logData);
+			
+			\DB::commit();
+			return true;
+			
+		} catch (\Exception $e) {
+			\DB::rollback();
+			return false;
 		}
 	}
 	
