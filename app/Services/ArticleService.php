@@ -125,7 +125,6 @@ class ArticleService extends BaseService {
 			
 			\DB::table('article_detail')->where('article_id', $articleId)->delete();
 			
-			$sqlFields = '';
 			foreach ($fields as $field) {
 				
 				$name = $field['name'];
@@ -146,13 +145,8 @@ class ArticleService extends BaseService {
 						break;
 				}
 				
-				$sqlFields .= sprintf('(\'%s\', \'%s\', \'%s\'),', $articleId, addslashes($name), addslashes($value));
-			}
-			
-			if ($sqlFields) {
-				$sqlDetail = 'INSERT INTO `t_article_detail` (`article_id`,`name`,`value`) VALUES '.$sqlFields;
-				$sqlDetail = substr($sqlDetail, 0, -1);
-				\DB::insert($sqlDetail);
+				$insertData = ['article_id' => $articleId, 'name' => $name, 'value' => $value];
+				\DB::table('article_detail')->insert($insertData);
 			}
 			
 			\DB::commit();
