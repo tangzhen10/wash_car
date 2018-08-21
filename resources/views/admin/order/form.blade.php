@@ -64,16 +64,17 @@
 						<span class="note">{{$detail['order_status_msg']}}</span>
 						@break
 						@case(2)
-						<span class="btn btn-secondary-outline radius J_action" data-status="3">{{trans('common.take_order')}}</span>
+						<span class="btn btn-secondary-outline radius J_action" data-action="take_order">{{trans('common.take_order')}}</span>
 						@break
 						@case(3)
-						<span class="btn btn-secondary-outline radius J_action" data-status="4">{{trans('common.serve_start')}}</span>
+						<span class="btn btn-secondary-outline radius J_action" data-action="serve_start">{{trans('common.serve_start')}}</span>
 						@break
 						@case(4)
-						<span class="btn btn-secondary-outline radius J_action" data-status="5">{{trans('common.serve_finish')}}</span>
+						<span class="btn btn-secondary-outline radius J_action" data-action="serve_finish">{{trans('common.serve_finish')}}</span>
 						@break
 						@case(8)
-						<span class="btn btn-warning-outline radius J_action" data-status="6">{{trans('common.agree_refund')}}</span>
+						<span class="btn btn-success-outline radius J_action" data-action="agree_refund">{{trans('common.agree_refund')}}</span>
+						<span class="btn btn-warning-outline radius J_action" data-action="reject_refund">{{trans('common.reject_refund')}}</span>
 						@break
 						@endswitch
 					</p>
@@ -226,17 +227,17 @@
 			// 订单操作
 			$('.J_action').click(function () {
 				var action_text = $(this).text(),
-					new_status  = $(this).attr('data-status');
+					action      = $(this).attr('data-action');
 				layer.confirm('<strong>确认'+action_text+'？', {
 					title : action_text,
 				}, function () {
-					if (new_status == 4) {
+					if (action == 'serve_start') {
 						@if (empty($wash_images['before']))
 						layer.msg('请先上传3张清洗前照片后再开始服务！');
 						$('#tab_area .tabBar span').eq(2).click();
 						return false;
 						@endif
-					} else if (new_status == 5) {
+					} else if (action == 'serve_finish') {
 						@if (empty($wash_images['after']))
 						layer.msg('请先上传3张清洗后照片后再完成服务！');
 						$('#tab_area .tabBar span').eq(3).click();
@@ -247,7 +248,7 @@
 						url        : '{{route('washOrderChangeStatus')}}',
 						data       : {
 							order_id : '{{$detail['order_id']}}',
-							status   : new_status,
+							action   : action,
 						},
 						type       : 'post',
 						dataType   : 'json',

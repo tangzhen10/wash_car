@@ -104,38 +104,17 @@ class OrderController extends BaseController {
 		if ($detail['user_id'] != $this->user->userId) {
 			json_msg(trans('error.access_denied'), 40003);
 		}
-		unset($detail['username'], $detail['phone']);
 		
-		# 支付方式
-		if ($detail['status'] == 1) {
-			
-			$paymentList = [
-				'balance' => [
-					'method' => 'balance',
-					'name'   => trans('common.payment.balance'),
-					'status' => '1',
-					'value'  => 0,
-				],
-				'wechat'  => [
-					'method' => 'wechat',
-					'name'   => trans('common.payment.wechat'),
-					'status' => '1',
-					'value'  => 0,
-				],
-			];
-			
-			$balance = $this->user->getBalance();
-			if ($balance > 0) {
-				$paymentList['balance']['value'] = $balance;
-			} else {
-				$paymentList['balance']['status'] = '0';
-			}
-			
-			$detail['payment_list'] = array_values($paymentList);
-		}
+		# 清理一些前端不需要的信息
+		unset($detail['username'], $detail['phone'], $detail['order_status_msg']);
+		
+		# 添加支付方式
+		$detail = \OrderService::addPaymentList($detail);
 		
 		# 订单日志
-		$logs      = \OrderService::getOrderLogs($orderId);
+		$logs = \OrderService::getOrderLogs($orderId);
+		
+		# 清理前后图片处理
 		$washImage = \OrderService::getWashImages($orderId, true);
 		foreach ($logs as &$log) {
 			switch ($log['action']) {

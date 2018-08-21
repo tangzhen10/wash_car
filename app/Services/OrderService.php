@@ -27,16 +27,17 @@ class OrderService extends BaseService {
 	
 	# 动作名称
 	const ORDER_ACTION = [
-		'add_order'    => '提交订单',
-		'pay_order'    => '订单支付',
-		'confirm_pay'  => '确认支付',
-		'take_order'   => '派单成功',
-		'serve_start'  => '开始服务',
-		'serve_finish' => '完成服务',
-		'refund_order' => '订单退款',
-		'cancel_order' => '取消订单',
-		'apply_refund' => '申请退款',
-		'agree_refund' => '同意退款',
+		'add_order'     => '提交订单',
+		'pay_order'     => '订单支付',
+		'confirm_pay'   => '确认支付',
+		'take_order'    => '派单成功',
+		'serve_start'   => '开始服务',
+		'serve_finish'  => '完成服务',
+		'refund_order'  => '订单退款',
+		'cancel_order'  => '取消订单',
+		'apply_refund'  => '申请退款',
+		'agree_refund'  => '同意退款',
+		'reject_refund' => '不予退款',
 	];
 	
 	# region 后台
@@ -216,17 +217,15 @@ class OrderService extends BaseService {
 		\DB::beginTransaction();
 		try {
 			if ($order['payment_status'] == '0') {
-				$newStatus  = 2;
-				$updateData = ['payment_status' => '1', 'status' => $newStatus, 'update_at' => time()];
-				\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 				
-				$logData = [
-					'wash_order_id' => $orderId,
-					'action'        => 'confirm_pay',
-					'order_status'  => $newStatus,
-					'operator_type' => 'manager',
+				$updateData = [
+					'order_id'       => $orderId,
+					'action'         => 'confirm_pay',
+					'status'         => 2,
+					'operator_type'  => 'manager',
+					'payment_status' => '1',
 				];
-				$this->addOrderLog($logData);
+				$this->_updateOrder($updateData);
 				
 				\DB::commit();
 				return true;
@@ -240,61 +239,87 @@ class OrderService extends BaseService {
 	}
 	
 	/**
+	 * 修改订单并添加日志
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-08-21 10:43:55
+	 */
+	private function _updateOrder(array $data) {
+		
+		$updateData = [
+			'status'    => $data['status'],
+			'update_at' => time(),
+		];
+		if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
+		\DB::table('wash_order')->where('order_id', $data['order_id'])->update($updateData);
+		
+		$logData = [
+			'wash_order_id' => $data['order_id'],
+			'action'        => $data['action'],
+			'order_status'  => $data['status'],
+			'operator_type' => $data['operator_type'],
+		];
+		$this->addOrderLog($logData);
+	}
+	
+	/**
 	 * 修改订单状态
-	 * @param int $orderId
-	 * @param int $status 新状态
+	 * @param int    $orderId
+	 * @param string $action
 	 * @author 李小同
 	 * @date   2018-8-5 00:25:49
 	 * @return bool
 	 */
-	public function adminWashOrderChangeStatus($orderId, $status) {
+	public function adminWashOrderChangeStatus($orderId, $action) {
 		
-		$order  = \DB::table('wash_order')->where('order_id', $orderId)->first(['status', 'payment_status']);
-		$status = intval($status);
+		$order = \DB::table('wash_order')->where('order_id', $orderId)->first(['status', 'payment_status']);
 		
 		\DB::beginTransaction();
 		try {
-			$flag   = false;
-			$action = '';
-			switch ($status) {
-				case 3:
+			$flag = false;
+			switch ($action) {
+				case 'take_order':
 					if ($order['status'] == 2) {
 						$flag   = true;
-						$action = 'take_order';
+						$status = 3;
 						$this->_setWasher($orderId);
 					}
 					break;
-				case 4:
+				case 'serve_start':
 					if ($order['status'] == 3) {
 						$flag   = true;
-						$action = 'serve_start';
+						$status = 4;
 					}
 					break;
-				case 5:
+				case 'serve_finish':
 					if ($order['status'] == 4) {
 						$flag   = true;
-						$action = 'serve_finish';
+						$status = 5;
 					}
 					break;
-				case 6: # 同意退款
+				case 'agree_refund': # 同意退款
 					if ($order['status'] == 8 && $order['payment_status'] == '1') {
 						$flag   = true;
-						$action = 'agree_refund';
+						$status = 6;
 						# todo lxt 退款
+					}
+					break;
+				case 'reject_refund': # 不予退款
+					if ($order['status'] == 8 && $order['payment_status'] == '1') {
+						$flag   = true;
+						$status = 3;
 					}
 					break;
 			}
 			if ($flag) {
-				$updateData = ['status' => $status, 'update_at' => time()];
-				\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 				
-				$logData = [
-					'wash_order_id' => $orderId,
+				$updateData = [
+					'order_id'      => $orderId,
 					'action'        => $action,
-					'order_status'  => $status,
+					'status'        => $status,
 					'operator_type' => 'manager',
 				];
-				$this->addOrderLog($logData);
+				$this->_updateOrder($updateData);
 				
 				\DB::commit();
 				return true;
@@ -948,13 +973,13 @@ class OrderService extends BaseService {
 		if (empty($order['order_id'])) json_msg(trans('error.illegal_action'), 40003);
 		switch ($post['action']) {
 			case 'cancel_order':
-				return $this->_cancelWashOrder($order);
+				$this->_cancelWashOrder($order);
 				break;
 			case 'refund_order':
-				return $this->_refundWashOrder($order);
+				$this->_refundWashOrder($order);
 				break;
 			case 'apply_refund':
-				return $this->_applyRefundWashOrder($order);
+				$this->_applyRefundWashOrder($order);
 				break;
 			default:
 				json_msg(trans('error.illegal_action'), 40003);
@@ -976,19 +1001,14 @@ class OrderService extends BaseService {
 			
 			\DB::beginTransaction();
 			try {
-				$action = 'cancel_order';
-				$status = 7;
 				
-				$updateData = ['status' => $status, 'update_at' => time()];
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
-				
-				$logData = [
-					'wash_order_id' => $order['order_id'],
-					'action'        => $action,
-					'order_status'  => $status,
+				$updateData = [
+					'order_id'      => $order['order_id'],
+					'action'        => 'cancel_order',
+					'status'        => 7,
 					'operator_type' => $system ? 'system' : 'user',
 				];
-				$this->addOrderLog($logData);
+				$this->_updateOrder($updateData);
 				
 				\DB::commit();
 				return true;
@@ -1020,19 +1040,13 @@ class OrderService extends BaseService {
 				
 				# todo lxt 余额退款
 				
-				$action = 'refund_order';
-				$status = 6;
-				
-				$updateData = ['status' => $status, 'update_at' => time()];
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
-				
-				$logData = [
-					'wash_order_id' => $order['order_id'],
-					'action'        => $action,
-					'order_status'  => $status,
+				$updateData = [
+					'order_id'      => $order['order_id'],
+					'action'        => 'refund_order',
+					'status'        => 6,
 					'operator_type' => 'user',
 				];
-				$this->addOrderLog($logData);
+				$this->_updateOrder($updateData);
 				
 				\DB::commit();
 				return true;
@@ -1060,19 +1074,13 @@ class OrderService extends BaseService {
 			\DB::beginTransaction();
 			try {
 				
-				$action = 'apply_refund';
-				$status = 8;
-				
-				$updateData = ['status' => $status, 'update_at' => time()];
-				\DB::table('wash_order')->where('order_id', $order['order_id'])->update($updateData);
-				
-				$logData = [
-					'wash_order_id' => $order['order_id'],
-					'action'        => $action,
-					'order_status'  => $status,
+				$updateData = [
+					'order_id'      => $order['order_id'],
+					'action'        => 'apply_refund',
+					'status'        => 8,
 					'operator_type' => 'user',
 				];
-				$this->addOrderLog($logData);
+				$this->_updateOrder($updateData);
 				
 				\DB::commit();
 				return true;
@@ -1086,6 +1094,52 @@ class OrderService extends BaseService {
 		}
 	}
 	
+	/**
+	 * 为未支付的订单详情追加支付方式
+	 * @param array $detail
+	 * @author 李小同
+	 * @date   2018-08-21 9:38:45
+	 * @return array $detail
+	 */
+	public function addPaymentList(array $detail) {
+		
+		if ($detail['status'] == 1) {
+			
+			$paymentList = [
+				'balance' => [
+					'method' => 'balance',
+					'name'   => trans('common.payment.balance'),
+					'status' => '1',
+					'value'  => 0,
+				],
+				'wechat'  => [
+					'method' => 'wechat',
+					'name'   => trans('common.payment.wechat'),
+					'status' => '1',
+					'value'  => 0,
+				],
+			];
+			
+			$balance = \UserService::getBalance();
+			if ($balance > 0) {
+				$paymentList['balance']['value'] = $balance;
+			} else {
+				$paymentList['balance']['status'] = '0';
+			}
+			
+			$detail['payment_list'] = array_values($paymentList);
+		}
+		
+		return $detail;
+	}
+	
+	/**
+	 * 支付订单
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-08-21 9:35:42
+	 * @return bool
+	 */
 	public function payOrder(array $post) {
 		
 		$orderId = $post['order_id'];
@@ -1096,8 +1150,8 @@ class OrderService extends BaseService {
 			json_msg(trans('error.illegal_action'), 40003);
 		}
 		
-		$paymentMethod = $post['payment_method'];
-		if ($paymentMethod == 'balance') {
+		$paymentMethod = explode(',', $post['payment_method']);
+		if ($paymentMethod == ['balance']) { # 仅余额支付时要检测余额是否充足
 			$balance = \UserService::getBalance();
 			if ($balance < $order['total_value']) json_msg(trans('common.balance_not_enough'), 50001);
 		}
@@ -1105,12 +1159,15 @@ class OrderService extends BaseService {
 		\DB::beginTransaction();
 		try {
 			
-			if ($paymentMethod == 'balance') {
+			$action = 'pay_order';
+			
+			if (in_array('balance', $paymentMethod)) {
 				$useBalanceData = [
 					'user_id'   => $this->userId,
 					'amount'    => -$order['total_value'],
-					'type'      => 'pay_order',
-					'comment'   => '支付订单'.$orderId,
+					'type'      => $action,
+					'order_id'  => $orderId,
+					'comment'   => '【支付订单】'.$orderId,
 					'create_at' => time(),
 					'create_ip' => getClientIp(true),
 				];
@@ -1118,19 +1175,22 @@ class OrderService extends BaseService {
 			}
 			
 			$updateData = [
-				'payment_status' => '1',
+				'order_id'       => $orderId,
+				'action'         => $action,
 				'status'         => 2,
-				'update_at'      => time(),
+				'operator_type'  => 'user',
+				'payment_status' => '1',
 			];
-			\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
+			$this->_updateOrder($updateData);
 			
-			$logData = [
-				'wash_order_id' => $orderId,
-				'action'        => 'pay_order',
-				'order_status'  => 2,
-				'operator_type' => 'user',
-			];
-			$this->addOrderLog($logData);
+			# 可能存在同时一个账号，多处登录并同时支付的情况，支付完成再查一次用户余额，如果余额小于0则回滚
+			if (in_array('balance', $paymentMethod)) {
+				$balance = \UserService::getBalance();
+				if ($balance < 0) {
+					\DB::rollback();
+					json_msg(trans('common.balance_not_enough'), 50001);
+				}
+			}
 			
 			\DB::commit();
 			return true;

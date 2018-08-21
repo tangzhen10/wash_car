@@ -83,8 +83,9 @@ return [
 	# 动作
 	'action'                   => '操作',
 	'after_sale'               => '申请售后',
-	'agree_refund'             => '同意退款',
 	'apply_refund'             => '申请退款',
+	'agree_refund'             => '同意退款',
+	'reject_refund'            => '不予退款',
 	'back'                     => '后退',
 	'cancel'                   => '取消',
 	'delete'                   => '删除',
