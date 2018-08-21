@@ -239,30 +239,6 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 修改订单并添加日志
-	 * @param array $data
-	 * @author 李小同
-	 * @date   2018-08-21 10:43:55
-	 */
-	private function _updateOrder(array $data) {
-		
-		$updateData = [
-			'status'    => $data['status'],
-			'update_at' => time(),
-		];
-		if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
-		\DB::table('wash_order')->where('order_id', $data['order_id'])->update($updateData);
-		
-		$logData = [
-			'wash_order_id' => $data['order_id'],
-			'action'        => $data['action'],
-			'order_status'  => $data['status'],
-			'operator_type' => $data['operator_type'],
-		];
-		$this->addOrderLog($logData);
-	}
-	
-	/**
 	 * 修改订单状态
 	 * @param int    $orderId
 	 * @param string $action
@@ -373,14 +349,27 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 获取格式化的管理员名称
+	 * 修改订单并添加日志
+	 * @param array $data
 	 * @author 李小同
-	 * @date   2018-8-5 14:08:29
-	 * @return string
+	 * @date   2018-08-21 10:43:55
 	 */
-	private function _getFormatManager() {
+	private function _updateOrder(array $data) {
 		
-		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
+		$updateData = [
+			'status'    => $data['status'],
+			'update_at' => time(),
+		];
+		if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
+		\DB::table('wash_order')->where('order_id', $data['order_id'])->update($updateData);
+		
+		$logData = [
+			'wash_order_id' => $data['order_id'],
+			'action'        => $data['action'],
+			'order_status'  => $data['status'],
+			'operator_type' => $data['operator_type'],
+		];
+		$this->addOrderLog($logData);
 	}
 	
 	/**
@@ -396,6 +385,17 @@ class OrderService extends BaseService {
 		          ->where('order_id', $orderId)
 		          ->update(['washer_id' => \ManagerService::getManagerId()]);
 		return $res;
+	}
+	
+	/**
+	 * 获取格式化的管理员名称
+	 * @author 李小同
+	 * @date   2018-8-5 14:08:29
+	 * @return string
+	 */
+	private function _getFormatManager() {
+		
+		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
 	}
 	# endregion
 	
@@ -988,6 +988,97 @@ class OrderService extends BaseService {
 	}
 	
 	/**
+	 * 支付订单
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-08-21 9:35:42
+	 * @return bool
+	 */
+	public function payOrder(array $post) {
+		
+		$orderId = $post['order_id'];
+		$order   = $this->getWashOrderDetail($orderId);
+		
+		if (empty($order)) {
+			json_msg(trans('validation.invalid', ['attr' => trans('common.order')]), 40003);
+		} elseif ($order['status'] != 1 || $order['payment_status'] == '1') {
+			json_msg(trans('error.illegal_action'), 40003);
+		}
+		
+		$paymentMethod = explode(',', $post['payment_method']);
+		$balance       = \UserService::getBalance();
+		if ($paymentMethod == ['balance']) { # 仅余额支付时要检测余额是否充足
+			if ($balance < $order['total_value']) json_msg(trans('common.balance_not_enough'), 50001);
+		} else {
+			if (in_array('balance', $paymentMethod)) { # 组合支付
+				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
+			}
+		}
+		
+		\DB::beginTransaction();
+		try {
+			
+			$action = 'pay_order';
+			
+			if (in_array('balance', $paymentMethod)) {
+				
+				if ($paymentMethod == ['balance']) {
+					$amount = $order['total_value'];
+				} else {
+					$amount = $balance;
+				}
+				
+				# 余额使用记录
+				$useBalanceData = [
+					'amount'   => -floatval($amount),
+					'type'     => $action,
+					'order_id' => $orderId,
+					'comment'  => '【支付订单】'.$orderId,
+				];
+				$this->_addBalanceDetail($useBalanceData);
+				
+				# 支付记录
+				$paymentData = [
+					'order_id'       => $orderId,
+					'payment_method' => 'balance',
+					'amount'         => $amount,
+				];
+				$this->_addPaymentLog($paymentData);
+			}
+			
+			# 修改订单状态
+			$updateData = [
+				'order_id'       => $orderId,
+				'action'         => $action,
+				'status'         => 2,
+				'operator_type'  => 'user',
+				'payment_status' => '1',
+			];
+			$this->_updateOrder($updateData);
+			
+			# 可能存在同时一个账号，多处登录并同时支付的情况，支付完成再查一次用户余额，如果余额小于0则回滚
+			if (in_array('balance', $paymentMethod)) {
+				$balance = \UserService::getBalance();
+				if ($balance < 0) {
+					\DB::rollback();
+					json_msg(trans('common.balance_not_enough'), 50001);
+				}
+			}
+			
+			\DB::commit();
+			return true;
+			
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+			print_r($e->getFile());
+			print_r($e->getLine());
+			
+			\DB::rollback();
+			return false;
+		}
+	}
+	
+	/**
 	 * 用户取消订单
 	 * @param array $order
 	 * @param bool  $system 是否系统自动取消
@@ -1095,71 +1186,42 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 支付订单
-	 * @param array $post
+	 * 添加余额流水
+	 * @param array $data
 	 * @author 李小同
-	 * @date   2018-08-21 9:35:42
-	 * @return bool
+	 * @date   2018-08-21 15:26:38
 	 */
-	public function payOrder(array $post) {
+	private function _addBalanceDetail(array $data) {
 		
-		$orderId = $post['order_id'];
-		$order   = $this->getWashOrderDetail($orderId);
-		if (empty($order)) {
-			json_msg(trans('validation.invalid', ['attr' => trans('common.order')]), 40003);
-		} elseif ($order['status'] != 1 || $order['payment_status']) {
-			json_msg(trans('error.illegal_action'), 40003);
-		}
+		$useBalanceData = [
+			'user_id'   => $this->userId,
+			'amount'    => $data['amount'],
+			'type'      => $data['type'],
+			'order_id'  => $data['order_id'],
+			'comment'   => $data['comment'],
+			'create_at' => time(),
+			'create_ip' => getClientIp(true),
+		];
+		\DB::table('balance_detail')->insert($useBalanceData);
+	}
+	
+	/**
+	 * 添加支付记录
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-08-21 15:23:04
+	 */
+	private function _addPaymentLog(array $data) {
 		
-		$paymentMethod = explode(',', $post['payment_method']);
-		if ($paymentMethod == ['balance']) { # 仅余额支付时要检测余额是否充足
-			$balance = \UserService::getBalance();
-			if ($balance < $order['total_value']) json_msg(trans('common.balance_not_enough'), 50001);
-		}
-		
-		\DB::beginTransaction();
-		try {
-			
-			$action = 'pay_order';
-			
-			if (in_array('balance', $paymentMethod)) {
-				$useBalanceData = [
-					'user_id'   => $this->userId,
-					'amount'    => -$order['total_value'],
-					'type'      => $action,
-					'order_id'  => $orderId,
-					'comment'   => '【支付订单】'.$orderId,
-					'create_at' => time(),
-					'create_ip' => getClientIp(true),
-				];
-				\DB::table('balance_detail')->insert($useBalanceData);
-			}
-			
-			$updateData = [
-				'order_id'       => $orderId,
-				'action'         => $action,
-				'status'         => 2,
-				'operator_type'  => 'user',
-				'payment_status' => '1',
-			];
-			$this->_updateOrder($updateData);
-			
-			# 可能存在同时一个账号，多处登录并同时支付的情况，支付完成再查一次用户余额，如果余额小于0则回滚
-			if (in_array('balance', $paymentMethod)) {
-				$balance = \UserService::getBalance();
-				if ($balance < 0) {
-					\DB::rollback();
-					json_msg(trans('common.balance_not_enough'), 50001);
-				}
-			}
-			
-			\DB::commit();
-			return true;
-			
-		} catch (\Exception $e) {
-			\DB::rollback();
-			return false;
-		}
+		$paymentData = [
+			'order_id'       => $data['order_id'],
+			'payment_method' => $data['payment_method'],
+			'amount'         => $data['amount'],
+			'creater'        => $this->_getFormatUser(),
+			'create_by'      => $this->userId,
+			'create_at'      => time(),
+		];
+		\DB::table('payment_log')->insert($paymentData);
 	}
 	
 	/**
