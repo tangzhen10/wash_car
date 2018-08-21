@@ -926,9 +926,6 @@ $md5即是sign的参数值
                 "value": "2018-08-14 01:00-02:00"
             }
         ],
-        "paymentMethod": [
-            "wechat"
-        ],
         "total": 128,
         "totalOri": 200,
         "userInfo": {
@@ -1293,6 +1290,7 @@ const ORDER_ACTION = [
 | L washer_phone   | string | 否    | 服务人员电话 | 18716238273                         |
 | L status         | int    | 是    | 订单状态   | 1                                   |
 | L status_text    | string | 是    | 订单状态描述 | 未付款                                 |
+| L balance        | string | 是    | 用户余额   | 356.00                              |
 | log              | array  | 是    | 订单操作日志 |                                     |
 | L create_at      | string | 是    | 操作时间   | 2018-08-05 14:10:09                 |
 | L action_text    | string | 是    | 操作名称   | 派单成功                                |

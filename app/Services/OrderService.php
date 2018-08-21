@@ -1095,45 +1095,6 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 为未支付的订单详情追加支付方式
-	 * @param array $detail
-	 * @author 李小同
-	 * @date   2018-08-21 9:38:45
-	 * @return array $detail
-	 */
-	public function addPaymentList(array $detail) {
-		
-		if ($detail['status'] == 1) {
-			
-			$paymentList = [
-				'balance' => [
-					'method' => 'balance',
-					'name'   => trans('common.payment.balance'),
-					'status' => '1',
-					'value'  => 0,
-				],
-				'wechat'  => [
-					'method' => 'wechat',
-					'name'   => trans('common.payment.wechat'),
-					'status' => '1',
-					'value'  => 0,
-				],
-			];
-			
-			$balance = \UserService::getBalance();
-			if ($balance > 0) {
-				$paymentList['balance']['value'] = $balance;
-			} else {
-				$paymentList['balance']['status'] = '0';
-			}
-			
-			$detail['payment_list'] = array_values($paymentList);
-		}
-		
-		return $detail;
-	}
-	
-	/**
 	 * 支付订单
 	 * @param array $post
 	 * @author 李小同

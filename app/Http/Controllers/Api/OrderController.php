@@ -108,8 +108,7 @@ class OrderController extends BaseController {
 		# 清理一些前端不需要的信息
 		unset($detail['username'], $detail['phone'], $detail['order_status_msg']);
 		
-		# 添加支付方式
-		$detail = \OrderService::addPaymentList($detail);
+		$detail['balance'] = $this->user->getBalance();
 		
 		# 订单日志
 		$logs = \OrderService::getOrderLogs($orderId);
