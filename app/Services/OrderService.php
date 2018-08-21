@@ -1025,7 +1025,8 @@ class OrderService extends BaseService {
 				if ($paymentMethod == ['balance']) {
 					$amount = $order['total_value'];
 				} else {
-					$amount = $balance;
+					# 组合支付，若余额充足，仍选了组合支付，支付金额不得超过订单总金额
+					$amount = min([$balance, $order['total_value']]);
 				}
 				
 				# 余额使用记录
