@@ -51,7 +51,7 @@ class CancelOrder extends Command {
 				\DB::beginTransaction();
 				try {
 					
-					$updateData = ['status' => OrderService::ACTION_TO_STATUS['cancel_order']];
+					$updateData = ['status' => 7];
 					\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
 					
 					$logData = [
