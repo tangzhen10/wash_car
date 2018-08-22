@@ -75,7 +75,9 @@ class OrderService extends BaseService {
 		               ->leftJoin('article AS g', 'g.id', '=', 'a.wash_product_id');
 		
 		if (!empty($filter['filter_order_id'])) $listPage = $listPage->where('a.order_id', '=', $filter['filter_order_id']);
+		if (!empty($filter['filter_wash_product_id'])) $listPage = $listPage->where('a.wash_product_id', '=', $filter['filter_wash_product_id']);
 		if (!empty($filter['filter_status'])) $listPage = $listPage->where('a.status', '=', $filter['filter_status']);
+		
 		if (!empty($filter['filter_date_from'])) {
 			$listPage = $listPage->where('a.create_at', '>=', strtotime($filter['filter_date_from'].' 00:00:00'));
 		}

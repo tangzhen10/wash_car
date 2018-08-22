@@ -29,6 +29,13 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		{{trans('common.order_id')}}：
 		<input style="width: 150px;" class="input-text" name="filter_order_id" value="{{$filter['filter_order_id']}}">
+		{{trans('common.wash_product')}}：
+		<select name="filter_wash_product_id" class="select-box width-120">
+			<option></option>
+			@foreach($wash_product_list as $item)
+				<option value="{{$item['id']}}" @if ($filter['filter_wash_product_id'] == $item['id']) selected @endif >{{$item['name']}}</option>
+			@endforeach
+		</select>
 		{{trans('common.order_status')}}：
 		<select name="filter_status" class="select-box width-120">
 			<option></option>
@@ -38,11 +45,12 @@
 		</select>
 		{{trans('common.create_at')}}：
 		<input type="text" name="filter_date_from" class="input-text Wdate width-120" value="{{$filter['filter_date_from']}}"
-		       id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})"> -
+			   id="datemin" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'datemax\')||\'%y-%M-%d\'}',skin:'whyGreen'})"> -
 		<input type="text" name="filter_date_to" class="input-text Wdate width-120" value="{{$filter['filter_date_to']}}"
-		       id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
-		<input type="text" class="input-text" style="width:250px" placeholder="输入会员名称、手机" name="filter_account"
-		       value="{{$filter['filter_account']}}">
+			   id="datemax" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d',skin:'whyGreen'})">
+		{{trans('common.user')}}：
+		<input type="text" class="input-text" style="width:250px" placeholder="输入用户名称、手机" name="filter_account"
+			   value="{{$filter['filter_account']}}">
 		<span class="btn btn-success radius" id="J_search">
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.filter')}}
 		</span>
@@ -96,14 +104,16 @@
 		}
 		
 		$('#J_search').click(function () {
-			var filter_order_id  = $('input[name="filter_order_id"]').val().trim(),
-			    filter_status    = $('select[name="filter_status"]').val(),
-			    filter_account   = $('input[name="filter_account"]').val().trim(),
-			    filter_date_from = $('input[name="filter_date_from"]').val().trim(),
-			    filter_date_to   = $('input[name="filter_date_to"]').val().trim();
+			var filter_order_id        = $('input[name="filter_order_id"]').val().trim(),
+				filter_wash_product_id = $('select[name="filter_wash_product_id"]').val(),
+				filter_status          = $('select[name="filter_status"]').val(),
+				filter_account         = $('input[name="filter_account"]').val().trim(),
+				filter_date_from       = $('input[name="filter_date_from"]').val().trim(),
+				filter_date_to         = $('input[name="filter_date_to"]').val().trim();
 			
 			var query_string = [], url = '{{route('washOrderList')}}';
 			if (filter_order_id) query_string.push('filter_order_id='+filter_order_id);
+			if (filter_wash_product_id) query_string.push('filter_wash_product_id='+filter_wash_product_id);
 			if (filter_status) query_string.push('filter_status='+filter_status);
 			if (filter_account) query_string.push('filter_account='+filter_account);
 			if (filter_date_from) query_string.push('filter_date_from='+filter_date_from);

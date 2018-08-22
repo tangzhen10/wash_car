@@ -17,18 +17,22 @@ class OrderController extends BaseController {
 	public function washOrderList() {
 		
 		$filter                    = [
-			'filter_order_id'  => \Request::input('filter_order_id', ''),
-			'filter_status'    => \Request::input('filter_status', ''),
-			'filter_date_from' => \Request::input('filter_date_from', ''),
-			'filter_date_to'   => \Request::input('filter_date_to', ''),
-			'filter_account'   => \Request::input('filter_account', ''),
-			'perPage'          => $this->getPerPage(),
+			'filter_order_id'        => \Request::input('filter_order_id', ''),
+			'filter_wash_product_id' => \Request::input('filter_wash_product_id', ''),
+			'filter_status'          => \Request::input('filter_status', ''),
+			'filter_date_from'       => \Request::input('filter_date_from', ''),
+			'filter_date_to'         => \Request::input('filter_date_to', ''),
+			'filter_account'         => \Request::input('filter_account', ''),
+			'perPage'                => $this->getPerPage(),
 		];
 		$list                      = $this->service->getOrderList($filter);
 		$this->data['list']        = $list['list'];
 		$this->data['pagination']  = $list['listPage'];
 		$this->data['total']       = $list['total'];
 		$this->data['status_list'] = OrderService::ORDER_STATUS;
+		
+		$filterProduct                   = ['content_type' => \SettingService::getValue('product_content_type')];
+		$this->data['wash_product_list'] = \ArticleService::getArticleBaseInfo($filterProduct);
 		
 		$this->data['filter'] = $filter;
 		
