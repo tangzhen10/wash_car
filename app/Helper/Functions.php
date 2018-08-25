@@ -401,7 +401,7 @@ function https_curl_json($url, $data, $type = 'json') {
 	curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 	$output = curl_exec($curl);
 	if (curl_errno($curl)) {
-		echo 'Errno'.curl_error($curl);//捕抓异常
+//		echo 'Errno'.curl_error($curl);//捕抓异常
 	}
 	curl_close($curl);
 	return $output;
