@@ -87,6 +87,10 @@
 					</span>
 					</p>
 					<p>
+						<span class="form_filed_row">{{trans('common.order_amount')}}：</span>
+						<span>{{$detail['total']}}</span>
+					</p>
+					<p>
 						<span class="form_filed_row">{{trans('common.user')}}：</span>
 						<span>
 							<a href="{{route('memberList')}}?filter_user_id={{$detail['user_id']}}" target="_blank">

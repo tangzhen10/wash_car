@@ -18,7 +18,7 @@
 	float: left;
 	border: 1px solid #ccc;
 	text-align: center;
-	margin-left: 5px;
+	margin: 0 0 5px 5px;
 }
 .pagination li a, .pagination li span {
 	display: inline-block;

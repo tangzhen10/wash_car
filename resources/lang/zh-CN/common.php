@@ -67,6 +67,7 @@ return [
 	'value_check_element'      => '单选框和复选框的值',
 	'verify_code'              => '验证码',
 	'wechat'                   => '微信',
+	'order_amount'             => '订单金额',
 	
 	# 属性
 	'gender_0'                 => '',
@@ -98,6 +99,7 @@ return [
 	'recharge'                 => '充值',
 	'refresh'                  => '刷新',
 	'refund'                   => '退款',
+	'cancel_refund'            => '取消并退款',
 	'save'                     => '保存',
 	'search'                   => '搜索',
 	'show_more'                => '显示更多',

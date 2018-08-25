@@ -61,6 +61,7 @@ class OrderService extends BaseService {
 			'a.create_at',
 			'a.payment_status',
 			'a.status',
+			'a.total',
 			'b.plate_number',
 			'c.name AS brand',
 			'd.name AS model',
@@ -92,6 +93,13 @@ class OrderService extends BaseService {
 				      ->orWhere('f.email', 'LIKE', '%'.$filter['filter_account'].'%');
 			});
 		}
+		# 待我服务，状态为已接单、开始服务，接单人为我
+		if (!empty($filter['filter_serve_by_me'])) {
+			$listPage = $listPage->where(function ($query) {
+				
+				$query->where('a.washer_id', \ManagerService::getManagerId())->whereIn('a.status', [3, 4]);
+			});
+		}
 		
 		$listPage = $listPage->select($fields)->orderBy('a.id', 'desc')->paginate($filter['perPage'])->appends($filter);
 		$listArr  = json_decode(json_encode($listPage), 1);
@@ -103,6 +111,7 @@ class OrderService extends BaseService {
 		foreach ($list as &$item) {
 			$item['status_text'] = self::ORDER_STATUS[$item['status']];
 			$item['create_at']   = date('Y-m-d H:i:s', $item['create_at']);
+			$item['total']       = currencyFormat($item['total']);
 			if (empty($item['brand'])) $item['brand'] = trans('common.other');
 			if (empty($item['model'])) $item['model'] = '';
 		}
@@ -543,7 +552,7 @@ class OrderService extends BaseService {
 				break;
 			case 2:
 				$detail['button'] = [
-					'text'   => trans('common.refund'),
+					'text'   => trans('common.cancel_refund'),
 					'action' => 'refund_order',
 				];
 				break;

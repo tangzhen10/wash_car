@@ -23,6 +23,7 @@ class OrderController extends BaseController {
 			'filter_date_from'       => \Request::input('filter_date_from', ''),
 			'filter_date_to'         => \Request::input('filter_date_to', ''),
 			'filter_account'         => \Request::input('filter_account', ''),
+			'filter_serve_by_me'     => \Request::input('filter_serve_by_me', ''),
 			'perPage'                => $this->getPerPage(),
 		];
 		$list                      = $this->service->getOrderList($filter);
