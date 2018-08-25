@@ -176,7 +176,7 @@ class WechatService {
 			$url     = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('APPID').'&secret='.env('APPSECRET');
 			$resJson = file_get_contents($url);
 			$res     = json_decode($resJson, 1);
-			if (empty($res['access_token'])) return [];
+			if (empty($res['access_token'])) return '';
 			
 			$res['create_at'] = time();
 			$key              = config('cache.WECHAT_MP.ACCESS_TOKEN');

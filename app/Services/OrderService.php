@@ -937,26 +937,9 @@ class OrderService extends BaseService {
 			\DB::commit();
 			
 			# 发送模板消息
-			$washProduct = \DB::table('article')->where('id', $orderData['wash_product_id'])->first(['name']);
-			$plate       = \DB::table('car')->where('id', $orderData['car_id'])->first(['plate_number']);
-			$keywords    = [
-				'keyword1' => ['value' => $orderData['order_id']],
-				'keyword2' => ['value' => $washProduct['name']],
-				'keyword3' => ['value' => $orderData['wash_time']],
-				'keyword4' => ['value' => $plate['plate_number']],
-				'keyword5' => ['value' => currencyFormat($orderData['total'])],
-				'keyword6' => ['value' => $orderData['address']],
-				'keyword7' => ['value' => date('Y-m-d H:i:s', $orderData['create_at'])],
-			];
-			
-			$tplData = [
-				'template_id' => config('project.WECHAT_MP.TPL_ID.ADD_ORDER'),
-				'openid'      => $post['openid'],
-				'form_id'     => $post['form_id'],
-				'data'        => $keywords,
-			];
-			
-			$res     = \WechatService::sendTplMsg($tplData);
+			$orderData['openid']  = $post['openid'];
+			$orderData['form_id'] = $post['form_id'];
+			$this->sendAddOrderMsg($orderData);
 			
 			$logger->info('success', $orderData);
 			
@@ -974,6 +957,38 @@ class OrderService extends BaseService {
 			
 			return false;
 		}
+	}
+	
+	/**
+	 * 下单成功，发送模板消息
+	 * @param array $orderData
+	 * @author 李小同
+	 * @date   2018-08-25 21:23:28
+	 * @return mixed
+	 */
+	public function sendAddOrderMsg(array $orderData) {
+		
+		$washProduct = \DB::table('article')->where('id', $orderData['wash_product_id'])->first(['name']);
+		$plate       = \DB::table('car')->where('id', $orderData['car_id'])->first(['plate_number']);
+		
+		$tplData = [
+			'template_id' => config('project.WECHAT_MP.TPL_ID.ADD_ORDER'),
+			'openid'      => $orderData['openid'],
+			'form_id'     => $orderData['form_id'],
+			'data'        => [
+				'keyword1' => ['value' => $orderData['order_id']],
+				'keyword2' => ['value' => $washProduct['name']],
+				'keyword3' => ['value' => $orderData['wash_time']],
+				'keyword4' => ['value' => $plate['plate_number']],
+				'keyword5' => ['value' => currencyFormat($orderData['total'])],
+				'keyword6' => ['value' => $orderData['address']],
+				'keyword7' => ['value' => date('Y-m-d H:i:s', $orderData['create_at'])],
+			],
+		];
+		
+		$res = \WechatService::sendTplMsg($tplData);
+		
+		return $res;
 	}
 	
 	/**

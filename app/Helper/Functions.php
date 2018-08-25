@@ -18,8 +18,8 @@ function get_http_headers() {
 	$headers = [];
 	foreach ($_SERVER as $key => $value) {
 		if (substr($key, 0, 5) == 'HTTP_') {
-			$key = substr($key, 5);
-			$key = strtolower($key);
+			$key           = substr($key, 5);
+			$key           = strtolower($key);
 			$headers[$key] = $value;
 			continue;
 		}
@@ -376,7 +376,7 @@ function request_post($url = '', $post_data = []) {
 	return $data;
 }
 
-/* 发送json格式的数据，到api接口 -xzz0704  */
+/* 发送json格式的数据 */
 function https_curl_json($url, $data, $type = 'json') {
 	
 	if ($type == 'json') {//json $_POST=json_decode(file_get_contents('php://input'), TRUE);
@@ -400,10 +400,11 @@ function https_curl_json($url, $data, $type = 'json') {
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 	$output = curl_exec($curl);
-	if (curl_errno($curl)) {
-//		echo 'Errno'.curl_error($curl);//捕抓异常
-	}
+
+//	if (curl_errno($curl)) echo 'Errno'.curl_error($curl);//捕抓异常
+	
 	curl_close($curl);
+	
 	return $output;
 }
 
