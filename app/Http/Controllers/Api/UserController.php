@@ -117,7 +117,7 @@ class UserController extends BaseController {
 	public function getOpenid() {
 		
 		$code = \Request::input('code');
-		$res  = \WechatService::getSessionKeyAndOpenId($code);
+		$res  = \WechatService::getMpOpenId($code);
 		json_msg($res);
 	}
 	

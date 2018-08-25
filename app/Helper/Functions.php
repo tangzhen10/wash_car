@@ -18,8 +18,8 @@ function get_http_headers() {
 	$headers = [];
 	foreach ($_SERVER as $key => $value) {
 		if (substr($key, 0, 5) == 'HTTP_') {
-			$key           = substr($key, 5);
-			$key           = strtolower($key);
+			$key = substr($key, 5);
+			$key = strtolower($key);
 			$headers[$key] = $value;
 			continue;
 		}
@@ -354,4 +354,56 @@ function currencyFormat($value) {
 	return '￥'.sprintf('%.2f', $value);
 }
 
+/**
+ * 模拟post进行url请求
+ * @param string $url
+ * @param array  $post_data
+ * @return mixed
+ */
+function request_post($url = '', $post_data = []) {
+	
+	if (empty($url)) return false;
+	
+	$ch = curl_init();//初始化curl
+	curl_setopt($ch, CURLOPT_URL, $url);//抓取指定网页
+	curl_setopt($ch, CURLOPT_HEADER, 0);//设置header
+//	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//要求结果为字符串且输出到屏幕上
+	curl_setopt($ch, CURLOPT_POST, 1);//post提交方式
+	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
+	$data = curl_exec($ch);//运行curl
+	curl_close($ch);
+	
+	return $data;
+}
+
+/* 发送json格式的数据，到api接口 -xzz0704  */
+function https_curl_json($url, $data, $type = 'json') {
+	
+	if ($type == 'json') {//json $_POST=json_decode(file_get_contents('php://input'), TRUE);
+		$headers = [
+			"Content-type: application/json;charset=UTF-8",
+			"Accept: application/json",
+			"Cache-Control: no-cache",
+			"Pragma: no-cache",
+		];
+		$data    = json_encode($data);
+	}
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_POST, 1); // 发送一个常规的Post请求
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+	if (!empty($data)) {
+		curl_setopt($curl, CURLOPT_POST, 1);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+	}
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+	$output = curl_exec($curl);
+	if (curl_errno($curl)) {
+		echo 'Errno'.curl_error($curl);//捕抓异常
+	}
+	curl_close($curl);
+	return $output;
+}
 

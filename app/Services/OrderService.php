@@ -936,13 +936,39 @@ class OrderService extends BaseService {
 			
 			\DB::commit();
 			
+			# 发送模板消息
+			$washProduct = \DB::table('article')->where('id', $orderData['wash_product_id'])->first(['name']);
+			$plate       = \DB::table('car')->where('id', $orderData['car_id'])->first(['plate_number']);
+			$keywords    = [
+				'keyword1' => ['value' => $orderData['order_id']],
+				'keyword2' => ['value' => $washProduct['name']],
+				'keyword3' => ['value' => $orderData['wash_time']],
+				'keyword4' => ['value' => $plate['plate_number']],
+				'keyword5' => ['value' => currencyFormat($orderData['total'])],
+				'keyword6' => ['value' => $orderData['address']],
+				'keyword7' => ['value' => date('Y-m-d H:i:s', $orderData['create_at'])],
+			];
+			
+			$tplData = [
+				'template_id' => config('project.WECHAT_MP.TPL_ID.ADD_ORDER'),
+				'openid'      => $post['openid'],
+				'form_id'     => $post['form_id'],
+				'data'        => $keywords,
+			];
+			
+			$res     = \WechatService::sendTplMsg($tplData);
+			
 			$logger->info('success', $orderData);
 			
 			return $orderData['order_id'];
 			
 		} catch (\Exception $e) {
 			
-			$logger->error($e->getMessage(), ['error_code' => $e->getCode()]);
+			$logger->error($e->getMessage(), [
+				'error_code' => $e->getCode(),
+				'file'       => $e->getFile(),
+				'line'       => $e->getLine(),
+			]);
 			
 			\DB::rollback();
 			
