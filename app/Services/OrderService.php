@@ -279,7 +279,7 @@ class OrderService extends BaseService {
 					if ($order['status'] == 8 && $order['payment_status'] == '1') {
 						$flag   = true;
 						$status = 6;
-						# todo lxt 退款
+						$this->refundOrder($orderId, 'admin');
 					}
 					break;
 				case 'reject_refund': # 不予退款
@@ -355,6 +355,7 @@ class OrderService extends BaseService {
 	 * @param array $data
 	 * @author 李小同
 	 * @date   2018-08-21 10:43:55
+	 * @return bool
 	 */
 	private function _updateOrder(array $data) {
 		
@@ -363,6 +364,8 @@ class OrderService extends BaseService {
 			'update_at' => time(),
 		];
 		if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
+		if (isset($data['payment_method'])) $updateData['payment_method'] = $data['payment_method'];
+		
 		\DB::table('wash_order')->where('order_id', $data['order_id'])->update($updateData);
 		
 		$logData = [
@@ -372,6 +375,8 @@ class OrderService extends BaseService {
 			'operator_type' => $data['operator_type'],
 		];
 		$this->addOrderLog($logData);
+		
+		return true;
 	}
 	
 	/**
@@ -455,13 +460,13 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 获取洗车订单详情
+	 * 获取洗车订单
 	 * @param $orderId
 	 * @author 李小同
-	 * @date   2018-8-4 10:03:18
+	 * @date   2018-08-25 10:44:37
 	 * @return array
 	 */
-	public function getWashOrderDetail($orderId) {
+	public function getWashOrder($orderId) {
 		
 		$fields = [
 			'a.id',
@@ -485,7 +490,7 @@ class OrderService extends BaseService {
 			'g.name AS wash_product',
 			'a.washer_id',
 		];
-		$detail = \DB::table('wash_order AS a')
+		$order  = \DB::table('wash_order AS a')
 		             ->leftJoin('car AS b', 'b.id', '=', 'a.car_id')
 		             ->leftJoin('car_brand AS c', 'c.id', '=', 'b.brand_id')
 		             ->leftJoin('car_model AS d', 'd.id', '=', 'b.model_id')
@@ -496,7 +501,32 @@ class OrderService extends BaseService {
 		             ->where('order_id', $orderId)
 		             ->where('a.status', '!=', '-1')
 		             ->first();
-		if (empty($detail)) json_msg(trans('common.not_exist_order'), 40003);
+		if (empty($order)) json_msg(trans('common.not_exist_order'), 40003);
+		
+		if ($order['status'] == 1) {
+			
+			# 未付款，1小时倒计时
+			$cancelAt = $order['create_at'] + 3600;
+			if ($cancelAt <= time()) {
+				if ($this->_cancelWashOrder($order, true)) {
+					return $this->getWashOrder($orderId);
+				}
+			}
+		}
+		
+		return $order;
+	}
+	
+	/**
+	 * 获取洗车订单详情
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-8-4 10:03:18
+	 * @return array
+	 */
+	public function getWashOrderDetail($orderId) {
+		
+		$detail = $this->getWashOrder($orderId);
 		
 		# 取消 & 退款 & 申请售后
 		switch ($detail['status']) {
@@ -504,17 +534,9 @@ class OrderService extends BaseService {
 				
 				# 未付款，1小时倒计时
 				$cancelAt              = $detail['create_at'] + 3600;
-				$orderStatusMsg        = '* 若不支付，本单将于'.date('Y-m-d H:i:s', $cancelAt).'自动取消！';
+				$detail['cancel_at']   = $cancelAt;
 				$detail['cancel_left'] = $cancelAt - time();
-				if ($detail['cancel_left'] <= 0) {
-					if ($this->_cancelWashOrder($detail, true)) {
-						return $this->getWashOrderDetail($orderId);
-					}
-				}
-				
-				$detail['order_status_msg'] = $orderStatusMsg;
-				
-				$detail['button'] = [
+				$detail['button']      = [
 					'text'   => trans('common.cancel'),
 					'action' => 'cancel_order',
 				];
@@ -604,6 +626,104 @@ class OrderService extends BaseService {
 		unset($log);
 		
 		return $logs;
+	}
+	
+	/**
+	 * 退款
+	 * @param int    $orderId
+	 * @param string $operateType admin|user|system
+	 * @author 李小同
+	 * @date   2018-08-25 11:25:10
+	 * @return bool
+	 */
+	public function refundOrder($orderId, $operateType) {
+		
+		$paymentLogs = $this->_getPaymentLogs($orderId);
+		foreach ($paymentLogs as $paymentLog) {
+			
+			if ($paymentLog['payment_method'] == 'balance') {
+				$data = [
+					'order_id'       => $orderId,
+					'payment_method' => 'balance',
+					'amount'         => $paymentLog['amount'],
+					'user_id'        => $paymentLog['create_by'],
+					'operate_type'   => $operateType,
+				];
+				$this->_balanceRefund($data);
+				
+			} elseif ($paymentLog['payment_method'] == 'wechat') {
+				
+				$this->_wechatRefund($orderId);
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * 获取支付记录
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-08-25 11:06:45
+	 * @return array
+	 */
+	private function _getPaymentLogs($orderId) {
+		
+		# amount大于0为支付，小于0为退款
+		$fields = ['payment_method', 'amount', 'create_by'];
+		$logs   = \DB::table('payment_log')
+		             ->where('order_id', $orderId)
+		             ->where('amount', '>', 0)
+		             ->get($fields)
+		             ->toArray();
+		return $logs;
+	}
+	
+	/**
+	 * 余额退款
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-08-25 11:25:37
+	 * @return bool
+	 */
+	private function _balanceRefund(array $data) {
+		
+		# 余额使用记录
+		$useBalanceData = [
+			'amount'   => floatval($data['amount']),
+			'type'     => 'refund_order',
+			'order_id' => $data['order_id'],
+			'comment'  => '【订单退款】'.$data['order_id'],
+			'user_id'  => $data['user_id'],
+		];
+		$this->_addBalanceDetail($useBalanceData);
+		
+		$refundData = [
+			'order_id'       => $data['order_id'],
+			'payment_method' => $data['payment_method'],
+			'amount'         => -$data['amount'],
+			'operate_type'   => $data['operate_type'],
+			'creator'        => $data['operate_type'] == 'admin' ? $this->_getFormatManager() : $this->_getFormatUser(),
+			'create_by'      => $data['operate_type'] == 'admin' ? \ManagerService::getManagerId() : $this->userId,
+			'create_at'      => time(),
+		];
+		\DB::table('payment_log')->insertGetId($refundData);
+		
+		return true;
+	}
+	
+	/**
+	 * 微信退款
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-08-25 11:28:46
+	 * @return bool
+	 */
+	private function _wechatRefund(array $data) {
+		
+		# todo lxt 微信退款
+		
+		return true;
 	}
 	# endregion
 	
@@ -999,20 +1119,22 @@ class OrderService extends BaseService {
 	public function payOrder(array $post) {
 		
 		$orderId = $post['order_id'];
-		$order   = $this->getWashOrderDetail($orderId);
+		$order   = $this->getWashOrder($orderId);
 		
-		if (empty($order)) {
-			json_msg(trans('validation.invalid', ['attr' => trans('common.order')]), 40003);
-		} elseif ($order['status'] != 1 || $order['payment_status'] == '1') {
+		if ($order['status'] != 1 || $order['payment_status'] == '1') {
 			json_msg(trans('error.illegal_action'), 40003);
 		}
 		
 		$paymentMethod = explode(',', $post['payment_method']);
 		$balance       = \UserService::getBalance();
-		if ($paymentMethod == ['balance']) { # 仅余额支付时要检测余额是否充足
-			if ($balance < $order['total_value']) json_msg(trans('common.balance_not_enough'), 50001);
-		} else {
-			if (in_array('balance', $paymentMethod)) { # 组合支付
+		if (in_array('balance', $paymentMethod)) {
+			
+			# 检测余额是否充足
+			if (count($paymentMethod) == 1) {
+				if ($balance < $order['total']) {
+					json_msg(trans('common.balance_not_enough'), 50001);
+				}
+			} else { # 组合支付
 				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
 			}
 		}
@@ -1024,11 +1146,11 @@ class OrderService extends BaseService {
 			
 			if (in_array('balance', $paymentMethod)) {
 				
-				if ($paymentMethod == ['balance']) {
-					$amount = $order['total_value'];
+				if (count($paymentMethod) == 1) {
+					$amount = $order['total'];
 				} else {
 					# 组合支付，若余额充足，仍选了组合支付，支付金额不得超过订单总金额
-					$amount = min([$balance, $order['total_value']]);
+					$amount = min([$balance, $order['total']]);
 				}
 				
 				# 余额使用记录
@@ -1037,6 +1159,7 @@ class OrderService extends BaseService {
 					'type'     => $action,
 					'order_id' => $orderId,
 					'comment'  => '【支付订单】'.$orderId,
+					'user_id'  => $this->userId,
 				];
 				$this->_addBalanceDetail($useBalanceData);
 				
@@ -1056,6 +1179,7 @@ class OrderService extends BaseService {
 				'status'         => 2,
 				'operator_type'  => 'user',
 				'payment_status' => '1',
+				'payment_method' => implode(',', $paymentMethod),
 			];
 			$this->_updateOrder($updateData);
 			
@@ -1129,10 +1253,7 @@ class OrderService extends BaseService {
 			
 			\DB::beginTransaction();
 			try {
-				
-				# todo lxt 微信退款
-				
-				# todo lxt 余额退款
+				$this->refundOrder($order['order_id'], 'user');
 				
 				$updateData = [
 					'order_id'      => $order['order_id'],
@@ -1197,7 +1318,7 @@ class OrderService extends BaseService {
 	private function _addBalanceDetail(array $data) {
 		
 		$useBalanceData = [
-			'user_id'   => $this->userId,
+			'user_id'   => $data['user_id'],
 			'amount'    => $data['amount'],
 			'type'      => $data['type'],
 			'order_id'  => $data['order_id'],
@@ -1205,7 +1326,9 @@ class OrderService extends BaseService {
 			'create_at' => time(),
 			'create_ip' => getClientIp(true),
 		];
-		\DB::table('balance_detail')->insert($useBalanceData);
+		$detailId       = \DB::table('balance_detail')->insertGetId($useBalanceData);
+		
+		return $detailId;
 	}
 	
 	/**
@@ -1220,11 +1343,13 @@ class OrderService extends BaseService {
 			'order_id'       => $data['order_id'],
 			'payment_method' => $data['payment_method'],
 			'amount'         => $data['amount'],
-			'creater'        => $this->_getFormatUser(),
+			'creator'        => $this->_getFormatUser(),
 			'create_by'      => $this->userId,
 			'create_at'      => time(),
 		];
-		\DB::table('payment_log')->insert($paymentData);
+		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
+		
+		return $logId;
 	}
 	
 	/**

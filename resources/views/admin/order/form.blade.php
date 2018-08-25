@@ -60,22 +60,22 @@
 						<span class="form_filed_row">{{trans('common.order_status')}}：</span>
 						<span class="mr-10">{{$detail['status_text']}}</span>
 						@switch ($detail['status'])
-						@case(1)
-						<span class="note">{{$detail['order_status_msg']}}</span>
-						@break
-						@case(2)
-						<span class="btn btn-secondary-outline radius J_action" data-action="take_order">{{trans('common.take_order')}}</span>
-						@break
-						@case(3)
-						<span class="btn btn-secondary-outline radius J_action" data-action="serve_start">{{trans('common.serve_start')}}</span>
-						@break
-						@case(4)
-						<span class="btn btn-secondary-outline radius J_action" data-action="serve_finish">{{trans('common.serve_finish')}}</span>
-						@break
-						@case(8)
-						<span class="btn btn-success-outline radius J_action" data-action="agree_refund">{{trans('common.agree_refund')}}</span>
-						<span class="btn btn-warning-outline radius J_action" data-action="reject_refund">{{trans('common.reject_refund')}}</span>
-						@break
+							@case(1)
+								<span class="note">* 若不支付，本单将于{{date('Y-m-d H:i:s', $detail['cancel_at'])}}自动取消！</span>
+								@break
+							@case(2)
+								<span class="btn btn-secondary-outline radius J_action" data-action="take_order">{{trans('common.take_order')}}</span>
+								@break
+							@case(3)
+								<span class="btn btn-secondary-outline radius J_action" data-action="serve_start">{{trans('common.serve_start')}}</span>
+								@break
+							@case(4)
+								<span class="btn btn-secondary-outline radius J_action" data-action="serve_finish">{{trans('common.serve_finish')}}</span>
+								@break
+							@case(8)
+								<span class="btn btn-success-outline radius J_action" data-action="agree_refund">{{trans('common.agree_refund')}}</span>
+								<span class="btn btn-warning-outline radius J_action" data-action="reject_refund">{{trans('common.reject_refund')}}</span>
+								@break
 						@endswitch
 					</p>
 					<p>
@@ -97,7 +97,8 @@
 					<p>
 						<span class="form_filed_row">{{trans('common.car_info')}}：</span>
 						<span>
-							{{$detail['plate_number']}} | {{$detail['brand']}} {{$detail['model']}} | {{$detail['color']}}
+							{{$detail['plate_number']}} | {{$detail['brand']}} {{$detail['model']}}
+							                            | {{$detail['color']}}
 						</span>
 					</p>
 					@if (in_array($detail['status'], [1,2]))
@@ -227,7 +228,7 @@
 			// 订单操作
 			$('.J_action').click(function () {
 				var action_text = $(this).text(),
-					action      = $(this).attr('data-action');
+				    action      = $(this).attr('data-action');
 				layer.confirm('<strong>确认'+action_text+'？', {
 					title : action_text,
 				}, function () {
