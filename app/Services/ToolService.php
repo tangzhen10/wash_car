@@ -158,6 +158,43 @@ class ToolService {
 	}
 	
 	/**
+	 * 推送待发邮件
+	 * @param string $to      邮件收件人
+	 * @param string $subject 邮件主题
+	 * @param string $content 邮件内容
+	 * @author 李小同
+	 * @date   2018-08-26 22:32:49
+	 * @return int 待发邮件总条数
+	 */
+	public function pushMailList($to, $subject, $content) {
+		
+		$data = compact('to', 'subject', 'content');
+		
+		$res = \Redis::lpush(config('cache.MAIL_LIST.TO_SEND'), json_encode($data));
+		
+		return $res;
+	}
+	
+	/**
+	 * 发送纯文本邮件
+	 * @param $to
+	 * @param $subject
+	 * @param $content
+	 * @author 李小同
+	 * @date   2018-08-26 11:11:47
+	 * @return mixed
+	 */
+	public function sendTextMail($to, $subject, $content) {
+		
+		$res = \Mail::raw($content, function ($message) use ($to, $subject) {
+			
+			$message->to($to)->subject($subject);
+		});
+		
+		return $res;
+	}
+	
+	/**
 	 * 验证手机号是否可用
 	 * @author 李小同
 	 * @date   2018-6-29 18:13:37

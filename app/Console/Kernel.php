@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel {
 	 */
 	protected $commands = [
 		\App\Console\Commands\CancelOrder::class, # 超时自动取消未支付的订单
+		\App\Console\Commands\SendMail::class, # 发送邮件
 	];
 	
 	/**
@@ -23,6 +24,8 @@ class Kernel extends ConsoleKernel {
 	protected function schedule(Schedule $schedule) {
 		
 		$schedule->command('CancelOrder')->everyFiveMinutes();
+		
+		$schedule->command('SendMail')->everyMinute();
 	}
 	
 	/**

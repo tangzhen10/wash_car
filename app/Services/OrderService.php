@@ -937,9 +937,18 @@ class OrderService extends BaseService {
 			\DB::commit();
 			
 			# 发送模板消息
-			$orderData['openid']  = $post['openid'];
-			$orderData['form_id'] = $post['form_id'];
-			$this->sendAddOrderMsg($orderData);
+			if (!empty($post['openid']) && !empty($post['form_id'])) {
+				$orderData['openid']  = $post['openid'];
+				$orderData['form_id'] = $post['form_id'];
+				$this->sendAddOrderMsg($orderData);
+			}
+			
+			# 给管理员发送邮件通知
+			$to        = \SettingService::getValue('manager_email');
+			$subject   = '新的洗车订单#'.$orderData['order_id'];
+			$orderLink = route('washOrderList').'?filter_order_id='.$orderData['order_id'];
+			$content   = '有新的洗车订单了，详情请点击以下链接：'.PHP_EOL.$orderLink;
+			\ToolService::pushMailList($to, $subject, $content);
 			
 			$logger->info('success', $orderData);
 			
