@@ -1501,7 +1501,25 @@ class OrderService extends BaseService {
 		];
 		\DB::table('wash_order')->insert($orderData);
 		
+		$this->checkWashCard($orderData['order_id']);
+		
 		return $orderData;
 	}
+	
+	public function checkWashCard($orderId, $washProductId) {
+		
+		$myCards = \CardService::getMyCards();
+		foreach ($myCards as $myCard) {
+			if ($myCard['wash_product_id'] != $washProductId) continue;
+			if (strtotime($myCard['expire_at']) <= time()) continue;
+			if ($myCard['left_times'] <= 0) continue;
+			
+			# todo lxt 添加使用月卡记录 修改订单支付状态
+			
+			break;
+		}
+	}
+	
+	
 	# endregion
 }

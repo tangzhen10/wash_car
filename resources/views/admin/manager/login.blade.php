@@ -24,7 +24,6 @@
 			padding: 20px;
 			border-radius: 5px;
 			box-shadow: 0 0 15px #3d7d9b;
-			background: rgba(83,170,210,0.1);
 		}
 		form {
 			background: #fdfdfd;

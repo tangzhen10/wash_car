@@ -42,15 +42,15 @@
 				}
 			}
 			
-			var expire_date = $('input[name="expire_date"]');
-			if (!expire_date.val().trim()) {
-				layer.tips('{{trans('validation.required', ['attr' => trans('common.expire_date')])}}', expire_date);
-				expire_date.focus();
+			var expire_days = $('input[name="expire_days"]');
+			if (!expire_days.val().trim()) {
+				layer.tips('{{trans('validation.required', ['attr' => trans('common.expire_days')])}}', expire_days);
+				expire_days.focus();
 				return false;
 			} else {
-				if (parseFloat(expire_date.val().trim()) <= 0 || parseFloat(expire_date.val().trim()) != parseInt(expire_date.val().trim())) {
-					layer.tips('{{trans('validation.must_be_positive_int', ['attr' => trans('common.expire_date')])}}', expire_date);
-					expire_date.focus();
+				if (parseFloat(expire_days.val().trim()) <= 0 || parseFloat(expire_days.val().trim()) != parseInt(expire_days.val().trim())) {
+					layer.tips('{{trans('validation.must_be_positive_int', ['attr' => trans('common.expire_days')])}}', expire_days);
+					expire_days.focus();
 					return false;
 				}
 			}

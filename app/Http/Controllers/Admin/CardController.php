@@ -79,9 +79,9 @@ class CardController extends BaseController {
 				'value'     => '0.00',
 			],
 			[
-				'name_text' => trans('common.expire_date'),
+				'name_text' => trans('common.expire_days'),
 				'type'      => 'number',
-				'name'      => 'expire_date',
+				'name'      => 'expire_days',
 				'value'     => '',
 			],
 			[

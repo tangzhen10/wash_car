@@ -300,7 +300,7 @@ $md5即是sign的参数值
 | L wash_product_id | int    | 是    | 适用的服务项目id  | 46      |
 | L price           | string | 是    | 卡券价格       | 120     |
 | L price_ori       | string | 是    | 卡券原价       | 160     |
-| L expire_date     | int    | 是    | 卡券有效期      | 30      |
+| L expire_days     | int    | 是    | 卡券有效期      | 30      |
 | L use_times       | int    | 是    | 可用次数       | 3       |
 | L hot_status      | string | 是    | 是否热销，1是 0否 | 1       |
 | L introduction    | string | 是    | 卡券介绍       | 见示例     |
@@ -321,7 +321,7 @@ $md5即是sign的参数值
                 "wash_product": "全外观清洗",
                 "price": "120.00",
                 "price_ori": "180.00",
-                "expire_date": 30,
+                "expire_days": 30,
                 "use_times": 3,
                 "hot_status": "1",
                 "introduction": "没用过，想体验？首选尝鲜套餐！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1个月内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",
@@ -335,7 +335,7 @@ $md5即是sign的参数值
                 "wash_product": "全外观清洗",
                 "price": "1000.00",
                 "price_ori": "1500.00",
-                "expire_date": 365,
+                "expire_days": 365,
                 "use_times": 40,
                 "hot_status": "1",
                 "introduction": "年卡，买的多，省的多！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1年内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",
@@ -368,7 +368,7 @@ $md5即是sign的参数值
 | wash_product_id | int    | 是    | 适用的服务项目id  | 46                               |
 | price           | string | 是    | 卡券价格       | 120                              |
 | price_ori       | string | 是    | 卡券原价       | 160                              |
-| expire_date     | int    | 是    | 卡券有效期      | 30                               |
+| expire_days     | int    | 是    | 卡券有效期      | 30                               |
 | use_times       | int    | 是    | 可用次数       | 3                                |
 | hot_status      | string | 是    | 是否热销，1是 0否 | 1                                |
 | introduction    | string | 是    | 卡券介绍       | 见示例                              |
@@ -390,7 +390,7 @@ $md5即是sign的参数值
                 "wash_product": "全外观清洗",
                 "price": "120.00",
                 "price_ori": "180.00",
-                "expire_date": 30,
+                "expire_days": 30,
                 "use_times": 3,
                 "hot_status": "1",
                 "introduction": "没用过，想体验？首选尝鲜套餐！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1个月内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",
@@ -406,7 +406,7 @@ $md5即是sign的参数值
                 "wash_product": "全外观清洗",
                 "price": "1000.00",
                 "price_ori": "1500.00",
-                "expire_date": 365,
+                "expire_days": 365,
                 "use_times": 40,
                 "hot_status": "1",
                 "introduction": "年卡，买的多，省的多！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1年内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",

@@ -18,7 +18,7 @@ return [
 	'description'              => '描述',
 	'email'                    => '邮箱',
 	'end_time'                 => '结束时间',
-	'expire_date'              => '生效时间',
+	'expire_days'              => '生效天数',
 	'gender'                   => '性别',
 	'home_page'                => '首页',
 	'hot'                      => '热门',

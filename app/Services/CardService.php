@@ -26,7 +26,7 @@ class CardService extends BaseService {
 			'name',
 			'price',
 			'price_ori',
-			'expire_date',
+			'expire_days',
 			'use_times',
 			'hot_status',
 			'create_at',
@@ -58,7 +58,7 @@ class CardService extends BaseService {
 			'name'         => '',
 			'price'        => '',
 			'price_ori'    => '',
-			'expire_date'  => '',
+			'expire_days'  => '',
 			'use_times'    => '',
 			'hot_status'   => '0',
 			'introduction' => '',
@@ -109,7 +109,7 @@ class CardService extends BaseService {
 			'b.name AS wash_product',
 			'a.price',
 			'a.price_ori',
-			'a.expire_date',
+			'a.expire_days',
 			'a.use_times',
 			'a.hot_status',
 			'a.introduction',
@@ -156,7 +156,7 @@ class CardService extends BaseService {
 			
 			# 有效期
 			$effectFrom = date('Y-m-d 00:00:00', $item['effect_from']);
-			$expire     = $cardList[$item['card_id']]['expire_date'] * 86400 - 1;
+			$expire     = $cardList[$item['card_id']]['expire_days'] * 86400 - 1;
 			$expireAt   = strtotime($effectFrom) + $expire;
 			
 			$cardList[$item['card_id']]['expire_at']  = date('Y-m-d H:i:s', $expireAt);
