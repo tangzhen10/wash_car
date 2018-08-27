@@ -350,7 +350,7 @@ $md5即是sign的参数值
 
 | URL                      | HTTP请求方式 | 是否需要登陆 |
 | ------------------------ | -------- | ------ |
-| {domain}/api/user/wallet | POST     | 是      |
+| {domain}/api/user/myCard | POST     | 是      |
 
 > 请求参数
 

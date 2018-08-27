@@ -178,6 +178,7 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
+		Maatwebsite\Excel\ExcelServiceProvider::class, # excel composer安装 2018-08-27 14:52:30
 		
 		# 自定义服务
 		App\Providers\UserServiceProvider::class,           # 用户 李小同 2018-6-28 14:26:45
@@ -240,6 +241,7 @@ return [
 		'URL'                => Illuminate\Support\Facades\URL::class,
 		'Validator'          => Illuminate\Support\Facades\Validator::class,
 		'View'               => Illuminate\Support\Facades\View::class,
+		'Excel'              => Maatwebsite\Excel\Facades\Excel::class,
 		
 		# 自定义服务
 		'UserService'        => App\Facades\UserServiceFacade::class,           # 用户 李小同 2018-6-28 14:28:08

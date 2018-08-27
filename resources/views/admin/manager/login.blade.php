@@ -9,7 +9,7 @@
 			height: 100%;
 			z-index: -10;
 			zoom: 1;
-			background: #fff url("{{URL::asset('src/image/admin_login_bg.jpg')}}") no-repeat center 0;
+			background: #53aad2 url("{{URL::asset('H-ui.admin.page/static/h-ui.admin/images/admin-login-bg.jpg')}}") no-repeat center 0;
 			background-size: cover;
 			-webkit-background-size: cover;
 			-o-background-size: cover;
@@ -23,7 +23,8 @@
 			margin: 200px auto;
 			padding: 20px;
 			border-radius: 5px;
-			box-shadow: 0 0 15px #333;
+			box-shadow: 0 0 15px #3d7d9b;
+			background: rgba(83,170,210,0.1);
 		}
 		form {
 			background: #fdfdfd;
