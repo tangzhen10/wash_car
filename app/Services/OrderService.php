@@ -650,20 +650,35 @@ class OrderService extends BaseService {
 		$paymentLogs = $this->_getPaymentLogs($orderId);
 		foreach ($paymentLogs as $paymentLog) {
 			
-			if ($paymentLog['payment_method'] == 'balance') {
-				$data = [
-					'order_id'       => $orderId,
-					'payment_method' => 'balance',
-					'amount'         => $paymentLog['amount'],
-					'user_id'        => $paymentLog['create_by'],
-					'operate_type'   => $operateType,
-				];
-				$this->_balanceRefund($data);
-				
-			} elseif ($paymentLog['payment_method'] == 'wechat') {
-				
-				$this->_wechatRefund($orderId);
+			switch ($paymentLog['payment_method']) {
+				case 'balance':
+					$data = [
+						'order_id'       => $orderId,
+						'payment_method' => 'balance',
+						'amount'         => $paymentLog['amount'],
+						'user_id'        => $paymentLog['create_by'],
+						'operate_type'   => $operateType,
+					];
+					$this->_balanceRefund($data);
+					break;
+				case 'wechat':
+					$this->_wechatRefund($orderId);
+					break;
+				case 'card':
+					\CardService::rollbackCard($orderId);
+					break;
 			}
+			
+			$refundData = [
+				'order_id'       => $orderId,
+				'payment_method' => $paymentLog['payment_method'],
+				'amount'         => -$paymentLog['amount'],
+				'operate_type'   => $operateType,
+				'creator'        => $operateType == 'admin' ? $this->_getFormatManager() : $this->_getFormatUser(),
+				'create_by'      => $operateType == 'admin' ? \ManagerService::getManagerId() : $this->userId,
+				'create_at'      => time(),
+			];
+			\DB::table('payment_log')->insertGetId($refundData);
 		}
 		
 		return true;
@@ -682,7 +697,7 @@ class OrderService extends BaseService {
 		$fields = ['payment_method', 'amount', 'create_by'];
 		$logs   = \DB::table('payment_log')
 		             ->where('order_id', $orderId)
-		             ->where('amount', '>', 0)
+		             ->where('amount', '>=', 0)
 		             ->get($fields)
 		             ->toArray();
 		return $logs;
@@ -706,17 +721,6 @@ class OrderService extends BaseService {
 			'user_id'  => $data['user_id'],
 		];
 		$this->_addBalanceDetail($useBalanceData);
-		
-		$refundData = [
-			'order_id'       => $data['order_id'],
-			'payment_method' => $data['payment_method'],
-			'amount'         => -$data['amount'],
-			'operate_type'   => $data['operate_type'],
-			'creator'        => $data['operate_type'] == 'admin' ? $this->_getFormatManager() : $this->_getFormatUser(),
-			'create_by'      => $data['operate_type'] == 'admin' ? \ManagerService::getManagerId() : $this->userId,
-			'create_at'      => time(),
-		];
-		\DB::table('payment_log')->insertGetId($refundData);
 		
 		return true;
 	}
@@ -933,6 +937,9 @@ class OrderService extends BaseService {
 				'operator_type' => 'user',
 			];
 			$this->addOrderLog($logData);
+			
+			# 自动使用卡券
+			\CardService::useCard($orderData['order_id'], $post['wash_product_id']);
 			
 			\DB::commit();
 			
@@ -1227,8 +1234,9 @@ class OrderService extends BaseService {
 					'order_id'       => $orderId,
 					'payment_method' => 'balance',
 					'amount'         => $amount,
+					'operate_type'   => 'user',
 				];
-				$this->_addPaymentLog($paymentData);
+				$this->addPaymentLog($paymentData);
 			}
 			
 			# 修改订单状态
@@ -1262,6 +1270,28 @@ class OrderService extends BaseService {
 			\DB::rollback();
 			return false;
 		}
+	}
+	
+	/**
+	 * 添加支付记录
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-08-21 15:23:04
+	 */
+	public function addPaymentLog(array $data) {
+		
+		$paymentData = [
+			'order_id'       => $data['order_id'],
+			'payment_method' => $data['payment_method'],
+			'amount'         => $data['amount'],
+			'operate_type'   => $data['operate_type'],
+			'creator'        => $this->_getFormatUser(),
+			'create_by'      => $this->userId,
+			'create_at'      => time(),
+		];
+		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
+		
+		return $logId;
 	}
 	
 	/**
@@ -1391,27 +1421,6 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 添加支付记录
-	 * @param array $data
-	 * @author 李小同
-	 * @date   2018-08-21 15:23:04
-	 */
-	private function _addPaymentLog(array $data) {
-		
-		$paymentData = [
-			'order_id'       => $data['order_id'],
-			'payment_method' => $data['payment_method'],
-			'amount'         => $data['amount'],
-			'creator'        => $this->_getFormatUser(),
-			'create_by'      => $this->userId,
-			'create_at'      => time(),
-		];
-		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
-		
-		return $logId;
-	}
-	
-	/**
 	 * 获取格式化的用户信息
 	 * @author 李小同
 	 * @date   2018-8-8 16:30:45
@@ -1501,25 +1510,8 @@ class OrderService extends BaseService {
 		];
 		\DB::table('wash_order')->insert($orderData);
 		
-		$this->checkWashCard($orderData['order_id']);
-		
 		return $orderData;
 	}
-	
-	public function checkWashCard($orderId, $washProductId) {
-		
-		$myCards = \CardService::getMyCards();
-		foreach ($myCards as $myCard) {
-			if ($myCard['wash_product_id'] != $washProductId) continue;
-			if (strtotime($myCard['expire_at']) <= time()) continue;
-			if ($myCard['left_times'] <= 0) continue;
-			
-			# todo lxt 添加使用月卡记录 修改订单支付状态
-			
-			break;
-		}
-	}
-	
 	
 	# endregion
 }

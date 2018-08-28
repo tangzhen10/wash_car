@@ -354,9 +354,9 @@ $md5即是sign的参数值
 
 > 请求参数
 
-| 字段名  | 类型   | 是否必填 | 描述   | 示例值  |
-| ---- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |
+| 字段名 | 类型 | 是否必填 | 描述              | 示例值  |
+| ------ | ---- | -------- | ----------------- | ------- |
+| status | int  | 否       | 1生效 0过期 2全部 | 1\|0\|2 |
 
 > 响应参数
 
@@ -384,22 +384,6 @@ $md5即是sign的参数值
     "data": {
         "list": [
             {
-                "id": 1,
-                "name": "猫头鹰洗车月卡",
-                "wash_product_id": 46,
-                "wash_product": "全外观清洗",
-                "price": "120.00",
-                "price_ori": "180.00",
-                "expire_days": 30,
-                "use_times": 3,
-                "hot_status": "1",
-                "introduction": "没用过，想体验？首选尝鲜套餐！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1个月内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",
-                "background": "http://www.wash.com/src/upload/image/20180814/153423860876617.jpg",
-                "status": "1",
-                "expire_at": "2018-04-29 23:59:59",
-                "left_times": 3
-            },
-            {
                 "id": 2,
                 "name": "猫头鹰洗车年卡",
                 "wash_product_id": 46,
@@ -410,10 +394,28 @@ $md5即是sign的参数值
                 "use_times": 40,
                 "hot_status": "1",
                 "introduction": "年卡，买的多，省的多！\r\n套餐内容：全外观精洗\r\n使用时间：购买之日起1年内有效（节假日通用）\r\n使用方法：购买套餐之后，系统将在账号内自动放入洗车券，下单即可使用！",
-                "background": "http://www.wash.com/src/upload/image/20180814/153423862178080.jpg",
+                "background": "http://www.wash.com/src/upload/image/20180823/153500579911426.png",
                 "status": "1",
-                "expire_at": "2019-11-28 23:59:59",
+                "effect_from": "2018-11-29 09:22:25",
+                "expire_at": "2019-11-29 09:22:24",
                 "left_times": 40
+            },
+            {
+                "id": 4,
+                "name": "PS4会员专享卡",
+                "wash_product_id": 47,
+                "wash_product": "车窗打蜡",
+                "price": "400.00",
+                "price_ori": "440.00",
+                "expire_days": 5,
+                "use_times": 4,
+                "hot_status": "1",
+                "introduction": "索尼大法好！\r\n会员洗车不要钱，不要钱！！！",
+                "background": "http://www.wash.com/src/upload/image/20180823/153500581073254.png",
+                "status": "1",
+                "effect_from": "2018-11-29 09:22:25",
+                "expire_at": "2018-12-04 09:22:24",
+                "left_times": 4
             }
         ]
     }

@@ -146,7 +146,8 @@ class UserController extends BaseController {
 	 */
 	public function myCard() {
 		
-		$myCards = \CardService::getMyCards();
+		$status  = \Request::input('status', 2);
+		$myCards = \CardService::getMyCards($status);
 		
 		json_msg(['list' => $myCards]);
 	}

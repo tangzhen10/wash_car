@@ -134,11 +134,12 @@ class CardService extends BaseService {
 	
 	/**
 	 * 获取我的卡券
+	 * @param $status int 0失效 1生效 2全部
 	 * @author 李小同
 	 * @date   2018-08-19 20:25:34
 	 * @return array
 	 */
-	public function getMyCards() {
+	public function getMyCards($status = 2) {
 		
 		$fields      = ['card_id', 'effect_from', 'use_times'];
 		$myCards     = \DB::table('user_card')
@@ -155,15 +156,109 @@ class CardService extends BaseService {
 		foreach ($myCards as $item) {
 			
 			# 有效期
-			$effectFrom = date('Y-m-d 00:00:00', $item['effect_from']);
+			$effectFrom = date('Y-m-d H:i:s', $item['effect_from']);
 			$expire     = $cardList[$item['card_id']]['expire_days'] * 86400 - 1;
 			$expireAt   = strtotime($effectFrom) + $expire;
 			
-			$cardList[$item['card_id']]['expire_at']  = date('Y-m-d H:i:s', $expireAt);
-			$cardList[$item['card_id']]['left_times'] = $cardList[$item['card_id']]['use_times'] - $item['use_times'];
+			$cardList[$item['card_id']]['effect_from'] = $effectFrom;
+			$cardList[$item['card_id']]['expire_at']   = date('Y-m-d H:i:s', $expireAt);
+			$cardList[$item['card_id']]['left_times']  = $cardList[$item['card_id']]['use_times'] - $item['use_times'];
+			
+			if ($cardList[$item['card_id']]['left_times'] <= 0) unset($cardList[$item['card_id']]);
+			
+			if ($status == 1) {
+				if ($expireAt < time()) unset($cardList[$item['card_id']]);
+			} elseif ($status == 0) {
+				if ($expireAt >= time()) unset($cardList[$item['card_id']]);
+			}
 		}
+		$cardList = array_values($cardList);
 		
-		return array_values($cardList);
+		# 按过期时间顺序排序
+		array_multisort(array_column($cardList, 'expire_at'), SORT_ASC, $cardList);
+		
+		return $cardList;
+	}
+	
+	/**
+	 * 下单时检测可用卡券
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-08-28 21:02:58
+	 */
+	public function useCard($orderId) {
+		
+		$orderInfo = \DB::table('wash_order')->where('order_id', $orderId)->first(['wash_product_id', 'total']);
+		
+		$myCards = \CardService::getMyCards(1);
+		
+		foreach ($myCards as $myCard) {
+			
+			if ($myCard['wash_product_id'] != $orderInfo['wash_product_id']) continue;
+			
+			# 添加使用卡券记录
+			$now     = time();
+			$logData = [
+				'card_id'   => $myCard['id'],
+				'user_id'   => $this->userId,
+				'order_id'  => $orderId,
+				'create_at' => $now,
+			];
+			\DB::table('card_use_log')->insert($logData);
+			
+			# 更新用户卡券使用次数
+			\DB::table('user_card')
+			   ->where('card_id', $myCard['id'])
+			   ->where('user_id', $this->userId)
+			   ->increment('use_times');
+			
+			# 支付记录
+			$paymentData = [
+				'order_id'       => $orderId,
+				'amount'         => $orderInfo['total'],
+				'payment_method' => 'card',
+				'operate_type'   => 'user',
+			];
+			\OrderService::addPaymentLog($paymentData);
+			
+			$updateData = ['status' => 2, 'payment_status' => 1, 'payment_method' => 'card'];
+			\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);
+			
+			# 订单日志
+			$logData = [
+				'wash_order_id' => $orderId,
+				'action'        => 'pay_order',
+				'order_status'  => 2,
+				'operator_type' => 'user',
+			];
+			\OrderService::addOrderLog($logData);
+			
+			break;
+		}
+	}
+	
+	/**
+	 * 恢复卡券使用记录
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-08-28 21:37:59
+	 * @return bool
+	 */
+	public function rollbackCard($orderId) {
+		
+		$user   = \DB::table('wash_order')->where('order_id', $orderId)->first(['user_id']);
+		$userId = $user['user_id'];
+		
+		$usedCard   = \DB::table('card_use_log')->where('order_id', $orderId)->where('status', '1')->first(['card_id']);
+		$usedCardId = $usedCard['card_id'];
+		
+		# 撤销卡券使用效果
+		\DB::table('card_use_log')->where('order_id', $orderId)->update(['status' => '0', 'update_at' => time()]);
+		
+		# 恢复用户卡券使用次数
+		\DB::table('user_card')->where('card_id', $usedCardId)->where('user_id', $userId)->decrement('use_times');
+		
+		return true;
 	}
 	# endregion
 	

@@ -13,6 +13,7 @@
 			<th width="150">{{trans('common.name')}}</th>
 			<th width="40">{{trans('common.price')}}</th>
 			<th width="90">{{trans('common.expire_days')}}</th>
+			<th width="90">{{trans('common.use_times')}}</th>
 			<th width="150">{{trans('common.hot')}}</th>
 			<th width="150">{{trans('common.create_at')}}</th>
 			<th width="150">{{trans('common.status')}}</th>
@@ -26,6 +27,7 @@
 				<td>{{$row['name']}}</td>
 				<td>{{$row['price']}}</td>
 				<td>{{$row['expire_days']}}</td>
+				<td>{{$row['use_times']}}</td>
 				<td>{{$row['hot_status']}}</td>
 				<td>{{$row['create_at']}}</td>
 				<td class="td-status">
