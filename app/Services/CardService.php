@@ -219,7 +219,7 @@ class CardService extends BaseService {
 				'payment_method' => 'card',
 				'operate_type'   => 'user',
 			];
-			\OrderService::addPaymentLog($paymentData);
+			\PaymentService::addPaymentLog($paymentData);
 			
 			$updateData = ['status' => 2, 'payment_status' => 1, 'payment_method' => 'card'];
 			\DB::table('wash_order')->where('order_id', $orderId)->update($updateData);

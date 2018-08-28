@@ -187,12 +187,13 @@ return [
 		App\Providers\RoleServiceProvider::class,           # 角色 李小同 2018-7-3 15:14:54
 		App\Providers\PermissionServiceProvider::class,     # 权限 李小同 2018-7-4 11:23:07
 		App\Providers\WechatServiceProvider::class,         # 微信 李小同 2018-7-8 11:10:27
-		App\Providers\ContentTypeServiceProvider::class,    # 文档类型 李小同 2018-7-10 23:59:16
+		App\Providers\ContentTypeServiceProvider::class,    # 文章模板 李小同 2018-7-10 23:59:16
 		App\Providers\ArticleServiceProvider::class,        # 文章 李小同 2018-7-11 21:43:25
 		App\Providers\SettingServiceProvider::class,        # 设置 李小同 2018-7-22 13:02:40
 		App\Providers\CarServiceProvider::class,            # 车辆 李小同 2018-7-22 22:13:12
 		App\Providers\OrderServiceProvider::class,          # 订单 李小同 2018-7-30 20:34:27
 		App\Providers\CardServiceProvider::class,           # 卡券 李小同 2018-08-19 14:28:29
+		App\Providers\PaymentServiceProvider::class,        # 支付 李小同 2018-08-28 22:44:29
 	],
 	
 	/*
@@ -250,12 +251,13 @@ return [
 		'RoleService'        => App\Facades\RoleServiceFacade::class,           # 角色 李小同 2018-7-3 15:14:34
 		'PermissionService'  => App\Facades\PermissionServiceFacade::class,     # 权限 李小同 2018-7-4 11:23:21
 		'WechatService'      => App\Facades\WechatServiceFacade::class,         # 微信 李小同 2018-7-8 11:10:14
-		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class,    # 文档类型 李小同 2018-7-10 23:58:55
+		'ContentTypeService' => App\Facades\ContentTypeServiceFacade::class,    # 文章模板 李小同 2018-7-10 23:58:55
 		'ArticleService'     => App\Facades\ArticleServiceFacade::class,        # 文章 李小同 2018-7-11 21:43:49
 		'SettingService'     => App\Facades\SettingServiceFacade::class,        # 设置 李小同 2018-7-22 13:02:23
 		'CarService'         => App\Facades\CarServiceFacade::class,            # 车辆 李小同 2018-7-22 22:13:40
 		'OrderService'       => App\Facades\OrderServiceFacade::class,          # 订单 李小同 2018-7-30 20:33:55
 		'CardService'        => App\Facades\CardServiceFacade::class,           # 卡券 李小同 2018-08-19 14:28:04
+		'PaymentService'     => App\Facades\PaymentServiceFacade::class,        # 支付 李小同 2018-08-28 22:43:57
 	],
 
 ];

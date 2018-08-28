@@ -235,6 +235,7 @@ class OrderService extends BaseService {
 					'status'         => 2,
 					'operator_type'  => 'manager',
 					'payment_status' => '1',
+					'payment_method' => 'offline',
 				];
 				$this->_updateOrder($updateData);
 				
@@ -346,7 +347,7 @@ class OrderService extends BaseService {
 					'type'          => $post['type'],
 					'images'        => $value,
 					'create_at'     => time(),
-					'create_by'     => $this->_getFormatManager(),
+					'create_by'     => $this->getFormatManager(),
 				];
 				$id        = \DB::table('wash_image')->insertGetId($imageData);
 				return $id;
@@ -357,6 +358,17 @@ class OrderService extends BaseService {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * 获取格式化的管理员名称
+	 * @author 李小同
+	 * @date   2018-8-5 14:08:29
+	 * @return string
+	 */
+	public function getFormatManager() {
+		
+		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
 	}
 	
 	/**
@@ -401,17 +413,6 @@ class OrderService extends BaseService {
 		          ->where('order_id', $orderId)
 		          ->update(['washer_id' => \ManagerService::getManagerId()]);
 		return $res;
-	}
-	
-	/**
-	 * 获取格式化的管理员名称
-	 * @author 李小同
-	 * @date   2018-8-5 14:08:29
-	 * @return string
-	 */
-	private function _getFormatManager() {
-		
-		return '【'.trans('common.manager').'】'.\ManagerService::getManagerName();
 	}
 	# endregion
 	
@@ -647,7 +648,7 @@ class OrderService extends BaseService {
 	 */
 	public function refundOrder($orderId, $operateType) {
 		
-		$paymentLogs = $this->_getPaymentLogs($orderId);
+		$paymentLogs = \PaymentService::getPaymentLogs($orderId);
 		foreach ($paymentLogs as $paymentLog) {
 			
 			switch ($paymentLog['payment_method']) {
@@ -659,10 +660,10 @@ class OrderService extends BaseService {
 						'user_id'        => $paymentLog['create_by'],
 						'operate_type'   => $operateType,
 					];
-					$this->_balanceRefund($data);
+					\PaymentService::balanceRefund($data);
 					break;
 				case 'wechat':
-					$this->_wechatRefund($orderId);
+					\PaymentService::wechatRefund($orderId);
 					break;
 				case 'card':
 					\CardService::rollbackCard($orderId);
@@ -674,67 +675,12 @@ class OrderService extends BaseService {
 				'payment_method' => $paymentLog['payment_method'],
 				'amount'         => -$paymentLog['amount'],
 				'operate_type'   => $operateType,
-				'creator'        => $operateType == 'admin' ? $this->_getFormatManager() : $this->_getFormatUser(),
+				'creator'        => $operateType == 'admin' ? $this->getFormatManager() : $this->getFormatUser(),
 				'create_by'      => $operateType == 'admin' ? \ManagerService::getManagerId() : $this->userId,
 				'create_at'      => time(),
 			];
 			\DB::table('payment_log')->insertGetId($refundData);
 		}
-		
-		return true;
-	}
-	
-	/**
-	 * 获取支付记录
-	 * @param $orderId
-	 * @author 李小同
-	 * @date   2018-08-25 11:06:45
-	 * @return array
-	 */
-	private function _getPaymentLogs($orderId) {
-		
-		# amount大于0为支付，小于0为退款
-		$fields = ['payment_method', 'amount', 'create_by'];
-		$logs   = \DB::table('payment_log')
-		             ->where('order_id', $orderId)
-		             ->where('amount', '>=', 0)
-		             ->get($fields)
-		             ->toArray();
-		return $logs;
-	}
-	
-	/**
-	 * 余额退款
-	 * @param array $data
-	 * @author 李小同
-	 * @date   2018-08-25 11:25:37
-	 * @return bool
-	 */
-	private function _balanceRefund(array $data) {
-		
-		# 余额使用记录
-		$useBalanceData = [
-			'amount'   => floatval($data['amount']),
-			'type'     => 'refund_order',
-			'order_id' => $data['order_id'],
-			'comment'  => '【订单退款】'.$data['order_id'],
-			'user_id'  => $data['user_id'],
-		];
-		$this->_addBalanceDetail($useBalanceData);
-		
-		return true;
-	}
-	
-	/**
-	 * 微信退款
-	 * @param array $data
-	 * @author 李小同
-	 * @date   2018-08-25 11:28:46
-	 * @return bool
-	 */
-	private function _wechatRefund(array $data) {
-		
-		# todo lxt 微信退款
 		
 		return true;
 	}
@@ -1079,11 +1025,11 @@ class OrderService extends BaseService {
 		switch ($logData['operator_type']) {
 			case 'manager':
 				$logData['operator_id'] = \ManagerService::getManagerId();
-				$logData['operator']    = $this->_getFormatManager();
+				$logData['operator']    = $this->getFormatManager();
 				break;
 			case 'user':
 				$logData['operator_id'] = $this->userId;
-				$logData['operator']    = $this->_getFormatUser();
+				$logData['operator']    = $this->getFormatUser();
 				break;
 			case 'system':
 				$logData['operator_id'] = 0;
@@ -1227,7 +1173,7 @@ class OrderService extends BaseService {
 					'comment'  => '【支付订单】'.$orderId,
 					'user_id'  => $this->userId,
 				];
-				$this->_addBalanceDetail($useBalanceData);
+				\PaymentService::addBalanceDetail($useBalanceData);
 				
 				# 支付记录
 				$paymentData = [
@@ -1236,7 +1182,7 @@ class OrderService extends BaseService {
 					'amount'         => $amount,
 					'operate_type'   => 'user',
 				];
-				$this->addPaymentLog($paymentData);
+				\PaymentService::addPaymentLog($paymentData);
 			}
 			
 			# 修改订单状态
@@ -1246,7 +1192,7 @@ class OrderService extends BaseService {
 				'status'         => 2,
 				'operator_type'  => 'user',
 				'payment_status' => '1',
-				'payment_method' => implode(',', $paymentMethod),
+				'payment_method' => $post['payment_method'],
 			];
 			$this->_updateOrder($updateData);
 			
@@ -1273,25 +1219,14 @@ class OrderService extends BaseService {
 	}
 	
 	/**
-	 * 添加支付记录
-	 * @param array $data
+	 * 获取格式化的用户信息
 	 * @author 李小同
-	 * @date   2018-08-21 15:23:04
+	 * @date   2018-8-8 16:30:45
+	 * @return string
 	 */
-	public function addPaymentLog(array $data) {
+	public function getFormatUser() {
 		
-		$paymentData = [
-			'order_id'       => $data['order_id'],
-			'payment_method' => $data['payment_method'],
-			'amount'         => $data['amount'],
-			'operate_type'   => $data['operate_type'],
-			'creator'        => $this->_getFormatUser(),
-			'create_by'      => $this->userId,
-			'create_at'      => time(),
-		];
-		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
-		
-		return $logId;
+		return '【'.trans('common.user').'】'.\UserService::getUserInfo('phone');
 	}
 	
 	/**
@@ -1396,39 +1331,6 @@ class OrderService extends BaseService {
 		} else {
 			json_msg(trans('error.illegal_action'), 40003);
 		}
-	}
-	
-	/**
-	 * 添加余额流水
-	 * @param array $data
-	 * @author 李小同
-	 * @date   2018-08-21 15:26:38
-	 */
-	private function _addBalanceDetail(array $data) {
-		
-		$useBalanceData = [
-			'user_id'   => $data['user_id'],
-			'amount'    => $data['amount'],
-			'type'      => $data['type'],
-			'order_id'  => $data['order_id'],
-			'comment'   => $data['comment'],
-			'create_at' => time(),
-			'create_ip' => getClientIp(true),
-		];
-		$detailId       = \DB::table('balance_detail')->insertGetId($useBalanceData);
-		
-		return $detailId;
-	}
-	
-	/**
-	 * 获取格式化的用户信息
-	 * @author 李小同
-	 * @date   2018-8-8 16:30:45
-	 * @return string
-	 */
-	private function _getFormatUser() {
-		
-		return '【'.trans('common.user').'】'.\UserService::getUserInfo('phone');
 	}
 	
 	/**
