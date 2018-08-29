@@ -35,10 +35,12 @@ class SendMail extends Command {
 		
 		$mailToSendKey  = config('cache.MAIL_LIST.TO_SEND');
 		$mailHasSentKey = config('cache.MAIL_LIST.HAS_SENT');
-		$mail           = \Redis::rpoplpush($mailToSendKey, $mailHasSentKey);
-		$mail           = json_decode($mail, 1);
-		if (preg_match(config('project.PATTERN.EMAIL'), $mail['to'])) {
-			\ToolService::sendTextMail($mail['to'], $mail['subject'], $mail['content']);
+		while ($mail = \Redis::rpoplpush($mailToSendKey, $mailHasSentKey)) {
+			
+			$mail = json_decode($mail, 1);
+			if (preg_match(config('project.PATTERN.EMAIL'), $mail['to'])) {
+				\ToolService::sendTextMail($mail, true);
+			}
 		}
 	}
 }

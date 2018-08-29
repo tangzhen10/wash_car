@@ -177,18 +177,20 @@ class ToolService {
 	
 	/**
 	 * 发送纯文本邮件
-	 * @param $to
-	 * @param $subject
-	 * @param $content
+	 * @param array       $mail to subject content
+	 * @param bool|string $html
 	 * @author 李小同
 	 * @date   2018-08-26 11:11:47
 	 * @return mixed
 	 */
-	public function sendTextMail($to, $subject, $content) {
+	public function sendTextMail(array $mail, $html = false) {
 		
-		$res = \Mail::raw($content, function ($message) use ($to, $subject) {
+		$res = \Mail::send('emails.text', [
+			'content' => $mail['content'],
+			'html'    => $html,
+		], function ($message) use ($mail) {
 			
-			$message->to($to)->subject($subject);
+			$message->to($mail['to'])->subject($mail['subject']);
 		});
 		
 		return $res;
