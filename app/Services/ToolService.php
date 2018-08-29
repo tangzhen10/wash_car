@@ -185,7 +185,7 @@ class ToolService {
 	 */
 	public function sendTextMail(array $mail, $html = false) {
 		
-		$res = \Mail::send('emails.text', [
+		\Mail::send('emails.text', [
 			'content' => $mail['content'],
 			'html'    => $html,
 		], function ($message) use ($mail) {
@@ -193,7 +193,7 @@ class ToolService {
 			$message->to($mail['to'])->subject($mail['subject']);
 		});
 		
-		return $res;
+		return true;
 	}
 	
 	/**
