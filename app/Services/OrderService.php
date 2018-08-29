@@ -517,7 +517,7 @@ class OrderService extends BaseService {
 		if ($order['status'] == 1) {
 			
 			# 未付款，1小时倒计时
-			$cancelAt = $order['create_at'] + 3600;
+			$cancelAt = $order['create_at'] + config('project.ORDER_WAIT_PAY');
 			if ($cancelAt <= time()) {
 				if ($this->_cancelWashOrder($order, true)) {
 					return $this->getWashOrder($orderId);
@@ -544,7 +544,7 @@ class OrderService extends BaseService {
 			case 1:
 				
 				# 未付款，1小时倒计时
-				$cancelAt              = $detail['create_at'] + 3600;
+				$cancelAt              = $detail['create_at'] + config('project.ORDER_WAIT_PAY');
 				$detail['cancel_at']   = $cancelAt;
 				$detail['cancel_left'] = $cancelAt - time();
 				$detail['button']      = [
@@ -886,7 +886,7 @@ class OrderService extends BaseService {
 			$this->addOrderLog($logData);
 			
 			# 自动使用卡券
-			$useCard = \CardService::useCard($orderData['order_id'], $post['wash_product_id']);
+			$useCard = \CardService::useCard($orderData['order_id']);
 			
 			\DB::commit();
 			

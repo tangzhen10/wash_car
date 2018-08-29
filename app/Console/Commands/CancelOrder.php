@@ -39,7 +39,7 @@ class CancelOrder extends Command {
 		$orderIds = \DB::table('wash_order')
 		               ->where('status', '1')
 		               ->where('payment_status', '0')
-		               ->where('create_at', '<', time() - 3600)
+		               ->where('create_at', '<', time() - config('project.ORDER_WAIT_PAY'))
 		               ->pluck('order_id')
 		               ->toArray();
 		$logger = new Logger('cancel_order');

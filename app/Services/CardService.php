@@ -166,8 +166,8 @@ class CardService extends BaseService {
 			
 			# 1是有效，2是未生效，3是已使用，4是过期
 			$effectStatus = 1;
-			if ($cardList[$item['card_id']]['effect_from'] < time()) $effectStatus = 2;
-			if ($expireAt > time()) $effectStatus = 4; # 过期 优先级高于 未生效
+			if ($cardList[$item['card_id']]['effect_from'] > time()) $effectStatus = 2;
+			if ($expireAt < time()) $effectStatus = 4; # 过期 优先级高于 未生效
 			if ($cardList[$item['card_id']]['left_times'] <= 0) $effectStatus = 3; # 已使用 优先级高于 过期
 			$cardList[$item['card_id']]['effect_status'] = $effectStatus;
 			
@@ -196,7 +196,7 @@ class CardService extends BaseService {
 		
 		$orderInfo = \DB::table('wash_order')->where('order_id', $orderId)->first(['wash_product_id', 'total']);
 		
-		$myCards = \CardService::getMyCards(1);
+		$myCards = $this->getMyCards(1);
 		
 		foreach ($myCards as $myCard) {
 			
