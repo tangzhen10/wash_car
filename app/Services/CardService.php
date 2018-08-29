@@ -179,8 +179,8 @@ class CardService extends BaseService {
 		}
 		$cardList = array_values($cardList);
 		
-		# 按过期时间顺序排序
-		if (!empty($cardList)) array_multisort(array_column($cardList, 'expire_at'), SORT_ASC, $cardList);
+		# 按过期时间倒序排序
+		if (!empty($cardList)) array_multisort(array_column($cardList, 'expire_at'), SORT_DESC, $cardList);
 		
 		return $cardList;
 	}
@@ -197,6 +197,9 @@ class CardService extends BaseService {
 		$orderInfo = \DB::table('wash_order')->where('order_id', $orderId)->first(['wash_product_id', 'total']);
 		
 		$myCards = $this->getMyCards(1);
+		
+		# 优先使用最先要过期的卡券
+		if (!empty($myCards)) array_multisort(array_column($myCards, 'expire_at'), SORT_ASC, $myCards);
 		
 		foreach ($myCards as $myCard) {
 			
