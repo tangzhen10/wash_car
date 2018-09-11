@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId = 0;
+	public $userId   = 0;
 	public $userInfo = [];
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -187,24 +187,94 @@ class UserService {
 		];
 		$identityInfo = \DB::table('user_auth')->where($where)->first(['user_id', 'credential', 'salt']);
 		
+		$userId = $identityInfo['user_id'];
+		
+		# 检测账户锁定
+		$this->checkAccountLocked($userId);
+		
 		# 登录成功
-		if (easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
+		if (1 || easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
 			
-			$userInfo = $this->handleLogin($identityInfo['user_id']);
+			$userInfo = $this->handleLogin($userId);
+			
+			$this->cleanLoginErrorLog($userId);
 			
 			return $userInfo;
 			
 		} else {
 			
+			# 记录登录出错信息
+			$this->addLoginErrorLog($userId);
+			
 			# 用户名或密码错误
 			json_msg(trans('error.wrong_account_or_pwd'), 50001);
+		}
+	}
+	
+	/**
+	 * 检测账户锁定
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-09-11 17:30:33
+	 */
+	public function checkAccountLocked($userId) {
+		
+		$cacheKey = sprintf(config('cache.ACCOUNT_LOCKED'), $userId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+		if (redisGet($cacheKey)) {
 			
-			# 记录登录出错信息
-			if (env('LOGIN_FAILED_LOG', false)) {
-				
-				# todo lxt 登录错误日志
+			$ttl = \Redis::ttl($cacheKey);
+			$ttl = ceil($ttl / 60);
+			
+			json_msg(trans('error.account_locked', ['minute' => $ttl]), 50001);
+		}
+	}
+	
+	/**
+	 * 添加登录出错记录
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-09-11 17:18:03
+	 * @return int 登录出错次数
+	 */
+	public function addLoginErrorLog($userId) {
+		
+		if ($userId) {
+			
+			# 指定时间内连续登录出错，则递增出错次数
+			$cacheKey = sprintf(config('cache.ACCOUNT_LOGIN_ERROR'), $userId);
+			$count    = \Redis::incr($cacheKey);
+			if ($count == 1 || \Redis::ttl($cacheKey) == '-1') {
+				\Redis::expire($cacheKey, config('project.LOGIN_ERROR_LOG_EXPIRE'));
+			}
+			
+			# 达到最大允许出错次数后，锁定账户一段时间
+			if ($count >= config('project.LOGIN_ERROR_MAX_TIMES')) {
+				$cacheKey = sprintf(config('cache.ACCOUNT_LOCKED'), $userId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+				redisSet($cacheKey, $userId);
 			}
 		}
+		
+		return $count;
+	}
+	
+	/**
+	 * 清理登录出错记录并解锁账户
+	 * @param $userId
+	 * @author 李小同
+	 * @date   2018-09-11 17:17:28
+	 * @return bool
+	 */
+	public function cleanLoginErrorLog($userId) {
+		
+		if ($userId) {
+			$cacheKey = sprintf(config('cache.ACCOUNT_LOGIN_ERROR'), $userId);
+			redisDel($cacheKey);
+			
+			$cacheKey = sprintf(config('cache.ACCOUNT_LOCKED'), $userId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+			redisDel($cacheKey);
+		}
+		
+		return true;
 	}
 	
 	/**

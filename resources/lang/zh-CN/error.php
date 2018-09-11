@@ -21,6 +21,7 @@ return [
 	'allow_identity_type'      => '抱歉，目前仅支持:type！',
 	'can_not_create_member'    => '不允许创建用户！',
 	'wrong_verify_code'        => '验证码错误！',
+	'account_locked'           => '账户已锁定，请于:minute分钟后重试！',
 	
 	# 定制业务
 	'not_your_car'             => '抱歉，这不是您的车辆，您无法操作！',

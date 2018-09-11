@@ -34,5 +34,8 @@ return [
 			'ADD_ORDER' => 'wsVdSzOvJt2p2GwhLRwEVpMCepZq9k2Ng3HZ4paKFSo', # 下单成功
 		],
 	],
-	'ORDER_WAIT_PAY'             => 3600, # 订单自动取消的时间
+	'ORDER_WAIT_PAY'             => 3600, # 订单自动取消的时间，单位：秒
+	'LOGIN_ERROR_LOG_EXPIRE'     => 1800, # 登录出错记录保持时间，单位：秒
+	'ACCOUNT_LOCKED_TIME'        => 1800, # 账户锁定时间，单位：秒
+	'LOGIN_ERROR_MAX_TIMES'      => 5, # 允许登录出错最大次数，达到或超过将锁定账号
 ];

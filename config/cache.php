@@ -95,13 +95,15 @@ return [
 	
 	# redis key [86400 = 24h, 604800 = 1 week]
 	'USER_INFO'            => env('APP_NAME').':user_info:%s@604800', # 用户登录信息
+	'ACCOUNT_LOGIN_ERROR'  => env('APP_NAME').':account:login_error:%s', # 账户登录出错信息
+	'ACCOUNT_LOCKED'       => env('APP_NAME').':account:locked:%s', # 锁定账户
 	'WECHAT'               => [ # 公众号
-	                            'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
-	                            'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
+		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
+		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
 	],
 	'WECHAT_MP'            => [ # 小程序
-	                            'ACCESS_TOKEN' => env('APP_NAME').':wechat_mp:access_token@7200', # 微信登录用户的access_token
-	                            'SESSION_KEY'  => env('APP_NAME').':wechat_mp:session_key:%s@7200', # 小程序session_key
+		'ACCESS_TOKEN' => env('APP_NAME').':wechat_mp:access_token@7200', # 微信登录用户的access_token
+		'SESSION_KEY'  => env('APP_NAME').':wechat_mp:session_key:%s@7200', # 小程序session_key
 	],
 	'TABLE_COLUMN'         => env('APP_NAME').':table_column:%s@604800', # 表结构字段
 	'CONTENT_TYPE'         => env('APP_NAME').':content_type:%s@604800', # 文档类型结构

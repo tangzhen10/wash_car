@@ -148,7 +148,7 @@ class WechatService {
 	 */
 	public function getMpOpenId($code = '') {
 		
-		$url     = 'https://api.weixin.qq.com/sns/jscode2session?appid='.env('APPID').'&secret='.env('APPSECRET').'&js_code='.$code.'&grant_type=authorization_code';
+		$url     = 'https://api.weixin.qq.com/sns/jscode2session?appid='.env('MP_APPID').'&secret='.env('MP_APPSECRET').'&js_code='.$code.'&grant_type=authorization_code';
 		$resJson = file_get_contents($url);
 		$res     = json_decode($resJson, 1);
 		if (empty($res['openid'])) return [];
@@ -173,7 +173,7 @@ class WechatService {
 		$res = redisGet($key);
 		if (empty($res)) {
 			
-			$url     = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('APPID').'&secret='.env('APPSECRET');
+			$url     = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('MP_APPID').'&secret='.env('MP_APPSECRET');
 			$resJson = file_get_contents($url);
 			$res     = json_decode($resJson, 1);
 			if (empty($res['access_token'])) return '';

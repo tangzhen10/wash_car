@@ -25,7 +25,7 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		# 注册
 		Route::post('register', ['uses' => 'UserController@register', 'as' => 'apiRegister']);
 		# 登录
-		Route::post('loginOri', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
+		Route::post('login', ['uses' => 'UserController@login', 'as' => 'apiLogin']);
 		# 登出
 		Route::post('logout', ['uses' => 'UserController@logout', 'as' => 'apiLogout']);
 		# 修改密码
