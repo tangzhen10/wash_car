@@ -1007,9 +1007,9 @@ class OrderService extends BaseService {
 		shuffle($orderIdList);
 		
 		$cacheKey = sprintf(config('cache.ORDER.TODAY_ORDER_ID_LIST'), date('ymd'));
-		foreach ($orderIdList as $item) {
-			\Redis::lpush($cacheKey, $item);
-		}
+		\Redis::lpush($cacheKey, ...$orderIdList);
+		
+		\Redis::expire($cacheKey, 24 * 3600);
 		
 		return true;
 	}
