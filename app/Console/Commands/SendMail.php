@@ -40,7 +40,7 @@ class SendMail extends Command {
 			$mail = json_decode($mail, 1);
 			if (preg_match(config('project.PATTERN.EMAIL'), $mail['to'])) {
 				if (\ToolService::sendTextMail($mail, true)) {
-					\Redis::lpush($mailHasSentKey, $mail);
+					\Redis::lpush($mailHasSentKey, json_encode($mail));
 				} else {
 					\Redis::lpush($mailHasSentKey.'error', $mail);
 				}

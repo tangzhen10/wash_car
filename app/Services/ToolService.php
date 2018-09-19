@@ -190,7 +190,7 @@ class ToolService {
 			'html'    => $html,
 		], function ($message) use ($mail) {
 			
-			$message->to($mail['to'])->subject($mail['subject']);
+			$message->to($mail['to'])->subject($mail['subject'].' - '.time());
 		});
 		
 		return true;
