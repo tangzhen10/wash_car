@@ -159,20 +159,29 @@ class ToolService {
 	
 	/**
 	 * 推送待发邮件
-	 * @param string $to      邮件收件人
-	 * @param string $subject 邮件主题
-	 * @param string $content 邮件内容
+	 * @param string $to       邮件收件人
+	 * @param string $subject  邮件主题
+	 * @param string $content  邮件内容
+	 * @param int    $priority 优先级 越大越高
 	 * @author 李小同
 	 * @date   2018-08-26 22:32:49
 	 * @return int 待发邮件总条数
 	 */
-	public function pushMailList($to, $subject, $content) {
+	public function pushMailList($to, $subject, $content, $priority = 1) {
 		
-		$data = compact('to', 'subject', 'content');
+		$id = \DB::table('mail')->insertGetId([
+			'priority'  => $priority,
+			'to'        => $to,
+			'subject'   => $subject,
+			'content'   => $content,
+			'create_at' => time(),
+		]);
+		return $id;
 		
-		$res = \Redis::lpush(config('cache.MAIL_LIST.TO_SEND'), json_encode($data));
-		
-		return $res;
+		# 以下为完全使用redis储存邮件队列
+		//$data = compact('to', 'subject', 'content');
+		//$res  = \Redis::lpush(config('cache.MAIL_LIST.TO_SEND'), json_encode($data));
+		//return $res;
 	}
 	
 	/**
@@ -196,6 +205,8 @@ class ToolService {
 		], function ($message) use ($mail) {
 			
 			$message->to($mail['to'])->subject($mail['subject']);
+			if (!empty($mail['cc'])) $message->cc($mail['cc']);
+			if (!empty($mail['attach'])) $message->attach($mail['attach']);
 		});
 		
 		return true;

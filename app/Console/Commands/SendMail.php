@@ -33,6 +33,50 @@ class SendMail extends Command {
 	 */
 	public function handle() {
 		
+		$fields = ['id', 'to', 'subject', 'content', 'cc', 'attach', 'times'];
+		$emails = \DB::table('mail')
+		             ->where('status', '0')
+		             ->where('times', '<', config('project.MAIL_RETRY_TIMES'))
+		             ->orderBy('priority', 'DESC')
+		             ->get($fields)
+		             ->toArray();
+		
+		foreach ($emails as $mail) {
+			
+			$to = explode(',', $mail['to']);
+			foreach ($to as $key => $value) {
+				if (!preg_match(config('project.PATTERN.EMAIL'), $value)) unset($to[$key]);
+			}
+			
+			if (count($to)) {
+				$mail['to'] = $to;
+				try {
+					
+					if (\ToolService::sendTextMail($mail, true)) $updateData = ['status' => '1'];
+					
+				} catch (\Exception $e) {
+					
+					$error      = [
+						'msg'  => $e->getMessage(),
+						'file' => $e->getFile(),
+						'line' => $e->getLine(),
+					];
+					$updateData = ['error' => json_encode($error)];
+				}
+				$updateData['update_at'] = time();
+				$updateData['times']     = ++$mail['times'];
+				\DB::table('mail')->where('id', $mail['id'])->update($updateData);
+			}
+		}
+	}
+	
+	/**
+	 * 完全使用redis储存邮件队列
+	 * @author 李小同
+	 * @date   2018-09-21 18:00:37
+	 */
+	public function handleBak() {
+		
 		$mailToSendKey  = config('cache.MAIL_LIST.TO_SEND');
 		$mailHasSentKey = config('cache.MAIL_LIST.HAS_SENT');
 		while ($mail = \Redis::rpop($mailToSendKey)) {

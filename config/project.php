@@ -38,4 +38,5 @@ return [
 	'LOGIN_ERROR_LOG_EXPIRE'     => 1800, # 登录出错记录保持时间，单位：秒
 	'ACCOUNT_LOCKED_TIME'        => 1800, # 账户锁定时间，单位：秒
 	'LOGIN_ERROR_MAX_TIMES'      => 5, # 允许登录出错最大次数，达到或超过将锁定账号
+	'MAIL_RETRY_TIMES'           => 3, # 邮件发送失败最大重试次数
 ];
