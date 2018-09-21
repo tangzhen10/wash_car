@@ -890,19 +890,21 @@ class OrderService extends BaseService {
 			
 			\DB::commit();
 			
-			# 发送模板消息
+			$washProduct = \DB::table('article')->where('id', $orderData['wash_product_id'])->first(['name']);
+			$plate       = \DB::table('car')->where('id', $orderData['car_id'])->first(['plate_number']);
+			
+			$orderData['wash_product'] = $washProduct['name'];
+			$orderData['plate_number'] = $plate['plate_number'];
+			
+			# 发送小程序模板消息
 			if (!empty($post['openid']) && !empty($post['form_id'])) {
 				$orderData['openid']  = $post['openid'];
 				$orderData['form_id'] = $post['form_id'];
-				$this->sendAddOrderMsg($orderData);
+				$this->newOrderMPMsg($orderData);
 			}
 			
 			# 给管理员发送邮件通知
-			$to        = \SettingService::getValue('manager_email');
-			$subject   = '新的洗车订单#'.$orderData['order_id'];
-			$orderLink = route('washOrderList').'?filter_order_id='.$orderData['order_id'];
-			$content   = '有新的洗车订单了，详情请点击以下链接：'.PHP_EOL.$orderLink;
-			\ToolService::pushMailList($to, $subject, $content);
+			$this->newOrderMail($orderData);
 			
 			$logger->info('success', $orderData);
 			
@@ -929,10 +931,7 @@ class OrderService extends BaseService {
 	 * @date   2018-08-25 21:23:28
 	 * @return mixed
 	 */
-	public function sendAddOrderMsg(array $orderData) {
-		
-		$washProduct = \DB::table('article')->where('id', $orderData['wash_product_id'])->first(['name']);
-		$plate       = \DB::table('car')->where('id', $orderData['car_id'])->first(['plate_number']);
+	public function newOrderMPMsg(array $orderData) {
 		
 		$tplData = [
 			'template_id' => config('project.WECHAT_MP.TPL_ID.ADD_ORDER'),
@@ -940,9 +939,9 @@ class OrderService extends BaseService {
 			'form_id'     => $orderData['form_id'],
 			'data'        => [
 				'keyword1' => ['value' => $orderData['order_id']],
-				'keyword2' => ['value' => $washProduct['name']],
+				'keyword2' => ['value' => $orderData['wash_product']],
 				'keyword3' => ['value' => $orderData['wash_time']],
-				'keyword4' => ['value' => $plate['plate_number']],
+				'keyword4' => ['value' => $orderData['plate_number']],
 				'keyword5' => ['value' => currencyFormat($orderData['total'])],
 				'keyword6' => ['value' => $orderData['address']],
 				'keyword7' => ['value' => date('Y-m-d H:i:s', $orderData['create_at'])],
@@ -950,6 +949,41 @@ class OrderService extends BaseService {
 		];
 		
 		$res = \WechatService::sendTplMsg($tplData);
+		
+		return $res;
+	}
+	
+	/**
+	 * 下单后给后台管理员发送邮件提醒
+	 * @param array $orderData
+	 * @author 李小同
+	 * @date   2018-09-21 14:03:37
+	 */
+	public function newOrderMail(array $orderData) {
+		
+		$to        = \SettingService::getValue('manager_email');
+		$subject   = '新的洗车订单#'.$orderData['order_id'];
+		$orderLink = route('washOrderList').'?filter_order_id='.$orderData['order_id'];
+		$content   = '<style>
+							table {background: #eee;border-collapse: collapse;width: 800px;}
+							td {background:#fff;border:#ccc solid 1px;text-align: center;padding: 5px;}
+							caption {font-weight: bold;padding: 10px;}
+						</style>
+						<table>
+							<caption>有新的洗车订单 - <a href="'.$orderLink.'" target="_blank">'.$orderData['order_id'].'</a></caption>
+							<tbody>
+								<tr><td><strong>'.trans('common.order_id').'</strong></td><td>'.$orderData['order_id'].'</td></tr>
+								<tr><td><strong>'.trans('common.wash_product').'</strong></td><td>'.$orderData['wash_product'].'</td></tr>
+								<tr><td><strong>'.trans('common.wash_time').'</strong></td><td>'.$orderData['wash_time'].'</td></tr>
+								<tr><td><strong>'.trans('common.plate_number').'</strong></td><td>'.$orderData['plate_number'].'</td></tr>
+								<tr><td><strong>'.trans('common.serve_address').'</strong></td><td>'.$orderData['address'].'</td></tr>
+								<tr><td><strong>'.trans('common.order_amount').'</strong></td><td>'.currencyFormat($orderData['total']).'</td></tr>
+								<tr><td><strong>'.trans('common.contact_user').'</strong></td><td>'.$orderData['contact_user'].'</td></tr>
+								<tr><td><strong>'.trans('common.contact_phone').'</strong></td><td>'.$orderData['contact_phone'].'</td></tr>
+								<tr><td><strong>'.trans('common.create_at').'</strong></td><td>'.date('Y-m-d H:i:s', $orderData['create_at']).'</td></tr>
+							</tbody>
+						</table>';
+		$res       = \ToolService::pushMailList($to, $subject, $content);
 		
 		return $res;
 	}

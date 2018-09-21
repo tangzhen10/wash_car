@@ -39,10 +39,18 @@ class SendMail extends Command {
 			
 			$mail = json_decode($mail, 1);
 			if (preg_match(config('project.PATTERN.EMAIL'), $mail['to'])) {
-				if (\ToolService::sendTextMail($mail, true)) {
-					\Redis::lpush($mailHasSentKey, json_encode($mail));
-				} else {
-					\Redis::lpush($mailHasSentKey.'error', $mail);
+				
+				try {
+					if (\ToolService::sendTextMail($mail, true)) {
+						\Redis::lpush($mailHasSentKey, json_encode($mail));
+					}
+				} catch (\Exception $e) {
+					
+					//\Redis::lpush($mailToSendKey, json_encode($mail));
+					$mail['error_msg']  = $e->getMessage();
+					$mail['error_file'] = $e->getFile();
+					$mail['error_line'] = $e->getLine();
+					\Redis::lpush($mailHasSentKey.' - error', json_encode($mail));
 				}
 			}
 		}

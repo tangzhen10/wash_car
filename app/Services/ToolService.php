@@ -185,12 +185,17 @@ class ToolService {
 	 */
 	public function sendTextMail(array $mail, $html = false) {
 		
+		if ($html) {
+			$mail['content'] .= '<br/><p>From: '.env('APP_URL').'</p>';
+		} else {
+			$mail['content'] .= PHP_EOL.PHP_EOL.'From: '.env('APP_URL');
+		}
 		\Mail::send('emails.text', [
 			'content' => $mail['content'],
 			'html'    => $html,
 		], function ($message) use ($mail) {
 			
-			$message->to($mail['to'])->subject($mail['subject'].' - '.time());
+			$message->to($mail['to'])->subject($mail['subject']);
 		});
 		
 		return true;
