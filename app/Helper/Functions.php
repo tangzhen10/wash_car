@@ -182,7 +182,8 @@ function redisSet($key, $data, $database = 'default') {
 function redisGet($key, $database = 'default') {
 	
 	$res = \Redis::connection($database)->get($key);
-	if ($res) {
+	
+	if ($res !== null) {
 		return json_decode($res, 1);
 	} else {
 		return false;

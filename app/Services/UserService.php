@@ -298,7 +298,7 @@ class UserService {
 		
 		$userInfo          = $this->getUserInfoFromDB($userId);
 		$userInfo['token'] = create_token();
-		$userInfo += $extraData;
+		$userInfo += $extraData; # 用于如微信自动登录等功能的附加信息
 		
 		# 服务器端保存登录信息
 		$cacheKey = sprintf(config('cache.USER_INFO'), $userInfo['token']);
