@@ -7,6 +7,26 @@ use App\Http\Controllers\Controller;
 
 class UserController extends Controller {
 	
+	/**
+	 * 注册
+	 * @author 李小同
+	 * @date   2018-09-28 14:09:44
+	 */
+	public function register() {
+		
+		return view('web/user/register');
+	}
+	
+	/**
+	 * 登录
+	 * @author 李小同
+	 * @date   2018-09-28 14:42:07
+	 */
+	public function login() {
+		
+		return view('web/user/login');
+	}
+	
 	# 个人中心
 	public function info() {
 		
@@ -47,7 +67,7 @@ class UserController extends Controller {
 					$userInfo = \UserService::handleLogin($userId, ['wechat' => $res]);
 					
 					setcookie('token', $userInfo['token'], time() + 7000, '/');
-					setcookie('refresh_token', $res['refresh_token'], time() + 29*24*3600, '/');
+					setcookie('refresh_token', $res['refresh_token'], time() + 29 * 24 * 3600, '/');
 					
 					$userInfo = \UserService::getUserInfoFromDB($userId);
 				} else {

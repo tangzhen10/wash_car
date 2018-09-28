@@ -193,7 +193,7 @@ class UserService {
 		$this->checkAccountLocked($userId);
 		
 		# 登录成功
-		if (1 || easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
+		if (easy_encrypt($password, $identityInfo['salt']) == $identityInfo['credential']) {
 			
 			$userInfo = $this->handleLogin($userId);
 			

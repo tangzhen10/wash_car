@@ -690,6 +690,7 @@ class OrderService extends BaseService {
 	# region 前台
 	/**
 	 * 订单列表
+	 * 根据页码，取得从第一页到指定页码的所有数据
 	 * @param int $page
 	 * @author 李小同
 	 * @date   2018-8-3 18:01:24
@@ -767,6 +768,7 @@ class OrderService extends BaseService {
 	
 	/**
 	 * 订单列表
+	 * 返回第 $page 页的 $perPage 条数据
 	 * @param int $page
 	 * @author 李小同
 	 * @date   2018-8-3 18:01:24

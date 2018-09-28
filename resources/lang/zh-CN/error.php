@@ -22,6 +22,7 @@ return [
 	'can_not_create_member'    => '不允许创建用户！',
 	'wrong_verify_code'        => '验证码错误！',
 	'account_locked'           => '账户已锁定，请于:minute分钟后重试！',
+	'wrong_file_type'          => '文件格式不正确！',
 	
 	# 定制业务
 	'not_your_car'             => '抱歉，这不是您的车辆，您无法操作！',

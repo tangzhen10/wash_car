@@ -224,14 +224,15 @@ function is_wechat() {
 
 /**
  * 时间戳转时间
- * @param int $timestamp
+ * @param int    $timestamp 时间戳
+ * @param string $format    时间格式
  * @author 李小同
  * @date   2018-7-13 22:31:22
  * @return string
  */
-function intToTime($timestamp = 0) {
+function intToTime($timestamp = 0, $format = 'Y-m-d H:i:s') {
 	
-	return $timestamp > 0 ? date('Y-m-d H:i:s', $timestamp) : '';
+	return $timestamp > 0 ? date($format, $timestamp) : '';
 }
 
 /**
@@ -260,7 +261,7 @@ function create_thumb($srcPath, $flag = true) {
 			$type = 'png';
 			break;
 		default:
-			json_msg('文件格式不正确', 40003);
+			json_msg(trans('error.wrong_file_type'), 40003);
 			return false;
 	}
 	

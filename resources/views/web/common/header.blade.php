@@ -9,7 +9,6 @@
 	<meta content="telephone=no" name="format-detection">
 	<meta content="email=no" name="format-detection">
 	<title>{{empty($pageTitle) ? env('PROJECT_NAME') : $pageTitle}}</title>
-	<link rel="stylesheet" type="text/css" href="{{URL::asset('css/web.css')}}" />
 	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/jquery/1.9.1/jquery.min.js')}}"></script>
 </head>
 
