@@ -886,7 +886,7 @@ class OrderService extends BaseService {
 			$this->addOrderLog($logData);
 			
 			# 自动使用卡券
-			\CardService::useCard($orderData['order_id'], $post['wash_product_id']);
+			$useCard = \CardService::useCard($orderData['order_id'], $post['wash_product_id']);
 			
 			\DB::commit();
 			
@@ -906,7 +906,7 @@ class OrderService extends BaseService {
 			
 			$logger->info('success', $orderData);
 			
-			return $orderData['order_id'];
+			return ['order_id' => $orderData['order_id'], 'payment_status' => $useCard ? '1' : '0'];
 			
 		} catch (\Exception $e) {
 			

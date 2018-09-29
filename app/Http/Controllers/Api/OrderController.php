@@ -63,15 +63,14 @@ class OrderController extends BaseController {
 	 */
 	public function placeOrder() {
 		
-		$orderId = \OrderService::createOrder();
+		$orderData = \OrderService::createOrder();
 		
-		if ($orderId) {
-			$result = [
-				'order_id'    => $orderId,
-				'success_msg' => trans('common.place_order_success'),
-			];
-			json_msg($result);
+		if (!empty($orderData['order_id'])) {
+			
+			json_msg($orderData);
+			
 		} else {
+			
 			json_msg(trans('common.place_order_failed'), 40004);
 		}
 	}

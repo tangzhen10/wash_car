@@ -164,12 +164,17 @@ class CardService extends BaseService {
 			$cardList[$item['card_id']]['expire_at']   = date('Y-m-d H:i:s', $expireAt);
 			$cardList[$item['card_id']]['left_times']  = $cardList[$item['card_id']]['use_times'] - $item['use_times'];
 			
-			if ($cardList[$item['card_id']]['left_times'] <= 0) unset($cardList[$item['card_id']]);
+			# 1是有效，2是未生效，3是已使用，4是过期
+			$effectStatus = 1;
+			if ($cardList[$item['card_id']]['effect_from'] < time()) $effectStatus = 2;
+			if ($expireAt > time()) $effectStatus = 4; # 过期 优先级高于 未生效
+			if ($cardList[$item['card_id']]['left_times'] <= 0) $effectStatus = 3; # 已使用 优先级高于 过期
+			$cardList[$item['card_id']]['effect_status'] = $effectStatus;
 			
 			if ($status == 1) {
-				if ($expireAt < time()) unset($cardList[$item['card_id']]);
+				if ($effectStatus != 1) unset($cardList[$item['card_id']]);
 			} elseif ($status == 0) {
-				if ($expireAt >= time()) unset($cardList[$item['card_id']]);
+				if ($effectStatus == 1) unset($cardList[$item['card_id']]);
 			}
 		}
 		$cardList = array_values($cardList);
@@ -185,6 +190,7 @@ class CardService extends BaseService {
 	 * @param $orderId
 	 * @author 李小同
 	 * @date   2018-08-28 21:02:58
+	 * @return bool true：使用卡券成功 false：无卡券使用
 	 */
 	public function useCard($orderId) {
 		
@@ -232,8 +238,10 @@ class CardService extends BaseService {
 			];
 			\OrderService::addOrderLog($logData);
 			
-			break;
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/**
