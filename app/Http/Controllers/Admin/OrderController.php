@@ -97,6 +97,7 @@ class OrderController extends BaseController {
 			
 			# 当前可用清洗时间
 			$this->data['wash_time_list'] = array_column($this->service->getWashTimeList(), 'value');
+			$this->data['payment_method'] = \PaymentService::getMethodName($detail['payment_method']);
 			
 			return view('admin/order/form', $this->data);
 		}

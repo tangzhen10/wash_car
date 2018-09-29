@@ -42,6 +42,7 @@ return [
 		'wechat'  => '微信支付',
 	],
 	'payment_status'           => '支付状态',
+	'payment_method'           => '支付方式',
 	'per_page'                 => '每页条数',
 	'permission'               => '权限',
 	'phone'                    => '手机号码',

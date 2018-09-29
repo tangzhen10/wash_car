@@ -44,9 +44,9 @@ class PaymentService {
 			'order_id'       => $data['order_id'],
 			'payment_method' => $data['payment_method'],
 			'amount'         => $data['amount'],
-			'operate_type'   => $data['operate_type'],
+			'operate_type'   => 'user',
 			'creator'        => \OrderService::getFormatUser(),
-			'create_by'      => $this->userId,
+			'create_by'      => \UserService::getUserId(),
 			'create_at'      => time(),
 		];
 		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
@@ -107,5 +107,35 @@ class PaymentService {
 		# todo lxt 微信退款
 		
 		return true;
+	}
+	
+	/**
+	 * 获取支付方式名称
+	 * @param $method
+	 * @author 李小同
+	 * @date   2018-09-29 14:50:16
+	 * @return string
+	 */
+	public function getMethodName($method) {
+		
+		switch ($method) {
+			case 'balance':
+				$name = '余额支付';
+				break;
+			case 'balance,wechat':
+			case 'wechat,balance':
+				$name = '余额支付 + 微信支付';
+				break;
+			case 'wechat':
+				$name = '微信支付';
+				break;
+			case 'card':
+				$name = '卡券自动支付';
+				break;
+			default:
+				$name = '线下支付';
+		}
+		
+		return $name;
 	}
 }

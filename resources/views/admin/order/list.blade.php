@@ -89,7 +89,7 @@
 				<td class="status_{{$row['status']}}">{{$row['status_text']}}</td>
 				<td class="td-manage" style="width: 50px;">
 					<a title="{{trans('common.edit')}}" href="javascript:;" class="ml-5"
-					   onclick="layer_show_check_mobile($(this).attr('title'),'{{route('washOrderForm', $row['order_id'])}}','','600')">
+					   onclick="layer_show_check_mobile($(this).attr('title'),'{{route('washOrderForm', $row['order_id'])}}','','630')">
 						<i class="Hui-iconfont">&#xe6df;</i>
 					</a>
 				</td>

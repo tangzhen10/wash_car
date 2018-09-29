@@ -488,6 +488,7 @@ class OrderService extends BaseService {
 			'a.address',
 			'a.wash_time',
 			'a.payment_status',
+			'a.payment_method',
 			'a.total',
 			'a.status',
 			'a.create_at',
@@ -1180,7 +1181,6 @@ class OrderService extends BaseService {
 					'order_id'       => $orderId,
 					'payment_method' => 'balance',
 					'amount'         => $amount,
-					'operate_type'   => 'user',
 				];
 				\PaymentService::addPaymentLog($paymentData);
 			}

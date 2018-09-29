@@ -141,17 +141,17 @@ class CardService extends BaseService {
 	 */
 	public function getMyCards($status = 2) {
 		
-		$fields      = ['card_id', 'effect_from', 'use_times'];
-		$myCards     = \DB::table('user_card')
-		                  ->where('user_id', $this->userId)
-		                  ->where('status', '1')
-		                  ->get($fields)
-		                  ->toArray();
+		$fields  = ['card_id', 'effect_from', 'use_times'];
+		$myCards = \DB::table('user_card')
+		              ->where('user_id', $this->userId)
+		              ->where('status', '1')
+		              ->get($fields)
+		              ->toArray();
+		if (empty($myCards)) return [];
+		
 		$cardListArr = $this->getEnableCardList(array_column($myCards, 'card_id'));
 		$cardList    = [];
-		foreach ($cardListArr as $item) {
-			$cardList[$item['id']] = $item;
-		}
+		foreach ($cardListArr as $item) $cardList[$item['id']] = $item;
 		
 		foreach ($myCards as $item) {
 			
@@ -175,7 +175,7 @@ class CardService extends BaseService {
 		$cardList = array_values($cardList);
 		
 		# 按过期时间顺序排序
-		array_multisort(array_column($cardList, 'expire_at'), SORT_ASC, $cardList);
+		if (!empty($cardList)) array_multisort(array_column($cardList, 'expire_at'), SORT_ASC, $cardList);
 		
 		return $cardList;
 	}
@@ -215,9 +215,8 @@ class CardService extends BaseService {
 			# 支付记录
 			$paymentData = [
 				'order_id'       => $orderId,
-				'amount'         => $orderInfo['total'],
 				'payment_method' => 'card',
-				'operate_type'   => 'user',
+				'amount'         => $orderInfo['total'],
 			];
 			\PaymentService::addPaymentLog($paymentData);
 			
