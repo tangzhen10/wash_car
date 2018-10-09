@@ -296,6 +296,14 @@ class UserService {
 		$where         = ['user_id' => $userId];
 		\DB::table('user')->where($where)->update($lastLoginInfo);
 		
+		# 添加登录日志 李小同 2018-10-09 15:44:36
+		$loginLog = [
+			'user_id'  => $userId,
+			'login_at' => $lastLoginInfo['last_login_at'],
+			'login_ip' => $lastLoginInfo['last_login_ip'],
+		];
+		\DB::table('login_log')->insert($loginLog);
+		
 		$userInfo          = $this->getUserInfoFromDB($userId);
 		$userInfo['token'] = create_token();
 		$userInfo += $extraData; # 用于如微信自动登录等功能的附加信息
