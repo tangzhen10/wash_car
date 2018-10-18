@@ -241,7 +241,7 @@ class UserService {
 		if ($userId) {
 			
 			# 指定时间内连续登录出错，则递增出错次数
-			$cacheKey = sprintf(config('cache.ACCOUNT_LOGIN_ERROR'), $userId);
+			$cacheKey = sprintf(config('cache.LOGIN_ERROR_COUNT'), $userId);
 			$count    = \Redis::incr($cacheKey);
 			if ($count == 1 || \Redis::ttl($cacheKey) == '-1') {
 				\Redis::expire($cacheKey, config('project.LOGIN_ERROR_LOG_EXPIRE'));
@@ -267,7 +267,7 @@ class UserService {
 	public function cleanLoginErrorLog($userId) {
 		
 		if ($userId) {
-			$cacheKey = sprintf(config('cache.ACCOUNT_LOGIN_ERROR'), $userId);
+			$cacheKey = sprintf(config('cache.LOGIN_ERROR_COUNT'), $userId);
 			redisDel($cacheKey);
 			
 			$cacheKey = sprintf(config('cache.ACCOUNT_LOCKED'), $userId).'@'.config('project.ACCOUNT_LOCKED_TIME');

@@ -87,45 +87,47 @@ return [
 	
 	'prefix' => env('CACHE_PREFIX', str_slug(env('APP_NAME', 'laravel'), '_').'_cache'),
 	
-	'DEFAULT_CACHE_EXPIRE' => 1800, # 默认缓存时间
+	'DEFAULT_CACHE_EXPIRE'    => 1800, # 默认缓存时间
 	
 	# admin redis key [86400 = 24h, 604800 = 1 week]
-	'ADMIN_LOG_INFO'       => env('APP_NAME').':manager_info:%s@86400', # 管理员登录信息
-	'FORM_ELEMENT'         => env('APP_NAME').':form_element@604800', # 表单类型
+	'ADMIN_LOG_INFO'          => env('APP_NAME').':manager:manager_info:%s@86400', # 管理员登录信息
+	'ADMIN_LOGIN_ERROR_COUNT' => env('APP_NAME').':manager:login_error_count:%s', # 管理员账户登录出错次数
+	'ADMIN_ACCOUNT_LOCKED'    => env('APP_NAME').':manager:locked:%s', # 管理员锁定账户
+	'FORM_ELEMENT'            => env('APP_NAME').':form_element@604800', # 表单类型
 	
 	# redis key [86400 = 24h, 604800 = 1 week]
-	'USER_INFO'            => env('APP_NAME').':user_info:%s@604800', # 用户登录信息
-	'ACCOUNT_LOGIN_ERROR'  => env('APP_NAME').':account:login_error:%s', # 账户登录出错信息
-	'ACCOUNT_LOCKED'       => env('APP_NAME').':account:locked:%s', # 锁定账户
-	'WECHAT'               => [ # 公众号
+	'USER_INFO'               => env('APP_NAME').':user_info:%s@604800', # 用户登录信息
+	'LOGIN_ERROR_COUNT'       => env('APP_NAME').':account:login_error_count:%s', # 账户登录出错次数
+	'ACCOUNT_LOCKED'          => env('APP_NAME').':account:locked:%s', # 锁定账户
+	'WECHAT'                  => [ # 公众号
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat:access_token:%s@7200', # 微信登录用户的access_token
 		'USER_INFO'    => env('APP_NAME').':wechat:user_info:%s', # 微信用户信息
 	],
-	'WECHAT_MP'            => [ # 小程序
+	'WECHAT_MP'               => [ # 小程序
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat_mp:access_token@7200', # 微信登录用户的access_token
 		'SESSION_KEY'  => env('APP_NAME').':wechat_mp:session_key:%s@7200', # 小程序session_key
 	],
-	'TABLE_COLUMN'         => env('APP_NAME').':table_column:%s@604800', # 表结构字段
-	'CONTENT_TYPE'         => env('APP_NAME').':content_type:%s@604800', # 文档类型结构
-	'SETTING'              => env('APP_NAME').':setting:setting@604800', # 系统配置
-	'CAR'                  => [
+	'TABLE_COLUMN'            => env('APP_NAME').':table_column:%s@604800', # 表结构字段
+	'CONTENT_TYPE'            => env('APP_NAME').':content_type:%s@604800', # 文档类型结构
+	'SETTING'                 => env('APP_NAME').':setting:setting@604800', # 系统配置
+	'CAR'                     => [
 		'BRAND'    => env('APP_NAME').':car:brand@604800', # 品牌
 		'PROVINCE' => env('APP_NAME').':car:province@604800', # 车牌省份
 		'COLOR'    => env('APP_NAME').':car:color@604800', # 颜色
 	],
-	'VERIFY_CODE'          => [
+	'VERIFY_CODE'             => [
 		'REGISTER'       => env('APP_NAME').':verify_code:register:%s@300', # 注册验证码
 		'LOGIN'          => env('APP_NAME').':verify_code:login:%s@60', # 登录验证码
 		'LOGIN_BY_PHONE' => env('APP_NAME').':verify_code:login_by_phone:%s@300', # 手机登录验证码
 	],
-	'ARTICLE'              => [
+	'ARTICLE'                 => [
 		'DETAIL' => env('APP_NAME').':article:detail:%s@3600', # 文章详情
 	],
-	'ORDER'                => [
+	'ORDER'                   => [
 		'PRODUCT_SALE_COUNT'  => env('APP_NAME').':order:product_sale_count:%s', # 商品的销售次数
 		'TODAY_ORDER_ID_LIST' => env('APP_NAME').':order:order_id_list:%s', # 订单号列表
 	],
-	'MAIL_LIST'            => [
+	'MAIL_LIST'               => [
 		'TO_SEND'  => env('APP_NAME').':mail_list:to_send', # 待发邮件列表
 		'HAS_SENT' => env('APP_NAME').':mail_list:has_sent', # 已发邮件列表
 	],

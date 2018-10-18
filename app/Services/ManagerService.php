@@ -17,8 +17,8 @@ namespace App\Services;
 class ManagerService extends BaseService {
 	
 	public $managerId = 0;
-	public $manager = [];
-	public $module = 'manager';
+	public $manager   = [];
+	public $module    = 'manager';
 	
 	public function __construct() {
 		
@@ -61,9 +61,19 @@ class ManagerService extends BaseService {
 			
 			if ($manager['status'] == 0) json_msg(trans('error.forbidden_account'), 50001);
 			
+			# 检测账户锁定
+			$this->checkAccountLocked($manager['id']);
+			
 			if (easy_encrypt($password, $manager['salt']) == $manager['password']) {
+				
+				$this->cleanLoginErrorLog($manager['id']);
+				
 				return $manager['id'];
 			} else {
+				
+				# 记录登录出错信息
+				$this->addLoginErrorLog($manager['id']);
+				
 				json_msg(trans('error.wrong_pwd'), 50001);
 			}
 		} else {
@@ -101,6 +111,76 @@ class ManagerService extends BaseService {
 		$manager = \DB::table('manager')->where('id', $managerId)->first($fields);
 		
 		return $manager;
+	}
+	
+	/**
+	 * 检测账户锁定
+	 * @param $managerId
+	 * @author 李小同
+	 * @date   2018-10-18 13:16:30
+	 */
+	public function checkAccountLocked($managerId) {
+		
+		$cacheKey   = sprintf(config('cache.ADMIN_ACCOUNT_LOCKED'), $managerId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+		$adminRedis = \Redis::connection('admin');
+		
+		if ($adminRedis->get($cacheKey)) {
+			
+			$ttl = $adminRedis->ttl($cacheKey);
+			$ttl = ceil($ttl / 60);
+			
+			json_msg(trans('error.account_locked', ['minute' => $ttl]), 50001);
+		}
+	}
+	
+	/**
+	 * 增加登录出错次数
+	 * @param $managerId
+	 * @author 李小同
+	 * @date   2018-10-18 13:22:41
+	 * @return int
+	 */
+	public function addLoginErrorLog($managerId) {
+		
+		if ($managerId) {
+			
+			# 指定时间内连续登录出错，则递增出错次数
+			$cacheKey = sprintf(config('cache.ADMIN_LOGIN_ERROR_COUNT'), $managerId);
+			
+			$adminRedis = \Redis::connection('admin');
+			$count      = $adminRedis->incr($cacheKey);
+			if ($count == 1 || $adminRedis->ttl($cacheKey) == '-1') {
+				$adminRedis->expire($cacheKey, config('project.LOGIN_ERROR_LOG_EXPIRE'));
+			}
+			
+			# 达到最大允许出错次数后，锁定账户一段时间
+			if ($count >= config('project.LOGIN_ERROR_MAX_TIMES')) {
+				$cacheKey = sprintf(config('cache.ADMIN_ACCOUNT_LOCKED'), $managerId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+				redisSet($cacheKey, $managerId, 'admin');
+			}
+		}
+		
+		return $count;
+	}
+	
+	/**
+	 * 清理登录出错记录并解锁账户
+	 * @param $managerId
+	 * @author 李小同
+	 * @date   2018-10-18 13:23:26
+	 * @return bool
+	 */
+	public function cleanLoginErrorLog($managerId) {
+		
+		if ($managerId) {
+			$cacheKey = sprintf(config('cache.ADMIN_LOGIN_ERROR_COUNT'), $managerId);
+			redisDel($cacheKey, 'admin');
+			
+			$cacheKey = sprintf(config('cache.ADMIN_ACCOUNT_LOCKED'), $managerId).'@'.config('project.ACCOUNT_LOCKED_TIME');
+			redisDel($cacheKey, 'admin');
+		}
+		
+		return true;
 	}
 	
 	/**
