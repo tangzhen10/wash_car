@@ -3,13 +3,13 @@
 	<div class="cl pd-5 bg-1 bk-gray">
 		<span class="l">
 			<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteRole')}}')" class="btn btn-danger radius">
-				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除
+				<i class="Hui-iconfont">&#xe6e2;</i> {{trans('common.batch_delete')}}
 			</a>
 			<a class="btn btn-primary radius" href="javascript:;" onclick="layer_show('添加角色','{{route('roleForm')}}','800')">
 				<i class="Hui-iconfont">&#xe600;</i> 添加角色
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{count($roles)}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), count($roles))!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-hover table-bg mt-10">
 		<thead>

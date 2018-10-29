@@ -13,7 +13,7 @@
 				<i class="Hui-iconfont">&#xe600;</i> 添加车型
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), $total)!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort mt-10">
 		<thead>

@@ -2,13 +2,13 @@
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray">
 		<span class="l">
-			<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteArticle')}}')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a>
+			<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteArticle')}}')" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> {{trans('common.batch_delete')}}</a>
 			<a href="javascript:;" onclick="layer_show('添加产品','{{route('articleForm')}}?content_type={{$filter_content_type}}','1000','600')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加产品
 			</a>
 		</span>
 		</span>
-		<span class="r">共有数据：<strong>{{$total}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), $total)!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg">
 		<thead>

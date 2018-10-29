@@ -39,4 +39,5 @@ return [
 	'ACCOUNT_LOCKED_TIME'        => 1800, # 账户锁定时间，单位：秒
 	'LOGIN_ERROR_MAX_TIMES'      => 5, # 允许登录出错最大次数，达到或超过将锁定账号
 	'MAIL_RETRY_TIMES'           => 3, # 邮件发送失败最大重试次数
+	'AUTO_ADD_SUPER_MANAGER'     => true, # 超级管理员自动获得新增的权限
 ];

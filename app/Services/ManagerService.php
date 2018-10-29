@@ -39,6 +39,7 @@ class ManagerService extends BaseService {
 			'name'     => '',
 			'password' => '',
 			'role'     => [],
+			'phone'    => '',
 			'status'   => '1',
 		];
 		

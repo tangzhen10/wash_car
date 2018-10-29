@@ -37,6 +37,7 @@ return [
 	'order_status'             => '订单状态',
 	'other'                    => '其他',
 	'password'                 => '密码',
+	'repassword'               => '确认密码',
 	'payment'                  => [
 		'balance' => '余额支付',
 		'wechat'  => '微信支付',
@@ -91,6 +92,7 @@ return [
 	'back'                     => '后退',
 	'cancel'                   => '取消',
 	'delete'                   => '删除',
+	'batch_delete'             => '批量删除',
 	'disable'                  => '停用',
 	'edit'                     => '编辑',
 	'enable'                   => '启用',
@@ -121,6 +123,7 @@ return [
 	'no_more'                  => '没有更多了',
 	'not_exist_order'          => '不存在的订单',
 	'register_success'         => '注册成功！',
+	'total_count'              => '共有数据：<strong>%s</strong> 条',
 	
 	# 洗车
 	'brand'                    => '品牌',

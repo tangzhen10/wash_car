@@ -48,6 +48,8 @@ class BaseService {
 		
 		$id = \DB::table($this->module)->insertGetId($data);
 		
+		if (method_exists(static::class, 'handleAfterCreate')) static::handleAfterCreate($id);
+		
 		return $id;
 	}
 	

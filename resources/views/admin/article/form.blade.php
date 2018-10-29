@@ -64,7 +64,7 @@
 				<h3>特有属性</h3>
 				<div id="J_private_attr_area"></div>
 			</div>
-			<p class="text-c"><span class="btn btn-success radius J_submit">{{trans('common.save')}}</span></p>
+			<p class="text-c pt-10"><span class="btn btn-success radius J_submit">{{trans('common.save')}}</span></p>
 		</form>
 	</article>
 @endsection

@@ -16,15 +16,15 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">密码：</label>
+				<label class="form-label col-xs-4 col-sm-3">{{trans('common.password')}}：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="password" class="input-text" autocomplete="off" value="" placeholder="密码" name="password">
+					<input type="password" class="input-text" autocomplete="off" value="" placeholder="{{trans('common.password')}}" name="password">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3">确认密码：</label>
+				<label class="form-label col-xs-4 col-sm-3">{{trans('common.repassword')}}：</label>
 				<div class="formControls col-xs-8 col-sm-9">
-					<input type="password" class="input-text" autocomplete="off" placeholder="确认密码" name="password_repeat">
+					<input type="password" class="input-text" autocomplete="off" placeholder="{{trans('common.repassword')}}" name="password_repeat">
 				</div>
 			</div>
 			<div class="row cl">
@@ -80,7 +80,10 @@
 				$('input[name="phone"]').focus();
 				return false;
 			} else {
-				if (!{{config('project.PATTERN.PHONE')}}.test(phone)) {
+				if (!{{config('project.PATTERN.PHONE')}}.
+				test(phone)
+			)
+				{
 					var error = '{{trans('validation.invalid', ['attr' => trans('common.phone')])}}';
 					layer.tips(error, 'input[name="phone"]', {tips : 1});
 					$('input[name="phone"]').focus();

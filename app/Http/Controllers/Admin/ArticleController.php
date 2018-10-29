@@ -24,7 +24,7 @@ ArticleController extends BaseController {
 		$this->data['list']       = $list['list'];
 		$this->data['pagination'] = $list['listPage'];
 		$this->data['total']      = $list['total'];
-		$this->data['typeList']   = \ContentTypeService::getList();
+		$this->data['typeList']   = \ContentTypeService::getList(['status' => '1']);
 		$this->data += $filter;
 		
 		return view('admin/article/list', $this->data);

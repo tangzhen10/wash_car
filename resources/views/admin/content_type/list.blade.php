@@ -6,7 +6,7 @@
 				<i class="Hui-iconfont">&#xe600;</i> 添加模板
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{count($typeList)}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), count($typeList))!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg mt-10">
 		<thead>

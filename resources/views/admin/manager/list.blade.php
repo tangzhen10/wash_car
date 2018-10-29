@@ -9,13 +9,13 @@
 	<div class="cl pd-5 bg-1 bk-gray mt-10">
 		<span class="l">
 			<a href="javascript:;" onclick="batch_delete('{{route('batchDeleteManager')}}')" class="btn btn-danger radius">
-				<i class="Hui-iconfont">&#xe6e2;</i> 批量删除
+				<i class="Hui-iconfont">&#xe6e2;</i> {{trans('common.batch_delete')}}
 			</a>
 			<a href="javascript:;" onclick="layer_show('添加管理员','{{route('managerForm')}}','800','500')" class="btn btn-primary radius">
 				<i class="Hui-iconfont">&#xe600;</i> 添加管理员
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{count($managers)}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), count($managers))!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg mt-10">
 		<thead>

@@ -35,6 +35,13 @@ class SettingService extends BaseService {
 		
 		$list = \DB::table($this->module)->where('group', 'admin')->get()->toArray();
 		
+		$settingList = [];
+		$cacheKey    = config('cache.SETTING');
+		foreach ($list as $setting) {
+			$settingList[$setting['name']] = $setting['value'];
+		}
+		redisSet($cacheKey, $settingList);
+		
 		return $list;
 	}
 	

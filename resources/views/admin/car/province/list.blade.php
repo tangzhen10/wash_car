@@ -1,7 +1,7 @@
 @extends('admin.public_list')
 @section('body')
 	<div class="cl pd-5 bg-1 bk-gray">
-		<span class="r">共有数据：<strong>{{count($list)}}</strong> 条</span>
+		<span class="r">{!!sprintf(trans('common.total_count'), count($list))!!}</span>
 	</div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg table-sort mt-10">
 		<thead>

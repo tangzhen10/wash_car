@@ -6,7 +6,7 @@
 				<i class="Hui-iconfont">&#xe600;</i> 添加权限节点
 			</a>
 		</span>
-		<span class="r">共有数据：<strong>{{count($permissions)}}</strong> 条</span></div>
+		<span class="r">{!!sprintf(trans('common.total_count'), count($permissions))!!}</span></div>
 	<table class="table table-border table-bordered table-striped table-hover table-bg mt-10">
 		<thead>
 		<tr class="text-c">

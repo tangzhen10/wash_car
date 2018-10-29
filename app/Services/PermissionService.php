@@ -256,4 +256,19 @@ class PermissionService extends BaseService {
 			}
 		}
 	}
+	
+	/**
+	 * 创建条目后自动执行的事件
+	 * @param $id
+	 * @author 李小同
+	 * @date   2018-10-29 17:26:20
+	 */
+	public function handleAfterCreate($id) {
+		
+		if (config('project.AUTO_ADD_SUPER_MANAGER')) {
+			
+			$superManagerId = \SettingService::getValue('super_manager');
+			\DB::table('role_permission')->insert(['role_id' => $superManagerId, 'permission_id' => $id]);
+		}
+	}
 }
