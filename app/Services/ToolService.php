@@ -10,6 +10,7 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use Qcloud\Sms\SmsSingleSender;
 
 class ToolService {
 	
@@ -31,7 +32,15 @@ class ToolService {
 		
 		$code = $this->createVerifyCode($phoneInfo);
 		
-		# todo lxt sendCode
+		# sendCode
+		try {
+			$ssender = new SmsSingleSender(env('SMS_APPID'), env('SMS_APPKEY'));
+			$result  = $ssender->send(0, "86", $phoneInfo['phone'], '【猫头鹰洗车】您的验证码是: '.$code, '', '');
+			return json_decode($result, 1);
+		} catch (\Exception $e) {
+			echo var_dump($e);
+		}
+		
 		$res = $code;
 		
 		return $res;
