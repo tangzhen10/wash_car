@@ -13,10 +13,10 @@
 			<th width="40">ID</th>
 			<th width="200">权限名称</th>
 			<th>路由</th>
-			<th>排序</th>
-			<th>状态</th>
-			<th>显示</th>
-			<th width="100">操作</th>
+			<th>{{trans('common.sort')}}</th>
+			<th>{{trans('common.status')}}</th>
+			<th>{{trans('common.show')}}</th>
+			<th width="100">{{trans('common.action')}}</th>
 		</tr>
 		</thead>
 		<tbody>

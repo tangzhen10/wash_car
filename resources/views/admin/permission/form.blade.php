@@ -40,21 +40,21 @@
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>排序：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{{trans('common.sort')}}：</label>
 				<div class="formControls col-xs-8 col-sm-9">
 					<input type="number" class="input-text" value="{{$detail['sort']}}" id="sort" name="sort">
 				</div>
 			</div>
 			<div class="row cl">
-				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
+				<label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>{{trans('common.status')}}：</label>
 				<div class="formControls col-xs-8 col-sm-9 skin-minimal">
 					<div class="radio-box">
 						<input type="radio" id="status-1" value="1" name="status" @if ($detail['status'] == '1') checked @endif>
-						<label for="status-1">启用</label>
+						<label for="status-1">{{trans('common.enable')}}</label>
 					</div>
 					<div class="radio-box">
 						<input type="radio" id="status-0" value="0" name="status" @if ($detail['status'] == '0') checked @endif>
-						<label for="status-0">停用</label>
+						<label for="status-0">{{trans('common.disable')}}</label>
 					</div>
 				</div>
 			</div>

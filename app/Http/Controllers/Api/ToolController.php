@@ -25,7 +25,7 @@ class ToolController extends BaseController {
 		if ($res['result']) {
 			json_msg($res['errmsg'].$res['ext'], $res['result']);
 		} else {
-			json_msg($res);
+			json_msg($res['errmsg'].$res['ext']);
 		}
 	}
 	

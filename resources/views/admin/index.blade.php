@@ -50,7 +50,7 @@
 			<td>{{$server['SERVER_SOFTWARE']}}</td>
 		</tr>
 		<tr>
-			<td>本文件所在文件夹</td>
+			<td>本文件所在目录</td>
 			<td>{{$server['DOCUMENT_ROOT']}}</td>
 		</tr>
 		<tr>

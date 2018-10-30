@@ -33,17 +33,16 @@ class ToolService {
 		$code = $this->createVerifyCode($phoneInfo);
 		
 		# sendCode
+		# 指定模板ID单发短信
+		$templateId = $phoneInfo['templateId'];
 		try {
-			$ssender = new SmsSingleSender(env('SMS_APPID'), env('SMS_APPKEY'));
-			$result  = $ssender->send(0, "86", $phoneInfo['phone'], '【猫头鹰洗车】您的验证码是: '.$code, '', '');
+			$ssender = new SmsSingleSender(env('SMS_APP_ID'), env('SMS_APP_KEY'));
+			$params  = [$code, 5];
+			$result  = $ssender->sendWithParam("86", $phoneInfo['phone'], $templateId, $params);
 			return json_decode($result, 1);
 		} catch (\Exception $e) {
 			echo var_dump($e);
 		}
-		
-		$res = $code;
-		
-		return $res;
 	}
 	
 	/**
@@ -244,17 +243,20 @@ class ToolService {
 				# 验证手机号是否被注册
 				$res = \UserService::checkExistIdentity('phone', $phone);
 				if ($res) json_msg(trans('validation.has_been_registered', ['attr' => trans('common.phone')]), 40002);
+				$templateId = config('project.SMS_TPL.REGISTER');
 				break;
 			case 'login':
 				# 验证手机号是否已注册
 				$res = \UserService::checkExistIdentity('phone', $phone);
 				if (!$res) json_msg(trans('validation.not_registered', ['attr' => trans('common.phone')]), 50001);
+				$templateId = config('project.SMS_TPL.LOGIN');
 				break;
 			case 'login_by_phone':
 				# 手机号登录（未注册则自动注册）
+				$templateId = config('project.SMS_TPL.LOGIN_BY_PHONE');
 				break;
 		}
 		
-		return compact('phone', 'useType', 'codeLength');
+		return compact('phone', 'useType', 'codeLength', 'templateId');
 	}
 }
