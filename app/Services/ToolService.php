@@ -32,16 +32,15 @@ class ToolService {
 		
 		$code = $this->createVerifyCode($phoneInfo);
 		
-		# sendCode
 		# 指定模板ID单发短信
 		$templateId = $phoneInfo['templateId'];
 		try {
 			$ssender = new SmsSingleSender(env('SMS_APP_ID'), env('SMS_APP_KEY'));
-			$params  = [$code, 5];
+			$params  = [$code, $phoneInfo['ttl']];
 			$result  = $ssender->sendWithParam("86", $phoneInfo['phone'], $templateId, $params);
 			return json_decode($result, 1);
 		} catch (\Exception $e) {
-			echo var_dump($e);
+			json_msg($e->getMessage(), $e->getCode());
 		}
 	}
 	
@@ -140,6 +139,7 @@ class ToolService {
 		} else {
 			$amount = floatval($amount);
 		}
+		# todo lxt 充值前要确认支付成功 xiaotong.li 2018-10-31 10:31:39
 		$insertData = [
 			'user_id'   => $userId,
 			'amount'    => $amount,
@@ -257,6 +257,10 @@ class ToolService {
 				break;
 		}
 		
-		return compact('phone', 'useType', 'codeLength', 'templateId');
+		# 验证码生效时间的分钟数
+		$cacheInfo = config('cache.VERIFY_CODE.'.strtoupper($useType));
+		$ttl       = ceil(substr(strrchr($cacheInfo, '@'), 1) / 60);
+		
+		return compact('phone', 'useType', 'codeLength', 'templateId', 'ttl');
 	}
 }
