@@ -1175,6 +1175,9 @@ class OrderService extends BaseService {
 			}
 		}
 		
+		# 微信支付，拉起支付界面
+		\WechatService::unifiedOrder($post['openid'], $post['order_id']);
+		
 		\DB::beginTransaction();
 		try {
 			

@@ -148,7 +148,7 @@ class WechatService {
 	 */
 	public function getMpOpenId($code = '') {
 		
-		$url     = 'https://api.weixin.qq.com/sns/jscode2session?appid='.env('MP_APPID').'&secret='.env('MP_APPSECRET').'&js_code='.$code.'&grant_type=authorization_code';
+		$url     = 'https://api.weixin.qq.com/sns/jscode2session?appid='.env('MP_APP_ID').'&secret='.env('MP_APP_SECRET').'&js_code='.$code.'&grant_type=authorization_code';
 		$resJson = file_get_contents($url);
 		$res     = json_decode($resJson, 1);
 		if (empty($res['openid'])) return [];
@@ -212,5 +212,108 @@ class WechatService {
 	}
 
 # endregion
+	# region 微信支付
+	/**
+	 * 微信统一下单接口
+	 * @param $openid
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-11-04 21:44:35
+	 */
+	public function unifiedOrder($openid, $orderId) {
+		
+		$orderInfo = \OrderService::getWashOrder($orderId);
+		
+		$param           = [];
+		$param['appid']  = env('MP_APP_ID');
+		$param['attach'] = ''; # 非必填
+		$param['body']   = $orderInfo['wash_product'];
+		$param['mch_id'] = env('MCH_ID');
+		$param['detail'] = '{ "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"apple" }] }';
+		// $param['device_info']  = ''; # 非必填
+		$param['nonce_str']        = md5(uniqid());
+		$param['notify_url']       = 'https://www.yexingxia2018.com/';
+		$param['openid']           = $openid;
+		$param['out_trade_no']     = $orderId;
+		$param['spbill_create_ip'] = getClientIp();
+		$param['time_start']       = date('YmdHis', $orderInfo['create_at']); # 交易起始时间，非必填
+		$param['time_expire']      = date('YmdHis', $orderInfo['create_at'] + 3570); # 交易结束时间，非必填
+		$param['total_fee']        = $orderInfo['total'] * 100; # 订单总金额，单位为分
+		$param['trade_type']       = 'JSAPI';
+//		$param['sign_type']        = 'MD5';
+//		$param['fee_type']         = 'CNY'; # 默认CNY，非必填
+		$param['total_fee'] = '1';
+//		$param['goods_tag']        = ''; # 非必填
+//		$param['product_id'] = '';
+		
+		$sign = $this->getSign($param);
+		
+		$tplPost = <<<EOL
+<xml>
+   <appid>%s</appid>
+   <attach>%s</attach>
+   <body>%s</body>
+   <mch_id>%s</mch_id>
+   <detail>%s</detail>
+   <nonce_str>%s</nonce_str>
+   <notify_url>%s</notify_url>
+   <openid>%s</openid>
+   <out_trade_no>%s</out_trade_no>
+   <spbill_create_ip>%s</spbill_create_ip>
+   <time_start>%s</time_start>
+   <time_expire>%s</time_expire>
+   <total_fee>%s</total_fee>
+   <trade_type>%s</trade_type>
+   <sign>%s</sign>
+</xml>
+EOL;
+		$postStr = sprintf($tplPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
+		
+		$url  = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+		$xml  = request_post_file($url, $postStr);
+		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		
+		$resp['timestamp'] = strval(time());
+		
+		$data            = [
+			'appId'     => $resp['appid'],
+			'nonceStr'  => $resp['nonce_str'],
+			'package'   => 'prepay_id='.$resp['prepay_id'],
+			'signType'  => 'MD5',
+			'timeStamp' => $resp['timestamp'],
+		];
+		$resp['paySign'] = $this->getSign($data);
+		
+		json_msg($resp);
+	}
+	# endregion
 	
+	/**
+	 * 微信支付签名生成
+	 * @param $data
+	 * @author 李小同
+	 * @date   2018-11-04 22:03:17
+	 * @return string
+	 */
+	public function getSign($data) {
+		
+		//签名步骤一：按字典序排序参数
+		ksort($data);
+		
+		$string = '';
+		foreach ($data as $k => $v) {
+			if ($k != 'sign' && $v != '' && !is_array($v)) {
+				$string .= $k.'='.$v.'&';
+			}
+		}
+		$string = trim($string, '&');
+		//签名步骤二：在string后加入KEY
+		$string = $string.'&key='.env('MCH_SIGN_KEY');
+		//签名步骤三：MD5加密
+		$string = md5($string);
+		//签名步骤四：所有字符转为大写
+		$result = strtoupper($string);
+		
+		return $result;
+	}
 }
