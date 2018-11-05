@@ -358,8 +358,8 @@ function currencyFormat($value) {
 
 /**
  * 模拟post进行url请求
- * @param string $url
- * @param array  $post_data
+ * @param string       $url
+ * @param string|array $post_data
  * @return mixed
  */
 function request_post($url = '', $post_data = '') {

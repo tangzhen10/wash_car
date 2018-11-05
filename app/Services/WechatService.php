@@ -270,7 +270,7 @@ EOL;
 		$postStr = sprintf($tplPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
 		
 		$url  = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-		$xml  = request_post_file($url, $postStr);
+		$xml  = request_post($url, $postStr);
 		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 		
 		$resp['timestamp'] = strval(time());
