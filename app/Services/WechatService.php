@@ -223,16 +223,22 @@ class WechatService {
 	public function unifiedOrder($openid, $orderId) {
 		
 		$orderInfo = \OrderService::getWashOrder($orderId);
+		$detail    = [
+			'good_id'        => $orderInfo['wash_product'],
+			'wxpay_goods_id' => $orderInfo['wash_product_id'],
+			'goods_name'     => $orderInfo['wash_product'],
+			'quantity'       => 1,
+			'price'          => $orderInfo['total'],
+		];
 		
-		$param           = [];
-		$param['appid']  = env('MP_APP_ID');
-		$param['attach'] = ''; # 非必填
-		$param['body']   = $orderInfo['wash_product'];
-		$param['mch_id'] = env('MCH_ID');
-		$param['detail'] = '{ "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"apple" }] }';
-		// $param['device_info']  = ''; # 非必填
+		$param                     = [];
+		$param['appid']            = env('MP_APP_ID');
+		$param['attach']           = ''; # 非必填
+		$param['body']             = $orderInfo['wash_product'];
+		$param['mch_id']           = env('MCH_ID');
+		$param['detail']           = json_encode($detail);
 		$param['nonce_str']        = md5(uniqid());
-		$param['notify_url']       = 'https://www.yexingxia2018.com/';
+		$param['notify_url']       = env('APP_URL').'/api/pay/wechatNotify';
 		$param['openid']           = $openid;
 		$param['out_trade_no']     = $orderId;
 		$param['spbill_create_ip'] = getClientIp();
@@ -240,11 +246,7 @@ class WechatService {
 		$param['time_expire']      = date('YmdHis', $orderInfo['create_at'] + 3570); # 交易结束时间，非必填
 		$param['total_fee']        = $orderInfo['total'] * 100; # 订单总金额，单位为分
 		$param['trade_type']       = 'JSAPI';
-//		$param['sign_type']        = 'MD5';
-//		$param['fee_type']         = 'CNY'; # 默认CNY，非必填
-		$param['total_fee'] = '1';
-//		$param['goods_tag']        = ''; # 非必填
-//		$param['product_id'] = '';
+		$param['total_fee']        = '1';
 		
 		$sign = $this->getSign($param);
 		
@@ -272,6 +274,11 @@ EOL;
 		$url  = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
 		$xml  = request_post($url, $postStr);
 		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		
+		# 出错则返回错误消息
+		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) {
+			json_msg($resp['err_code_des'], 20001);
+		}
 		
 		$resp['timestamp'] = strval(time());
 		

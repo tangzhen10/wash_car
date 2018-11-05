@@ -90,5 +90,12 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		
 	});
 	
+	# 支付
+	Route::group(['prefix' => 'pay'], function () {
+		
+		# 微信支付回调
+		Route::post('wechatNotify', ['uses' => 'ToolController@wechatNotify', 'as' => 'apiPayWechatNotify']);
+	});
+	
 });
 

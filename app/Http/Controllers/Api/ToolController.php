@@ -40,4 +40,15 @@ class ToolController extends BaseController {
 		$res    = \ToolService::recharge($amount, $this->user->userId);
 		$this->render($res);
 	}
+	
+	/**
+	 * 微信支付回调
+	 * @author 李小同
+	 * @date   2018-11-05 21:21:07
+	 */
+	public function wechatNotify() {
+		
+		$post = request_all();
+		file_put_contents('pay.log', var_export($post, 1), FILE_APPEND);
+	}
 }

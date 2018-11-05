@@ -13,6 +13,7 @@ class CheckLogin {
 		'apiLoginByPhone',
 		'apiSendSMSCode',
 		'apiGetOpenid',
+		'apiPayWechatNotify',
 	];
 	
 	/**
