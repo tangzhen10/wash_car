@@ -31,7 +31,7 @@ return [
 	'PATH_TO_CANCEL_ORDER_LOG'   => storage_path('logs/cancel_order/'.date('Y-m-d').'.log'), # 超时自动取消洗车订单的日志位置
 	'WECHAT_MP'                  => [
 		'TPL_ID' => [ # 模板消息
-			'ADD_ORDER' => '4l_gUH4985dhtVmWc7Q9WTbFh4ChbdcYbtooIekgBIM', # 下单成功
+			'ADD_ORDER' => '4l_gUH4985dhtVmWc7Q9WVa4ooQuhRkJrCkcFTBUbfQ', # 下单成功
 		],
 	],
 	'ORDER_WAIT_PAY'             => 3600, # 订单自动取消的时间，单位：秒

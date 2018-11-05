@@ -238,7 +238,7 @@ class WechatService {
 		$param['mch_id']           = env('MCH_ID');
 		$param['detail']           = json_encode($detail);
 		$param['nonce_str']        = md5(uniqid());
-		$param['notify_url']       = env('APP_URL').'/api/pay/wechatNotify';
+		$param['notify_url']       = route('apiPayWechatNotify');
 		$param['openid']           = $openid;
 		$param['out_trade_no']     = $orderId;
 		$param['spbill_create_ip'] = getClientIp();
