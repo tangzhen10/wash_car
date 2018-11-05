@@ -173,7 +173,7 @@ class WechatService {
 		$res = redisGet($key);
 		if (empty($res)) {
 			
-			$url     = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('MP_APPID').'&secret='.env('MP_APPSECRET');
+			$url     = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.env('MP_APP_ID').'&secret='.env('MP_APP_SECRET');
 			$resJson = file_get_contents($url);
 			$res     = json_decode($resJson, 1);
 			if (empty($res['access_token'])) return '';
