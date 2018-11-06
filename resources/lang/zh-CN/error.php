@@ -28,5 +28,8 @@ return [
 	'not_your_car'             => '抱歉，这不是您的车辆，您无法操作！',
 	'wrong_wash_product_price' => '抱歉，本项服务价格配置错误，无法下单！',
 	'wrong_wash_time'          => '抱歉，您选择的清洗时间不在服务时间内，请重新选择！',
+	
+	# 支付
+	'insufficient_payment'     => '支付金额不足',
 
 ];

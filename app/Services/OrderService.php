@@ -1161,7 +1161,31 @@ class OrderService extends BaseService {
 			json_msg(trans('error.illegal_action'), 40003);
 		}
 		
-		$paymentMethod = explode(',', $post['payment_method']);
+		# 更新支付方式，用于微信支付成功后的回调
+		\DB::table('wash_order')->where('order_id', $orderId)->update(['payment_method' => $post['payment_method']]);
+		
+		# 微信支付，拉起支付界面
+		if (in_array('wechat', explode(',', $post['payment_method']))) {
+			
+			\WechatService::unifiedOrder($post['openid'], $post['order_id']);
+			
+		} elseif ('balance' == $post['payment_method']) {
+			
+			$order['payment_method'] = $post['payment_method'];
+			$this->realPayOrder($order);
+		}
+	}
+	
+	/**
+	 * 真正的付款动作，扣款、改订单状态、记录
+	 * @param $order
+	 * @author 李小同
+	 * @date   2018-11-06 21:51:18
+	 * @return bool
+	 */
+	public function realPayOrder(array $order) {
+		
+		$paymentMethod = explode(',', $order['payment_method']);
 		$balance       = \UserService::getBalance();
 		if (in_array('balance', $paymentMethod)) {
 			
@@ -1173,11 +1197,6 @@ class OrderService extends BaseService {
 			} else { # 组合支付
 				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
 			}
-		}
-		
-		# 微信支付，拉起支付界面
-		if (in_array('wechat', $paymentMethod)) {
-			\WechatService::unifiedOrder($post['openid'], $post['order_id']);
 		}
 		
 		\DB::beginTransaction();
@@ -1220,7 +1239,7 @@ class OrderService extends BaseService {
 				'status'         => 2,
 				'operator_type'  => 'user',
 				'payment_status' => '1',
-				'payment_method' => $post['payment_method'],
+				'payment_method' => $order['payment_method'],
 			];
 			$this->_updateOrder($updateData);
 			

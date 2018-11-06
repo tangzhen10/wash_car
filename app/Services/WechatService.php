@@ -246,7 +246,16 @@ class WechatService {
 		$param['time_expire']      = date('YmdHis', $orderInfo['create_at'] + 3570); # 交易结束时间，非必填
 		$param['total_fee']        = $orderInfo['total'] * 100; # 订单总金额，单位为分
 		$param['trade_type']       = 'JSAPI';
-		$param['total_fee']        = '1';
+		
+		# 若存在组合支付，扣除余额支付金额后作为当前的应付金额
+		if (in_array('balance', explode(',', $orderInfo['payment_method']))) {
+			$balance = \UserService::getBalance();
+			$param['total_fee'] -= $balance * 100;
+			if ($param['total_fee'] <= 0) json_msg(trans('error.illegal_param'), 40003);
+		}
+		
+		# todo lxt 测试用，上线一定要删除 xiaotong.li 2018-11-06 22:32:30
+//		$param['total_fee'] = '1';
 		
 		$sign = $this->getSign($param);
 		
@@ -293,7 +302,6 @@ EOL;
 		
 		json_msg($resp);
 	}
-	# endregion
 	
 	/**
 	 * 微信支付签名生成
@@ -323,4 +331,5 @@ EOL;
 		
 		return $result;
 	}
+	# endregion
 }

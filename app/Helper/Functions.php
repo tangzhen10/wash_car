@@ -412,3 +412,40 @@ function https_curl_json($url, $data, $type = 'json') {
 	
 	return $output;
 }
+
+/**
+ * 获取请求的数据，摘自网络
+ * @author 李小同
+ * @date   2018-11-06 21:21:10
+ * @return mixed|string
+ */
+function post_data() {
+	
+	$receipt = $_REQUEST;
+	if ($receipt == null) {
+		$receipt = file_get_contents("php://input");
+		if ($receipt == null) {
+			$receipt = $GLOBALS['HTTP_RAW_POST_DATA'];
+		}
+	}
+	return $receipt;
+}
+
+/**
+ * xml转array，摘自网络
+ * @param $xml
+ * @author 李小同
+ * @date   2018-11-06 21:24:48
+ * @return bool|mixed
+ */
+function xml_to_array($xml) {
+	
+	if (!$xml) return false;
+	
+	//将XML转为array
+	//禁止引用外部xml实体
+	libxml_disable_entity_loader(true);
+	$data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+	
+	return $data;
+}
