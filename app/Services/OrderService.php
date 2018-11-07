@@ -653,6 +653,7 @@ class OrderService extends BaseService {
 		$paymentLogs = \PaymentService::getPaymentLogs($orderId);
 		foreach ($paymentLogs as $paymentLog) {
 			
+			$refundId = 0;
 			switch ($paymentLog['payment_method']) {
 				case 'balance':
 					$data = [
@@ -665,7 +666,7 @@ class OrderService extends BaseService {
 					\PaymentService::balanceRefund($data);
 					break;
 				case 'wechat':
-					\PaymentService::wechatRefund($paymentLog);
+					$refundId = \PaymentService::wechatRefund($paymentLog);
 					break;
 				case 'card':
 					\CardService::rollbackCard($orderId);
@@ -681,6 +682,7 @@ class OrderService extends BaseService {
 				'create_by'      => $operateType == 'admin' ? \ManagerService::getManagerId() : $this->userId,
 				'create_at'      => time(),
 			];
+			if (!empty($refundId)) $refundData['transaction_id'] = $refundId;
 			\DB::table('payment_log')->insertGetId($refundData);
 		}
 		

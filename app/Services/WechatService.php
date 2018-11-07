@@ -304,7 +304,7 @@ class WechatService {
 	 * @param array $paymentLog
 	 * @author 李小同
 	 * @date   2018-11-07 17:32:27
-	 * @return bool
+	 * @return bool|string 微信生成的退款单号
 	 */
 	public function refund(array $paymentLog) {
 		
@@ -337,28 +337,28 @@ class WechatService {
 		$log->addInfo('$xmlPost='.$postStr);
 		
 		$url  = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
-		$resp = $this->_requestPostWithCert($url, $postStr);
+		$resp = $this->_requestWithCert($url, $postStr);
 		$log->addInfo('$xmlResponse', $resp);
 		
 		# 出错则返回错误消息
 		if ($resp['return_code'] != 'SUCCESS') json_msg($resp['return_msg'], 50001);
 		
-		return true;
+		return $resp['refund_id'];
 	}
 	
 	/**
-	 * 带证书的请求
+	 * 带证书的请求，目前用于微信退款
 	 * @param $url
 	 * @param $xmlPost
 	 * @author 李小同
 	 * @date   2018-11-07 23:35:07
 	 * @return mixed
 	 */
-	private function _requestPostWithCert($url, $xmlPost) {
+	private function _requestWithCert($url, $xmlPost) {
 		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HEADER, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 0);//设置header
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); //证书检查
 		
@@ -386,12 +386,9 @@ class WechatService {
 			
 		} else {
 			$error = curl_errno($ch);
-			
 			curl_close($ch);
-			// 错误的时候返回错误码。
-			$result['errNum'] = $error;
 			
-			return $result;
+			json_msg(trans('error.action_failed'), $error);
 		}
 	}
 	
