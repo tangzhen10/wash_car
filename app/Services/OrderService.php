@@ -1188,7 +1188,7 @@ class OrderService extends BaseService {
 		
 		$paymentMethod = explode(',', $order['payment_method']);
 		$orderId       = $order['order_id'];
-		$balance       = \UserService::getBalance();
+		$balance       = \UserService::getBalance($order['user_id']);
 		if (in_array('balance', $paymentMethod)) {
 			
 			# 检测余额是否充足
@@ -1247,7 +1247,7 @@ class OrderService extends BaseService {
 			
 			# 可能存在同时一个账号，多处登录并同时支付的情况，支付完成再查一次用户余额，如果余额小于0则回滚
 			if (in_array('balance', $paymentMethod)) {
-				$balance = \UserService::getBalance();
+				$balance = \UserService::getBalance($order['user_id']);
 				if ($balance < 0) {
 					\DB::rollback();
 					json_msg(trans('common.balance_not_enough'), 50001);

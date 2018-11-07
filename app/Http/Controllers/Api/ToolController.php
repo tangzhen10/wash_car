@@ -75,13 +75,14 @@ class ToolController extends BaseController {
 		# 验证微信支付金额是否正确
 		if (in_array($orderInfo['payment_method'], ['wechat,balance', 'balance,wechat'])) {
 			# 组合支付
-			$balance = \UserService::getBalance();
+			$balance = \UserService::getBalance($orderInfo['user_id']);
 			$needPay = $orderInfo['total'] * 100 - $balance * 100;
 		} else {
 			$needPay = $orderInfo['total'] * 100;
 		}
 		if ($needPay != $post['total_fee']) {
 			$log->addError('wrong total_fee', $_SERVER);
+			$log->addError('$needPay='.$needPay);
 			json_msg(trans('error.insufficient_payment'), 40003);
 		}
 		
@@ -103,7 +104,7 @@ class ToolController extends BaseController {
 			$paymentData = [
 				'order_id'       => $orderId,
 				'payment_method' => 'wechat',
-				'amount'         => $post['total_fee'],
+				'amount'         => $post['total_fee'] / 100, # 回调的total_fee是乘以100的
 			];
 			\PaymentService::addPaymentLog($paymentData);
 			

@@ -249,7 +249,7 @@ class WechatService {
 		
 		# 若存在组合支付，扣除余额支付金额后作为当前的应付金额
 		if (in_array('balance', explode(',', $orderInfo['payment_method']))) {
-			$balance = \UserService::getBalance();
+			$balance = \UserService::getBalance($orderInfo['user_id']);
 			$param['total_fee'] -= $balance * 100;
 			if ($param['total_fee'] <= 0) json_msg(trans('error.illegal_param'), 40003);
 		}
