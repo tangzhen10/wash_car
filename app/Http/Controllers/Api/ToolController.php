@@ -105,6 +105,7 @@ class ToolController extends BaseController {
 				'order_id'       => $orderId,
 				'payment_method' => 'wechat',
 				'amount'         => $post['total_fee'] / 100, # 回调的total_fee是乘以100的
+				'create_by'      => $orderInfo['user_id'],
 			];
 			\PaymentService::addPaymentLog($paymentData);
 			

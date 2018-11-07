@@ -45,7 +45,7 @@ class PaymentService {
 			'payment_method' => $data['payment_method'],
 			'amount'         => $data['amount'],
 			'operate_type'   => 'user',
-			'creator'        => empty($data['create_by']) ? \OrderService::getFormatUser() : \OrderService::getFormatUser().'user_id='.$data['create_by'],
+			'creator'        => empty($data['create_by']) ? \OrderService::getFormatUser() : \OrderService::getFormatUser($data['create_by']),
 			'create_by'      => empty($data['create_by']) ? \UserService::getUserId() : $data['create_by'],
 			'create_at'      => time(),
 		];

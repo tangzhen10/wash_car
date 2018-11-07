@@ -395,6 +395,7 @@ class OrderService extends BaseService {
 			'order_status'  => $data['status'],
 			'operator_type' => $data['operator_type'],
 		];
+		if (!empty($data['user_id'])) $logData['user_id'] = $data['user_id'];
 		$this->addOrderLog($logData);
 		
 		return true;
@@ -1053,8 +1054,8 @@ class OrderService extends BaseService {
 				$logData['operator']    = $this->getFormatManager();
 				break;
 			case 'user':
-				$logData['operator_id'] = $this->userId;
-				$logData['operator']    = $this->getFormatUser();
+				$logData['operator_id'] = empty($this->userId) ? $logData['user_id'] : $this->userId;
+				$logData['operator']    = $this->getFormatUser($logData['operator_id']);
 				break;
 			case 'system':
 				$logData['operator_id'] = 0;
@@ -1179,6 +1180,7 @@ class OrderService extends BaseService {
 	
 	/**
 	 * 真正的付款动作，扣款、改订单状态、记录
+	 * 支付回调时，无登录状态
 	 * @param $order
 	 * @author 李小同
 	 * @date   2018-11-06 21:51:18
@@ -1243,6 +1245,7 @@ class OrderService extends BaseService {
 				'operator_type'  => 'user',
 				'payment_status' => '1',
 				'payment_method' => $order['payment_method'],
+				'user_id'        => $order['user_id'],
 			];
 			$this->_updateOrder($updateData);
 			
@@ -1274,9 +1277,14 @@ class OrderService extends BaseService {
 	 * @date   2018-8-8 16:30:45
 	 * @return string
 	 */
-	public function getFormatUser() {
+	public function getFormatUser($userId = 0) {
 		
-		return '【'.trans('common.user').'】'.\UserService::getUserInfo('phone');
+		if ($userId) {
+			$res = '【'.trans('common.user').'】user_id='.$userId;
+		} else {
+			$res = '【'.trans('common.user').'】'.\UserService::getUserInfo('phone');
+		}
+		return $res;
 	}
 	
 	/**
