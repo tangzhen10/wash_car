@@ -948,6 +948,7 @@ class OrderService extends BaseService {
 				'keyword6' => ['value' => $orderData['address']],
 				'keyword7' => ['value' => date('Y-m-d H:i:s', $orderData['create_at'])],
 			],
+			'page'        => '/pages/orderDetail/orderDetail?order_id='.$orderData['order_id'],
 		];
 		
 		$res = \WechatService::sendTplMsg($tplData);
@@ -1172,7 +1173,7 @@ class OrderService extends BaseService {
 		} elseif ('balance' == $post['payment_method']) {
 			
 			$order['payment_method'] = $post['payment_method'];
-			$this->realPayOrder($order);
+			return $this->realPayOrder($order);
 		}
 	}
 	
@@ -1186,6 +1187,7 @@ class OrderService extends BaseService {
 	public function realPayOrder(array $order) {
 		
 		$paymentMethod = explode(',', $order['payment_method']);
+		$orderId       = $order['order_id'];
 		$balance       = \UserService::getBalance();
 		if (in_array('balance', $paymentMethod)) {
 			

@@ -202,7 +202,7 @@ class WechatService {
 			'touser'      => $data['openid'],
 			'form_id'     => $data['form_id'],
 			'url'         => empty($data['url']) ? '' : $data['url'],
-			'page'        => 'pages/index/index',
+			'page'        => empty($data['page']) ? 'pages/index/index' : $data['page'],
 			'data'        => $data['data'],
 		];
 		if (isset($data['emphasis_keyword'])) $body['emphasis_keyword'] = $data['emphasis_keyword'].'.DATA';

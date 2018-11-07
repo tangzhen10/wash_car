@@ -50,11 +50,11 @@ class ToolController extends BaseController {
 	 */
 	public function wechatNotify() {
 		
-		$post = post_data();
-		$post = xml_to_array($post);
-		
 		$log = new Logger('pay');
 		$log->pushHandler(new StreamHandler(config('project.PATH_TO_PAY_LOG')));
+		
+		$post = file_get_contents("php://input");
+		$post = xml_to_array($post);
 		$log->addInfo('wechat_pay', $post);
 		
 		/*
@@ -64,7 +64,10 @@ class ToolController extends BaseController {
 		 * 防止数据泄漏导致出现“假通知”，造成资金损失。
 		 */
 		$sign = \WechatService::getSign($post);
-		if ($sign !== $post['sign']) json_msg(trans('error.illegal_action'), 40006);
+		if ($sign !== $post['sign']) {
+			$log->addError('wrong sign', $_SERVER);
+			json_msg(trans('error.illegal_action'), 40006);
+		}
 		
 		$orderId   = $post['out_trade_no'];
 		$orderInfo = \OrderService::getWashOrder($orderId);
@@ -77,7 +80,10 @@ class ToolController extends BaseController {
 		} else {
 			$needPay = $orderInfo['total'] * 100;
 		}
-		if ($needPay != $post['total_fee']) json_msg(trans('error.insufficient_payment'), 40003);
+		if ($needPay != $post['total_fee']) {
+			$log->addError('wrong total_fee', $_SERVER);
+			json_msg(trans('error.insufficient_payment'), 40003);
+		}
 		
 		if ($post['return_code'] == 'SUCCESS' && !empty($post['sign'])) {
 			
@@ -90,7 +96,8 @@ class ToolController extends BaseController {
 								<return_code><![CDATA[SUCCESS]]></return_code>
 								<return_msg><![CDATA[OK]]></return_msg>
 							</xml>';
-			if ($orderInfo['status'] == 2 && $orderInfo['payment_status'] == '1') die($successMsg);
+			# 订单状态在变为2之后可能还会有其他状态，故只能用 != 1来判断
+			if ($orderInfo['status'] != 1 && $orderInfo['payment_status'] == '1') die($successMsg);
 			
 			\OrderService::realPayOrder($orderInfo);
 			$log->addInfo('wechat paid success');

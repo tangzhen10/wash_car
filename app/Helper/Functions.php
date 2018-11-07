@@ -414,24 +414,6 @@ function https_curl_json($url, $data, $type = 'json') {
 }
 
 /**
- * 获取请求的数据，摘自网络
- * @author 李小同
- * @date   2018-11-06 21:21:10
- * @return mixed|string
- */
-function post_data() {
-	
-	$receipt = $_REQUEST;
-	if ($receipt == null) {
-		$receipt = file_get_contents("php://input");
-		if ($receipt == null) {
-			$receipt = $GLOBALS['HTTP_RAW_POST_DATA'];
-		}
-	}
-	return $receipt;
-}
-
-/**
  * xml转array，摘自网络
  * @param $xml
  * @author 李小同
