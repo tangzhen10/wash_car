@@ -99,6 +99,14 @@ class ToolController extends BaseController {
 			# 订单状态在变为2之后可能还会有其他状态，故只能用 != 1来判断
 			if ($orderInfo['status'] != 1 && $orderInfo['payment_status'] == '1') die($successMsg);
 			
+			# 支付记录
+			$paymentData = [
+				'order_id'       => $orderId,
+				'payment_method' => 'wechat',
+				'amount'         => $post['total_fee'],
+			];
+			\PaymentService::addPaymentLog($paymentData);
+			
 			\OrderService::realPayOrder($orderInfo);
 			$log->addInfo('wechat paid success');
 			echo $successMsg;
