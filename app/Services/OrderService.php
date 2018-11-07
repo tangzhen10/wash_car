@@ -665,7 +665,7 @@ class OrderService extends BaseService {
 					\PaymentService::balanceRefund($data);
 					break;
 				case 'wechat':
-					\PaymentService::wechatRefund($orderId);
+					\PaymentService::wechatRefund($paymentLog);
 					break;
 				case 'card':
 					\CardService::rollbackCard($orderId);

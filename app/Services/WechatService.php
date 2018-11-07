@@ -7,6 +7,8 @@
  */
 
 namespace App\Services;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class WechatService {
 	
@@ -297,6 +299,54 @@ class WechatService {
 		$resp['paySign']   = $this->getSign($data);
 		
 		json_msg($resp);
+	}
+	
+	/**
+	 * 退款
+	 * @param array $paymentLog
+	 * @author 李小同
+	 * @date   2018-11-07 17:32:27
+	 * @return bool
+	 */
+	public function refund(array $paymentLog) {
+		
+		$log = new Logger('refund');
+		$log->pushHandler(new StreamHandler(config('project.PATH_TO_PAY_LOG')));
+		
+		$param                   = [];
+		$param['appid']          = env('MP_APP_ID');
+		$param['mch_id']         = env('MCH_ID');
+		$param['nonce_str']      = md5(uniqid());
+		$param['out_refund_no']  = $paymentLog['order_id'].'.RF'; # 退款单号
+		$param['out_trade_no']   = $paymentLog['order_id'];
+		$param['refund_fee']     = $paymentLog['amount'] * 100; # 退款金额，单位为分
+		$param['total_fee']      = $paymentLog['amount'] * 100; # 支付金额，单位为分
+		$param['transaction_id'] = $paymentLog['transaction_id'];
+		$param['sign']           = $this->getSign($param);
+		
+		$xmlPost = '<xml>
+					   <appid>%s</appid>
+					   <mch_id>%s</mch_id>
+					   <nonce_str>%s</nonce_str> 
+					   <out_refund_no>%s</out_refund_no>
+					   <out_trade_no>%s</out_trade_no>
+					   <refund_fee>%s</refund_fee>
+					   <total_fee>%s</total_fee>
+					   <transaction_id>%s</transaction_id>
+					   <sign>%s</sign>
+					</xml>';
+		$postStr = sprintf($xmlPost, $param['appid'], $param['mch_id'], $param['nonce_str'], $param['out_refund_no'], $param['out_trade_no'], $param['refund_fee'], $param['total_fee'], $param['transaction_id'], $param['sign']);
+		$log->addInfo('$xmlPost='.$xmlPost);
+		
+		$url  = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
+		$xml  = request_post($url, $postStr);
+		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		$log->addInfo('$xmlResponse', $resp);
+		
+		# 出错则返回错误消息
+		if ($resp['return_code'] != 'SUCCESS') json_msg($resp['err_code_des'], $resp['err_code']);
+		
+		return true;
 	}
 	
 	/**

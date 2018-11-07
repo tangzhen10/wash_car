@@ -50,7 +50,7 @@ function json_msg($data = '', $code = 0) {
 	
 	$result = ['code' => $code];
 	
-	if ($code > 0) {
+	if ($code != 0) {
 		if (!empty($data)) {
 			$result['error'] = (string)$data;
 		} else {

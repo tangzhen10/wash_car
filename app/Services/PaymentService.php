@@ -44,6 +44,7 @@ class PaymentService {
 			'order_id'       => $data['order_id'],
 			'payment_method' => $data['payment_method'],
 			'amount'         => $data['amount'],
+			'transaction_id' => empty($data['transaction_id']) ? '' : $data['transaction_id'],
 			'operate_type'   => 'user',
 			'creator'        => empty($data['create_by']) ? \OrderService::getFormatUser() : \OrderService::getFormatUser($data['create_by']),
 			'create_by'      => empty($data['create_by']) ? \UserService::getUserId() : $data['create_by'],
@@ -64,7 +65,7 @@ class PaymentService {
 	public function getPaymentLogs($orderId) {
 		
 		# amount大于0为支付，小于0为退款
-		$fields = ['payment_method', 'amount', 'create_by'];
+		$fields = ['order_id', 'payment_method', 'amount', 'transaction_id', 'create_by'];
 		$logs   = \DB::table('payment_log')
 		             ->where('order_id', $orderId)
 		             ->where('amount', '>=', 0)
@@ -104,9 +105,7 @@ class PaymentService {
 	 */
 	public function wechatRefund(array $data) {
 		
-		# todo lxt 微信退款
-		
-		return true;
+		return \WechatService::refund($data);
 	}
 	
 	/**
