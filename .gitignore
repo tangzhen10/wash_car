@@ -14,3 +14,5 @@ yarn-error.log
 access_token
 public/src/upload
 *.sql
+*.pem
+*.p12

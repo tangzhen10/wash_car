@@ -281,9 +281,7 @@ class WechatService {
 		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 		
 		# 出错则返回错误消息
-		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) {
-			json_msg($resp['err_code_des'], 20001);
-		}
+		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
 		
 		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
 		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
@@ -317,7 +315,7 @@ class WechatService {
 		$param['appid']          = env('MP_APP_ID');
 		$param['mch_id']         = env('MCH_ID');
 		$param['nonce_str']      = md5(uniqid());
-		$param['out_refund_no']  = $paymentLog['order_id'].'.RF'; # 退款单号
+		$param['out_refund_no']  = $paymentLog['order_id'].'_RF'; # 退款单号，out_refund_no只能含有数字、字母和字符_-|*@
 		$param['out_trade_no']   = $paymentLog['order_id'];
 		$param['refund_fee']     = $paymentLog['amount'] * 100; # 退款金额，单位为分
 		$param['total_fee']      = $paymentLog['amount'] * 100; # 支付金额，单位为分
@@ -336,17 +334,65 @@ class WechatService {
 					   <sign>%s</sign>
 					</xml>';
 		$postStr = sprintf($xmlPost, $param['appid'], $param['mch_id'], $param['nonce_str'], $param['out_refund_no'], $param['out_trade_no'], $param['refund_fee'], $param['total_fee'], $param['transaction_id'], $param['sign']);
-		$log->addInfo('$xmlPost='.$xmlPost);
+		$log->addInfo('$xmlPost='.$postStr);
 		
 		$url  = 'https://api.mch.weixin.qq.com/secapi/pay/refund';
-		$xml  = request_post($url, $postStr);
-		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		$resp = $this->_requestPostWithCert($url, $postStr);
 		$log->addInfo('$xmlResponse', $resp);
 		
 		# 出错则返回错误消息
-		if ($resp['return_code'] != 'SUCCESS') json_msg($resp['err_code_des'], $resp['err_code']);
+		if ($resp['return_code'] != 'SUCCESS') json_msg($resp['return_msg'], 50001);
 		
 		return true;
+	}
+	
+	/**
+	 * 带证书的请求
+	 * @param $url
+	 * @param $xmlPost
+	 * @author 李小同
+	 * @date   2018-11-07 23:35:07
+	 * @return mixed
+	 */
+	private function _requestPostWithCert($url, $xmlPost) {
+		
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); //证书检查
+		
+		// 设置证书
+		$certPath = resource_path('WxPay/cert/');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_SSLCERT, $certPath.'apiclient_cert.pem');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_SSLKEY, $certPath.'apiclient_key.pem');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_CAINFO, $certPath.'rootca.pem');
+		
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlPost);
+		$xml = curl_exec($ch);
+		
+		// 返回结果0的时候能只能表明程序是正常返回不一定说明退款成功而已
+		if ($xml) {
+			curl_close($ch);
+			// 把xml转化成数组
+			libxml_disable_entity_loader(true);
+			$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+			
+			return $resp;
+			
+		} else {
+			$error = curl_errno($ch);
+			
+			curl_close($ch);
+			// 错误的时候返回错误码。
+			$result['errNum'] = $error;
+			
+			return $result;
+		}
 	}
 	
 	/**
