@@ -283,16 +283,18 @@ class WechatService {
 			json_msg($resp['err_code_des'], 20001);
 		}
 		
-		$resp['timestamp'] = strval(time());
+		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
+		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
 		
-		$data            = [
+		$resp['timestamp'] = strval(time());
+		$data              = [
 			'appId'     => $resp['appid'],
 			'nonceStr'  => $resp['nonce_str'],
 			'package'   => 'prepay_id='.$resp['prepay_id'],
 			'signType'  => 'MD5',
 			'timeStamp' => $resp['timestamp'],
 		];
-		$resp['paySign'] = $this->getSign($data);
+		$resp['paySign']   = $this->getSign($data);
 		
 		json_msg($resp);
 	}

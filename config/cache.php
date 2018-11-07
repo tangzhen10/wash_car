@@ -106,6 +106,7 @@ return [
 	'WECHAT_MP'               => [ # 小程序
 		'ACCESS_TOKEN' => env('APP_NAME').':wechat_mp:access_token@7200', # 微信登录用户的access_token
 		'SESSION_KEY'  => env('APP_NAME').':wechat_mp:session_key:%s@7200', # 小程序session_key
+	    'FROM_ID_LIST' => env('APP_NAME').':wechat_mp:from_id_list', # 小程序form_id和prepay_id队列，用于发送模板消息
 	],
 	'TABLE_COLUMN'            => env('APP_NAME').':table_column:%s@604800', # 表结构字段
 	'CONTENT_TYPE'            => env('APP_NAME').':content_type:%s@604800', # 文档类型结构
