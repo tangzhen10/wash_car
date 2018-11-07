@@ -1221,7 +1221,7 @@ class OrderService extends BaseService {
 					'type'     => $action,
 					'order_id' => $orderId,
 					'comment'  => '【支付订单】'.$orderId,
-					'user_id'  => $this->userId,
+					'user_id'  => $order['user_id'],
 				];
 				\PaymentService::addBalanceDetail($useBalanceData);
 				
@@ -1230,6 +1230,7 @@ class OrderService extends BaseService {
 					'order_id'       => $orderId,
 					'payment_method' => 'balance',
 					'amount'         => $amount,
+					'create_by'      => $order['user_id'],
 				];
 				\PaymentService::addPaymentLog($paymentData);
 			}

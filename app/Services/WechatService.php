@@ -254,35 +254,29 @@ class WechatService {
 			if ($param['total_fee'] <= 0) json_msg(trans('error.illegal_param'), 40003);
 		}
 		
-		# todo lxt 测试用，上线一定要删除 xiaotong.li 2018-11-06 22:32:30
-//		$param['total_fee'] = '1';
-		
 		$sign = $this->getSign($param);
 		
-		$tplPost = <<<EOL
-<xml>
-   <appid>%s</appid>
-   <attach>%s</attach>
-   <body>%s</body>
-   <mch_id>%s</mch_id>
-   <detail>%s</detail>
-   <nonce_str>%s</nonce_str>
-   <notify_url>%s</notify_url>
-   <openid>%s</openid>
-   <out_trade_no>%s</out_trade_no>
-   <spbill_create_ip>%s</spbill_create_ip>
-   <time_start>%s</time_start>
-   <time_expire>%s</time_expire>
-   <total_fee>%s</total_fee>
-   <trade_type>%s</trade_type>
-   <sign>%s</sign>
-</xml>
-EOL;
-		$postStr = sprintf($tplPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
-		
-		$url  = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-		$xml  = request_post($url, $postStr);
-		$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		$xmlPost = '<xml>
+					   <appid>%s</appid>
+					   <attach>%s</attach>
+					   <body>%s</body>
+					   <mch_id>%s</mch_id>
+					   <detail>%s</detail>
+					   <nonce_str>%s</nonce_str>
+					   <notify_url>%s</notify_url>
+					   <openid>%s</openid>
+					   <out_trade_no>%s</out_trade_no>
+					   <spbill_create_ip>%s</spbill_create_ip>
+					   <time_start>%s</time_start>
+					   <time_expire>%s</time_expire>
+					   <total_fee>%s</total_fee>
+					   <trade_type>%s</trade_type>
+					   <sign>%s</sign>
+					</xml>';
+		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
+		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+		$xml     = request_post($url, $postStr);
+		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
 		
 		# 出错则返回错误消息
 		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) {

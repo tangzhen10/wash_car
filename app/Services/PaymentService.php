@@ -45,8 +45,8 @@ class PaymentService {
 			'payment_method' => $data['payment_method'],
 			'amount'         => $data['amount'],
 			'operate_type'   => 'user',
-			'creator'        => \OrderService::getFormatUser(),
-			'create_by'      => \UserService::getUserId(),
+			'creator'        => empty($data['create_by']) ? \OrderService::getFormatUser() : \OrderService::getFormatUser().'user_id='.$data['create_by'],
+			'create_by'      => empty($data['create_by']) ? \UserService::getUserId() : $data['create_by'],
 			'create_at'      => time(),
 		];
 		$logId       = \DB::table('payment_log')->insertGetId($paymentData);
