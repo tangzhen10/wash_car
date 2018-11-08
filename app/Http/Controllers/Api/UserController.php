@@ -167,9 +167,4 @@ class UserController extends BaseController {
 		
 		json_msg($detail);
 	}
-	
-	public function buyCard() {
-		
-		$post = request_all();
-	}
 }

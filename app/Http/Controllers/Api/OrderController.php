@@ -158,17 +158,4 @@ class OrderController extends BaseController {
 		$res  = \OrderService::userWashOrderChangeStatus($post);
 		$this->render($res);
 	}
-	
-	/**
-	 * 支付
-	 * @author 李小同
-	 * @date   2018-11-05 11:32:38
-	 */
-	public function payOrder() {
-		
-		$post = request_all();
-		$res  = \OrderService::payOrder($post);
-		$this->render($res);
-	}
-	
 }

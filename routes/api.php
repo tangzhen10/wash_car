@@ -38,8 +38,6 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('myCard', ['uses' => 'UserController@myCard', 'as' => 'apiMyCard']);
 		# 卡券详情
 		Route::post('cardDetail', ['uses' => 'UserController@cardDetail', 'as' => 'apiCardDetail']);
-		# 购买洗车卡
-		Route::post('buyCard', ['uses' => 'UserController@buyCard', 'as' => 'apiBuyCard']);
 	});
 	
 	# 工具
@@ -49,6 +47,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('sendSMSCode', ['uses' => 'ToolController@sendSMSCode', 'as' => 'apiSendSMSCode']);
 		# 充值
 		Route::post('recharge', ['uses' => 'ToolController@recharge', 'as' => 'apiRecharge']);
+		# 统一支付接口
+		Route::post('pay', ['uses' => 'ToolController@commonPay', 'as' => 'apiCommonPay']);
 	});
 	
 	# 车辆
@@ -96,8 +96,10 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 	# 支付
 	Route::group(['prefix' => 'pay'], function () {
 		
-		# 微信支付回调
+		# 微信支付回调（订单）
 		Route::post('wechatNotify', ['uses' => 'ToolController@wechatNotify', 'as' => 'apiPayWechatNotify']);
+		# 微信支付回调（买卡）
+		Route::post('wechatNotifyForCard', ['uses' => 'ToolController@wechatNotifyForCard', 'as' => 'apiPayWechatNotifyForCard']);
 	});
 	
 });

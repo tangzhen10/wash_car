@@ -185,6 +185,149 @@ class CardService extends BaseService {
 		return $cardList;
 	}
 	
+	public function buyCard(array $post) {
+		
+		$cardId        = $post['key_id'];
+		$paymentMethod = explode(',', trim($post['payment_method']));
+
+//		if (in_array('balance', $paymentMethod)) {
+//
+//			# 检测余额是否充足
+//			$balance = \UserService::getBalance();
+//
+//			if (count($paymentMethod) == 1) {
+//				if ($balance < $detail['price']) {
+//					json_msg(trans('common.balance_not_enough'), 50001);
+//				}
+//			} else { # 组合支付
+//				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
+//			}
+//		}
+		
+		# 微信支付，拉起支付界面
+		if (in_array('wechat', $paymentMethod)) \WechatService::unifiedOrderForCard($post);
+	}
+	
+	/**
+	 * 购卡，放入用户卡包中
+	 * @param array $order
+	 * @author 李小同
+	 * @date   2018-11-08 15:07:09
+	 * @return bool
+	 */
+	public function realBuyCard(array $order) {
+		
+		$paymentMethod = explode(',', $order['payment_method']);
+		$orderId       = $order['order_id'];
+		
+		if (in_array('balance', $paymentMethod)) {
+			
+			# 检测余额是否充足
+			$balance = \UserService::getBalance($order['user_id']);
+			
+			if (count($paymentMethod) == 1) {
+				if ($balance < $order['total']) {
+					json_msg(trans('common.balance_not_enough'), 50001);
+				}
+			} else { # 组合支付
+				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
+			}
+		}
+		
+		\DB::beginTransaction();
+		try {
+			
+			if (in_array('balance', $paymentMethod)) {
+				
+				if (count($paymentMethod) == 1) {
+					$amount = $order['total'];
+				} else {
+					# 组合支付，若余额充足，仍选了组合支付，支付金额不得超过订单总金额
+					$amount = min([$balance, $order['total']]);
+				}
+				
+				# 余额使用记录
+				$useBalanceData = [
+					'amount'   => -floatval($amount),
+					'type'     => 'buy_card',
+					'order_id' => $orderId,
+					'comment'  => '【购买卡券】'.$orderId,
+					'user_id'  => $order['user_id'],
+				];
+				\PaymentService::addBalanceDetail($useBalanceData);
+			}
+			
+			# 修改订单状态
+			\DB::table('card_order')->where('order_id', $orderId)->upate(['status' => '1']);
+			
+			# 卡券放入卡包
+			$now = time();
+			\DB::table('user_card')->insert([
+				'user_id'     => $order['user_id'],
+				'card_id'     => $order['card_id'],
+				'effect_from' => $now,
+				'create_at'   => $now,
+			]);
+			
+			# 可能存在同时一个账号，多处登录并同时支付的情况，支付完成再查一次用户余额，如果余额小于0则回滚
+			if (in_array('balance', $paymentMethod)) {
+				$balance = \UserService::getBalance($order['user_id']);
+				if ($balance < 0) {
+					\DB::rollback();
+					json_msg(trans('common.balance_not_enough'), 50001);
+				}
+			}
+			
+			\DB::commit();
+			return true;
+			
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+			print_r($e->getFile());
+			print_r($e->getLine());
+			
+			\DB::rollback();
+			return false;
+		}
+	}
+	
+	/**
+	 * 创建购卡订单
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-11-08 14:48:47
+	 * @return mixed
+	 */
+	public function createCardOrder(array $post) {
+		
+		$orderData = [
+			'order_id'       => \OrderServie::getOrderId(),
+			'user_id'        => $this->userId,
+			'card_id'        => $post['key_id'],
+			'total'          => $post['total'],
+			'payment_method' => $post['payment_method'],
+			'create_at'      => time(),
+		];
+		\DB::table('card_order')->insert($orderData);
+		
+		return $orderData['order_id'];
+	}
+	
+	/**
+	 * 购卡订单详情
+	 * @param $orderId
+	 * @author 李小同
+	 * @date   2018-11-08 14:52:41
+	 * @return mixed
+	 */
+	public function cardOrderDetail($orderId) {
+		
+		$fields = ['order_id', 'card_id', 'user_id', 'total', 'status', 'payment_method'];
+		$order  = \DB::table('card_order')->where('order_id', $orderId)->first($fields);
+		
+		return $order;
+	}
+	
 	/**
 	 * 下单时检测可用卡券
 	 * @param $orderId

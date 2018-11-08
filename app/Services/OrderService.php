@@ -1158,8 +1158,9 @@ class OrderService extends BaseService {
 	 */
 	public function payOrder(array $post) {
 		
-		$orderId = $post['order_id'];
-		$order   = $this->getWashOrder($orderId);
+		$orderId       = $post['key_id'];
+		$order         = $this->getWashOrder($orderId);
+		$paymentMethod = $post['payment_method'];
 		
 		if ($order['status'] != 1 || $order['payment_status'] == '1') {
 			json_msg(trans('error.illegal_action'), 40003);
@@ -1169,13 +1170,13 @@ class OrderService extends BaseService {
 		\DB::table('wash_order')->where('order_id', $orderId)->update(['payment_method' => $post['payment_method']]);
 		
 		# 微信支付，拉起支付界面
-		if (in_array('wechat', explode(',', $post['payment_method']))) {
+		if (in_array('wechat', explode(',', $paymentMethod))) {
 			
-			\WechatService::unifiedOrder($post['openid'], $post['order_id']);
+			\WechatService::unifiedOrder($post['openid'], $orderId);
 			
-		} elseif ('balance' == $post['payment_method']) {
+		} elseif ('balance' == $paymentMethod) {
 			
-			$order['payment_method'] = $post['payment_method'];
+			$order['payment_method'] = $paymentMethod;
 			return $this->realPayOrder($order);
 		}
 	}
@@ -1192,10 +1193,12 @@ class OrderService extends BaseService {
 		
 		$paymentMethod = explode(',', $order['payment_method']);
 		$orderId       = $order['order_id'];
-		$balance       = \UserService::getBalance($order['user_id']);
+		
 		if (in_array('balance', $paymentMethod)) {
 			
 			# 检测余额是否充足
+			$balance = \UserService::getBalance($order['user_id']);
+			
 			if (count($paymentMethod) == 1) {
 				if ($balance < $order['total']) {
 					json_msg(trans('common.balance_not_enough'), 50001);

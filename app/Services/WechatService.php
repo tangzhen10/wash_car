@@ -212,8 +212,8 @@ class WechatService {
 		
 		return $res;
 	}
-
-# endregion
+	# endregion
+	
 	# region 微信支付
 	/**
 	 * 微信统一下单接口
@@ -419,6 +419,97 @@ class WechatService {
 		$result = strtoupper($string);
 		
 		return $result;
+	}
+	
+	/**
+	 * 购卡，微信统一下单
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-11-08 13:45:04
+	 */
+	public function unifiedOrderForCard(array $post) {
+		
+		$paymentMethod = explode(',', trim($post['payment_method']));
+		$detail        = \CardService::getDetailById($post['key_id']);
+		
+		if (in_array('balance', $paymentMethod)) {
+			
+			# 检测余额是否充足
+			$balance = \UserService::getBalance();
+			
+			if (count($paymentMethod) == 1) {
+				if ($balance < $detail['price']) json_msg(trans('common.balance_not_enough'), 50001);
+			} else { # 组合支付
+				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
+			}
+		}
+		
+		$goodDetail = [
+			'good_id'        => $detail['name'],
+			'wxpay_goods_id' => $detail['id'],
+			'goods_name'     => $detail['name'],
+			'quantity'       => 1,
+			'price'          => $detail['price'],
+		];
+		if (in_array('balance', $paymentMethod)) $goodDetail['price'] -= $balance;
+		if ($goodDetail['price'] <= 0) json_msg(trans('error.illegal_param'), 40003);
+		
+		$post['total'] = $goodDetail['price'];
+		$cardOrderId   = \CardService::createCardOrder($post);
+		
+		$param                     = [];
+		$param['appid']            = env('MP_APP_ID');
+		$param['attach']           = ''; # 非必填
+		$param['body']             = $detail['name'];
+		$param['mch_id']           = env('MCH_ID');
+		$param['detail']           = json_encode($goodDetail);
+		$param['nonce_str']        = md5(uniqid());
+		$param['notify_url']       = route('apiPayWechatNotifyForCard');
+		$param['openid']           = $post['openid'];
+		$param['out_trade_no']     = $cardOrderId;
+		$param['spbill_create_ip'] = getClientIp();
+		$param['total_fee']        = $goodDetail['price'] * 100; # 订单总金额，单位为分
+		$param['trade_type']       = 'JSAPI';
+		
+		$sign = $this->getSign($param);
+		
+		$xmlPost = '<xml>
+					   <appid>%s</appid>
+					   <attach>%s</attach>
+					   <body>%s</body>
+					   <mch_id>%s</mch_id>
+					   <detail>%s</detail>
+					   <nonce_str>%s</nonce_str>
+					   <notify_url>%s</notify_url>
+					   <openid>%s</openid>
+					   <out_trade_no>%s</out_trade_no>
+					   <spbill_create_ip>%s</spbill_create_ip>
+					   <total_fee>%s</total_fee>
+					   <trade_type>%s</trade_type>
+					   <sign>%s</sign>
+					</xml>';
+		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['total_fee'], $param['trade_type'], $sign);
+		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+		$xml     = request_post($url, $postStr);
+		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		
+		# 出错则返回错误消息
+		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
+		
+		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
+		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
+		
+		$resp['timestamp'] = strval(time());
+		$data              = [
+			'appId'     => $resp['appid'],
+			'nonceStr'  => $resp['nonce_str'],
+			'package'   => 'prepay_id='.$resp['prepay_id'],
+			'signType'  => 'MD5',
+			'timeStamp' => $resp['timestamp'],
+		];
+		$resp['paySign']   = $this->getSign($data);
+		
+		json_msg($resp);
 	}
 	# endregion
 }

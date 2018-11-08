@@ -32,6 +32,26 @@ class ToolController extends BaseController {
 	}
 	
 	/**
+	 * 统一支付接口
+	 * @author 李小同
+	 * @date   2018-11-08 12:38:38
+	 */
+	public function commonPay() {
+		
+		$post = request_all();
+		switch ($post['pay_type']) {
+			case 'order':
+				$res = \OrderService::payOrder($post);
+				$this->render($res);
+				break;
+			case 'card':
+				$res = \CardService::buyCard($post);
+				$this->render($res);
+				break;
+		}
+	}
+	
+	/**
 	 * 充值
 	 * @author 李小同
 	 * @date   2018-8-11 11:13:29
@@ -116,6 +136,71 @@ class ToolController extends BaseController {
 			
 		} else {
 			$log->addInfo('wechat paid failed');
+		}
+	}
+	
+	/**
+	 * 微信支付购卡支付的回调
+	 * @author 李小同
+	 * @date   2018-11-08 14:50:15
+	 */
+	public function wechatNotifyForCard() {
+		
+		$log = new Logger('pay');
+		$log->pushHandler(new StreamHandler(config('project.PATH_TO_PAY_LOG')));
+		
+		$post = file_get_contents("php://input");
+		$post = xml_to_array($post);
+		$log->addInfo('wechat_pay_card', $post);
+		
+		/*
+		 * 微信官方提醒：
+		 * 商户系统对于支付结果通知的内容一定要做【签名验证】,
+		 * 并校验返回的【订单金额是否与商户侧的订单金额】一致，
+		 * 防止数据泄漏导致出现“假通知”，造成资金损失。
+		 */
+		$sign = \WechatService::getSign($post);
+		if ($sign !== $post['sign']) {
+			$log->addError('wrong sign', $_SERVER);
+			json_msg(trans('error.illegal_action'), 40006);
+		}
+		
+		$orderId   = $post['out_trade_no'];
+		$orderInfo = \CardService::cardOrderDetail($orderId);
+		
+		# 验证微信支付金额是否正确
+		if (in_array('wechat', explode(',', $orderInfo['payment_method']))) {
+			# 组合支付
+			$balance = \UserService::getBalance($orderInfo['user_id']);
+			$needPay = $orderInfo['total'] * 100 - $balance * 100;
+		} else {
+			$needPay = $orderInfo['total'] * 100;
+		}
+		if ($needPay != $post['total_fee']) {
+			$log->addError('wrong total_fee', $_SERVER);
+			$log->addError('$needPay='.$needPay);
+			json_msg(trans('error.insufficient_payment'), 40003);
+		}
+		
+		if ($post['return_code'] == 'SUCCESS' && !empty($post['sign'])) {
+			
+			/**
+			 * 首先判断，订单是否已经更新为ok，因为微信会总共发送8次回调确认
+			 * 其次，订单已经为ok的，直接返回SUCCESS
+			 * 最后，订单没有为ok的，更新状态为ok，返回SUCCESS
+			 */
+			$successMsg = '<xml>
+								<return_code><![CDATA[SUCCESS]]></return_code>
+								<return_msg><![CDATA[OK]]></return_msg>
+							</xml>';
+			if ($orderInfo['status'] == 1) die($successMsg);
+			
+			\CardService::realBuyCard($orderInfo);
+			$log->addInfo('wechat paid card success');
+			echo $successMsg;
+			
+		} else {
+			$log->addInfo('wechat paid card failed');
 		}
 	}
 }
