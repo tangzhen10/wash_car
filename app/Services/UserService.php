@@ -478,7 +478,7 @@ class UserService {
 			$insertData = [
 				'user_id'   => $data['user_id'],
 				'amount'    => $data['total'],
-				'type'      => $data['recharge'],
+				'type'      => 'recharge',
 				'order_id'  => $data['order_id'],
 				'comment'   => '充值'.currencyFormat($data['total']),
 				'create_at' => time(),
