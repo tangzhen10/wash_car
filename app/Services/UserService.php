@@ -8,6 +8,8 @@
  */
 
 namespace App\Services;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 class UserService {
 	
@@ -468,6 +470,9 @@ class UserService {
 	 */
 	public function recharge(array $data) {
 		
+		$log = new Logger('pay');
+		$log->pushHandler(new StreamHandler(config('project.PATH_TO_PAY_LOG')));
+		
 		\DB::beginTransaction();
 		try {
 			$insertData = [
@@ -483,15 +488,14 @@ class UserService {
 			
 			# 修改订单状态
 			\DB::table('card_order')->where('order_id', $data['order_id'])->update(['status' => '1']);
-			
 			\DB::commit();
+			$log->addInfo('recharge success', $data);
+			
 			return $id;
 			
 		} catch (\Exception $e) {
-			print_r($e->getMessage());
-			print_r($e->getFile());
-			print_r($e->getLine());
 			
+			$log->addError($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine()]);
 			\DB::rollback();
 			return false;
 		}
