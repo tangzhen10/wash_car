@@ -228,7 +228,7 @@ class WechatService {
 		$detail    = [
 			'good_id'        => $orderInfo['wash_product'],
 			'wxpay_goods_id' => $orderInfo['wash_product_id'],
-			'goods_name'     => $orderInfo['wash_product'],
+			'goods_name'     => '【洗车服务】'.$orderInfo['wash_product'],
 			'quantity'       => 1,
 			'price'          => $orderInfo['total'],
 		];
@@ -236,7 +236,7 @@ class WechatService {
 		$param                     = [];
 		$param['appid']            = env('MP_APP_ID');
 		$param['attach']           = ''; # 非必填
-		$param['body']             = '洗车服务 - '.$orderInfo['wash_product'];
+		$param['body']             = $detail['goods_name'];
 		$param['mch_id']           = env('MCH_ID');
 		$param['detail']           = json_encode($detail);
 		$param['nonce_str']        = md5(uniqid());
@@ -401,7 +401,7 @@ class WechatService {
 		$goodDetail = [
 			'good_id'        => $detail['name'],
 			'wxpay_goods_id' => $detail['id'],
-			'goods_name'     => $detail['name'],
+			'goods_name'     => '【洗车卡】'.$detail['name'],
 			'quantity'       => 1,
 			'price'          => $detail['price'],
 		];
@@ -418,7 +418,7 @@ class WechatService {
 		$param                     = [];
 		$param['appid']            = env('MP_APP_ID');
 		$param['attach']           = ''; # 非必填
-		$param['body']             = '洗车卡 - '.$detail['name'];
+		$param['body']             = $goodDetail['goods_name'];
 		$param['mch_id']           = env('MCH_ID');
 		$param['detail']           = json_encode($goodDetail);
 		$param['nonce_str']        = md5(uniqid());
@@ -484,13 +484,14 @@ class WechatService {
 		$goodDetail = [
 			'good_id'        => $amount,
 			'wxpay_goods_id' => $amount,
-			'goods_name'     => '充值 - '.currencyFormat($amount),
+			'goods_name'     => '【充值】'.currencyFormat($amount),
 			'quantity'       => 1,
 			'price'          => $amount,
 		];
 		
-//		$post['total'] = $goodDetail['price'];
-//		$cardOrderId   = \CardService::createCardOrder($post);
+		$post['total']  = $amount;
+		$post['key_id'] = 0; # card_order表 card_id=0表示充值订单
+		$cardOrderId    = \CardService::createCardOrder($post);
 		
 		$param                     = [];
 		$param['appid']            = env('MP_APP_ID');
@@ -501,7 +502,7 @@ class WechatService {
 		$param['nonce_str']        = md5(uniqid());
 		$param['notify_url']       = route('apiPayWechatNotifyForRecharge');
 		$param['openid']           = $post['openid'];
-		$param['out_trade_no']     = \OrderService::getOrderId();
+		$param['out_trade_no']     = $cardOrderId;
 		$param['spbill_create_ip'] = getClientIp();
 		$param['total_fee']        = $amount * 100; # 充值金额，单位为分
 		$param['trade_type']       = 'JSAPI';

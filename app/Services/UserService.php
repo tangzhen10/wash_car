@@ -11,7 +11,7 @@ namespace App\Services;
 
 class UserService {
 	
-	public $userId   = 0;
+	public $userId = 0;
 	public $userInfo = [];
 	
 	private $_passwordIdentityTypes = ['username', 'email', 'phone']; # 需要密码的登录渠道
@@ -457,6 +457,44 @@ class UserService {
 		$balance = sprintf('%.2f', $balance);
 		
 		return $balance;
+	}
+	
+	/**
+	 * 充值
+	 * @param array $data
+	 * @author 李小同
+	 * @date   2018-11-08 22:22:47
+	 * @return int
+	 */
+	public function recharge(array $data) {
+		
+		\DB::beginTransaction();
+		try {
+			$insertData = [
+				'user_id'   => $data['user_id'],
+				'amount'    => $data['total'],
+				'type'      => $data['recharge'],
+				'order_id'  => $data['order_id'],
+				'comment'   => '充值'.currencyFormat($data['total']),
+				'create_at' => time(),
+				'create_ip' => getClientIp(true),
+			];
+			$id         = \DB::table('balance_detail')->insertGetId($insertData);
+			
+			# 修改订单状态
+			\DB::table('card_order')->where('order_id', $data['order_id'])->update(['status' => '1']);
+			
+			\DB::commit();
+			return $id;
+			
+		} catch (\Exception $e) {
+			print_r($e->getMessage());
+			print_r($e->getFile());
+			print_r($e->getLine());
+			
+			\DB::rollback();
+			return false;
+		}
 	}
 	
 	/**
