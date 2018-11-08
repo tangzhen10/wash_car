@@ -185,27 +185,39 @@ class CardService extends BaseService {
 		return $cardList;
 	}
 	
+	/**
+	 * 购卡
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-11-08 15:40:40
+	 * @return bool
+	 */
 	public function buyCard(array $post) {
 		
 		$cardId        = $post['key_id'];
 		$paymentMethod = explode(',', trim($post['payment_method']));
-
-//		if (in_array('balance', $paymentMethod)) {
-//
-//			# 检测余额是否充足
-//			$balance = \UserService::getBalance();
-//
-//			if (count($paymentMethod) == 1) {
-//				if ($balance < $detail['price']) {
-//					json_msg(trans('common.balance_not_enough'), 50001);
-//				}
-//			} else { # 组合支付
-//				if ($balance <= 0) json_msg(trans('error.balance_not_enough'), 40003);
-//			}
-//		}
 		
 		# 微信支付，拉起支付界面
-		if (in_array('wechat', $paymentMethod)) \WechatService::unifiedOrderForCard($post);
+		if (in_array('wechat', $paymentMethod)) {
+			
+			\WechatService::unifiedOrderForCard($post);
+			
+		} else { # 余额支付
+			
+			$detail = $this->getDetailById($cardId);
+			
+			$post['total'] = $detail['price'];
+			$cardOrderId   = $this->createCardOrder($post);
+			
+			$order = [
+				'order_id'       => $cardOrderId,
+				'payment_method' => $post['payment_method'],
+				'user_id'        => $this->userId,
+				'card_id'        => $cardId,
+				'total'          => $detail['price'],
+			];
+			return $this->realBuyCard($order);
+		}
 	}
 	
 	/**
@@ -301,7 +313,7 @@ class CardService extends BaseService {
 	public function createCardOrder(array $post) {
 		
 		$orderData = [
-			'order_id'       => \OrderServie::getOrderId(),
+			'order_id'       => \OrderService::getOrderId(),
 			'user_id'        => $this->userId,
 			'card_id'        => $post['key_id'],
 			'total'          => $post['total'],
