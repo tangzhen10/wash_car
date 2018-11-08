@@ -36,7 +36,10 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('wallet', ['uses' => 'UserController@wallet', 'as' => 'apiWallet']);
 		# 我的卡券
 		Route::post('myCard', ['uses' => 'UserController@myCard', 'as' => 'apiMyCard']);
-		
+		# 卡券详情
+		Route::post('cardDetail', ['uses' => 'UserController@cardDetail', 'as' => 'apiCardDetail']);
+		# 购买洗车卡
+		Route::post('buyCard', ['uses' => 'UserController@buyCard', 'as' => 'apiBuyCard']);
 	});
 	
 	# 工具

@@ -151,4 +151,24 @@ class UserController extends BaseController {
 		
 		json_msg(['list' => $myCards]);
 	}
+	
+	/**
+	 * 卡券详情
+	 * @author 李小同
+	 * @date   2018-11-08 11:16:41
+	 */
+	public function cardDetail() {
+		
+		$cardId = \Request::input('card_id');
+		$detail = \CardService::getDetailById($cardId);
+		
+		$detail['background'] = \URL::asset($detail['background']);
+		
+		json_msg($detail);
+	}
+	
+	public function buyCard() {
+		
+		$post = request_all();
+	}
 }
