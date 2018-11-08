@@ -141,7 +141,7 @@ class CardService extends BaseService {
 	 */
 	public function getMyCards($status = 2) {
 		
-		$fields  = ['card_id', 'effect_from', 'use_times'];
+		$fields  = ['id', 'card_id', 'effect_from', 'use_times'];
 		$myCards = \DB::table('user_card')
 		              ->where('user_id', $this->userId)
 		              ->where('status', '1')
@@ -153,36 +153,39 @@ class CardService extends BaseService {
 		$cardList    = [];
 		foreach ($cardListArr as $item) $cardList[$item['id']] = $item;
 		
+		$myCardList = [];
 		foreach ($myCards as $item) {
+			
+			$myCardList[$item['id']] = $cardList[$item['card_id']];
 			
 			# 有效期
 			$effectFrom = date('Y-m-d H:i:s', $item['effect_from']);
-			$expire     = $cardList[$item['card_id']]['expire_days'] * 86400 - 1;
+			$expire     = $myCardList[$item['id']]['expire_days'] * 86400 - 1;
 			$expireAt   = strtotime($effectFrom) + $expire;
 			
-			$cardList[$item['card_id']]['effect_from'] = $effectFrom;
-			$cardList[$item['card_id']]['expire_at']   = date('Y-m-d H:i:s', $expireAt);
-			$cardList[$item['card_id']]['left_times']  = $cardList[$item['card_id']]['use_times'] - $item['use_times'];
+			$myCardList[$item['id']]['effect_from'] = $effectFrom;
+			$myCardList[$item['id']]['expire_at']   = date('Y-m-d H:i:s', $expireAt);
+			$myCardList[$item['id']]['left_times']  = $myCardList[$item['id']]['use_times'] - $item['use_times'];
 			
 			# 1是有效，2是未生效，3是已使用，4是过期
 			$effectStatus = 1;
-			if ($cardList[$item['card_id']]['effect_from'] > time()) $effectStatus = 2;
+			if ($myCardList[$item['id']]['effect_from'] > time()) $effectStatus = 2;
 			if ($expireAt < time()) $effectStatus = 4; # 过期 优先级高于 未生效
-			if ($cardList[$item['card_id']]['left_times'] <= 0) $effectStatus = 3; # 已使用 优先级高于 过期
-			$cardList[$item['card_id']]['effect_status'] = $effectStatus;
+			if ($myCardList[$item['id']]['left_times'] <= 0) $effectStatus = 3; # 已使用 优先级高于 过期
+			$myCardList[$item['id']]['effect_status'] = $effectStatus;
 			
 			if ($status == 1) {
-				if ($effectStatus != 1) unset($cardList[$item['card_id']]);
+				if ($effectStatus != 1) unset($myCardList[$item['id']]);
 			} elseif ($status == 0) {
-				if ($effectStatus == 1) unset($cardList[$item['card_id']]);
+				if ($effectStatus == 1) unset($myCardList[$item['id']]);
 			}
 		}
-		$cardList = array_values($cardList);
+		$myCardList = array_values($myCardList);
 		
 		# 按过期时间倒序排序
-		if (!empty($cardList)) array_multisort(array_column($cardList, 'expire_at'), SORT_DESC, $cardList);
+		if (!empty($myCardList)) array_multisort(array_column($myCardList, 'expire_at'), SORT_DESC, $myCardList);
 		
-		return $cardList;
+		return $myCardList;
 	}
 	
 	/**
