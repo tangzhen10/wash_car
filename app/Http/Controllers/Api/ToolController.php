@@ -209,4 +209,8 @@ class ToolController extends BaseController {
 			$log->addInfo('wechat paid card failed');
 		}
 	}
+	
+	public function wechatNotifyForRecharge() {
+		
+	}
 }

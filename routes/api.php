@@ -100,6 +100,8 @@ Route::group(['namespace' => 'Api', 'middleware' => 'checkLogin'], function () {
 		Route::post('wechatNotify', ['uses' => 'ToolController@wechatNotify', 'as' => 'apiPayWechatNotify']);
 		# 微信支付回调（买卡）
 		Route::post('wechatNotifyForCard', ['uses' => 'ToolController@wechatNotifyForCard', 'as' => 'apiPayWechatNotifyForCard']);
+		# 微信支付回调（充值）
+		Route::post('wechatNotifyForRecharge', ['uses' => 'ToolController@wechatNotifyForRecharge', 'as' => 'apiPayWechatNotifyForRecharge']);
 	});
 	
 });
