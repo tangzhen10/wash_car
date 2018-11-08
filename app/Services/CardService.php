@@ -270,7 +270,7 @@ class CardService extends BaseService {
 			}
 			
 			# 修改订单状态
-			\DB::table('card_order')->where('order_id', $orderId)->upate(['status' => '1']);
+			\DB::table('card_order')->where('order_id', $orderId)->update(['status' => '1']);
 			
 			# 卡券放入卡包
 			$now = time();
