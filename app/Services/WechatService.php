@@ -451,8 +451,12 @@ class WechatService {
 			'quantity'       => 1,
 			'price'          => $detail['price'],
 		];
-		if (in_array('balance', $paymentMethod)) $goodDetail['price'] -= $balance;
-		if ($goodDetail['price'] <= 0) json_msg(trans('error.illegal_param'), 40003);
+		if (in_array('balance', $paymentMethod)) {
+			$totalFee = $goodDetail['price'] * 100 - $balance * 100;
+		} else {
+			$totalFee = $goodDetail['price'] * 100;
+		}
+		if ($totalFee <= 0) json_msg(trans('error.illegal_param'), 40003);
 		
 		$post['total'] = $goodDetail['price'];
 		$cardOrderId   = \CardService::createCardOrder($post);
@@ -468,7 +472,7 @@ class WechatService {
 		$param['openid']           = $post['openid'];
 		$param['out_trade_no']     = $cardOrderId;
 		$param['spbill_create_ip'] = getClientIp();
-		$param['total_fee']        = $goodDetail['price'] * 100; # 订单总金额，单位为分
+		$param['total_fee']        = $totalFee; # 订单总金额，单位为分
 		$param['trade_type']       = 'JSAPI';
 		
 		$sign = $this->getSign($param);
@@ -495,6 +499,7 @@ class WechatService {
 		
 		# 出错则返回错误消息
 		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
+		if (!isset($resp['prepay_id']) && !empty($resp['return_msg'])) json_msg($resp['return_msg'], 20001);
 		
 		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
 		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);

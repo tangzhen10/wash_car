@@ -14,6 +14,7 @@ class CheckLogin {
 		'apiSendSMSCode',
 		'apiGetOpenid',
 		'apiPayWechatNotify',
+		'apiPayWechatNotifyForCard',
 	];
 	
 	/**
