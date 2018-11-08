@@ -236,7 +236,7 @@ class WechatService {
 		$param                     = [];
 		$param['appid']            = env('MP_APP_ID');
 		$param['attach']           = ''; # 非必填
-		$param['body']             = $orderInfo['wash_product'];
+		$param['body']             = '洗车服务 - '.$orderInfo['wash_product'];
 		$param['mch_id']           = env('MCH_ID');
 		$param['detail']           = json_encode($detail);
 		$param['nonce_str']        = md5(uniqid());
@@ -347,52 +347,6 @@ class WechatService {
 	}
 	
 	/**
-	 * 带证书的请求，目前用于微信退款
-	 * @param $url
-	 * @param $xmlPost
-	 * @author 李小同
-	 * @date   2018-11-07 23:35:07
-	 * @return mixed
-	 */
-	private function _requestWithCert($url, $xmlPost) {
-		
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HEADER, 0);//设置header
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); //证书检查
-		
-		// 设置证书
-		$certPath = resource_path('WxPay/cert/');
-		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
-		curl_setopt($ch, CURLOPT_SSLCERT, $certPath.'apiclient_cert.pem');
-		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
-		curl_setopt($ch, CURLOPT_SSLKEY, $certPath.'apiclient_key.pem');
-		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
-		curl_setopt($ch, CURLOPT_CAINFO, $certPath.'rootca.pem');
-		
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlPost);
-		$xml = curl_exec($ch);
-		
-		// 返回结果0的时候能只能表明程序是正常返回不一定说明退款成功而已
-		if ($xml) {
-			curl_close($ch);
-			// 把xml转化成数组
-			libxml_disable_entity_loader(true);
-			$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-			
-			return $resp;
-			
-		} else {
-			$error = curl_errno($ch);
-			curl_close($ch);
-			
-			json_msg(trans('error.action_failed'), $error);
-		}
-	}
-	
-	/**
 	 * 微信支付签名生成
 	 * @param $data
 	 * @author 李小同
@@ -464,7 +418,7 @@ class WechatService {
 		$param                     = [];
 		$param['appid']            = env('MP_APP_ID');
 		$param['attach']           = ''; # 非必填
-		$param['body']             = $detail['name'];
+		$param['body']             = '洗车卡 - '.$detail['name'];
 		$param['mch_id']           = env('MCH_ID');
 		$param['detail']           = json_encode($goodDetail);
 		$param['nonce_str']        = md5(uniqid());
@@ -515,6 +469,129 @@ class WechatService {
 		$resp['paySign']   = $this->getSign($data);
 		
 		json_msg($resp);
+	}
+	
+	/**
+	 * 购卡，微信统一下单
+	 * @param array $post
+	 * @author 李小同
+	 * @date   2018-11-08 13:45:04
+	 */
+	public function unifiedOrderForRecharge(array $post) {
+		
+		$amount = $post['key_id'];
+		
+		$goodDetail = [
+			'good_id'        => $amount,
+			'wxpay_goods_id' => $amount,
+			'goods_name'     => '充值 - '.currencyFormat($amount),
+			'quantity'       => 1,
+			'price'          => $amount,
+		];
+		
+//		$post['total'] = $goodDetail['price'];
+//		$cardOrderId   = \CardService::createCardOrder($post);
+		
+		$param                     = [];
+		$param['appid']            = env('MP_APP_ID');
+		$param['attach']           = ''; # 非必填
+		$param['body']             = $goodDetail['goods_name'];
+		$param['mch_id']           = env('MCH_ID');
+		$param['detail']           = json_encode($goodDetail);
+		$param['nonce_str']        = md5(uniqid());
+		$param['notify_url']       = route('apiPayWechatNotifyForRecharge');
+		$param['openid']           = $post['openid'];
+		$param['out_trade_no']     = \OrderService::getOrderId();
+		$param['spbill_create_ip'] = getClientIp();
+		$param['total_fee']        = $amount * 100; # 充值金额，单位为分
+		$param['trade_type']       = 'JSAPI';
+		
+		$sign = $this->getSign($param);
+		
+		$xmlPost = '<xml>
+					   <appid>%s</appid>
+					   <attach>%s</attach>
+					   <body>%s</body>
+					   <mch_id>%s</mch_id>
+					   <detail>%s</detail>
+					   <nonce_str>%s</nonce_str>
+					   <notify_url>%s</notify_url>
+					   <openid>%s</openid>
+					   <out_trade_no>%s</out_trade_no>
+					   <spbill_create_ip>%s</spbill_create_ip>
+					   <total_fee>%s</total_fee>
+					   <trade_type>%s</trade_type>
+					   <sign>%s</sign>
+					</xml>';
+		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['total_fee'], $param['trade_type'], $sign);
+		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+		$xml     = request_post($url, $postStr);
+		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+		
+		# 出错则返回错误消息
+		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
+		if (!isset($resp['prepay_id']) && !empty($resp['return_msg'])) json_msg($resp['return_msg'], 20001);
+		
+		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
+		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
+		
+		$resp['timestamp'] = strval(time());
+		$data              = [
+			'appId'     => $resp['appid'],
+			'nonceStr'  => $resp['nonce_str'],
+			'package'   => 'prepay_id='.$resp['prepay_id'],
+			'signType'  => 'MD5',
+			'timeStamp' => $resp['timestamp'],
+		];
+		$resp['paySign']   = $this->getSign($data);
+		
+		json_msg($resp);
+	}
+	
+	/**
+	 * 带证书的请求，目前用于微信退款
+	 * @param $url
+	 * @param $xmlPost
+	 * @author 李小同
+	 * @date   2018-11-07 23:35:07
+	 * @return mixed
+	 */
+	private function _requestWithCert($url, $xmlPost) {
+		
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);//设置header
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1); //证书检查
+		
+		// 设置证书
+		$certPath = resource_path('WxPay/cert/');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_SSLCERT, $certPath.'apiclient_cert.pem');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_SSLKEY, $certPath.'apiclient_key.pem');
+		curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'pem');
+		curl_setopt($ch, CURLOPT_CAINFO, $certPath.'rootca.pem');
+		
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlPost);
+		$xml = curl_exec($ch);
+		
+		// 返回结果0的时候能只能表明程序是正常返回不一定说明退款成功而已
+		if ($xml) {
+			curl_close($ch);
+			// 把xml转化成数组
+			libxml_disable_entity_loader(true);
+			$resp = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+			
+			return $resp;
+			
+		} else {
+			$error = curl_errno($ch);
+			curl_close($ch);
+			
+			json_msg(trans('error.action_failed'), $error);
+		}
 	}
 	# endregion
 }

@@ -15,6 +15,7 @@ class CheckLogin {
 		'apiGetOpenid',
 		'apiPayWechatNotify',
 		'apiPayWechatNotifyForCard',
+		'apiPayWechatNotifyForRecharge',
 	];
 	
 	/**

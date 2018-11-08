@@ -48,6 +48,12 @@ class ToolController extends BaseController {
 				$res = \CardService::buyCard($post);
 				$this->render($res);
 				break;
+			case 'recharge':
+				$res = \WechatService::unifiedOrderForRecharge($post);
+				$this->render($res);
+				break;
+			default:
+				json_msg(trans('error.illegal_param'), 40001);
 		}
 	}
 	
@@ -64,7 +70,7 @@ class ToolController extends BaseController {
 	}
 	
 	/**
-	 * 微信支付回调
+	 * 微信支付回调 - 订单
 	 * @author 李小同
 	 * @date   2018-11-05 21:21:07
 	 */
