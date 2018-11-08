@@ -163,6 +163,7 @@ class UserController extends BaseController {
 		$detail = \CardService::getDetailById($cardId);
 		
 		$detail['background'] = \URL::asset($detail['background']);
+		$detail['balance']    = \UserService::getBalance();
 		
 		json_msg($detail);
 	}
