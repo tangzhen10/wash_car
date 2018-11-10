@@ -24,6 +24,12 @@ Route::get('/', function () {
 
 Route::group(['namespace' => 'Web'], function () {
 	
+	# 首页
+//	Route::get('/', ['uses' => 'IndexController@index', 'as' => 'home']);
+	
+	# 静态文章
+	Route::get('article/{id}', ['uses' => 'IndexController@article', 'as' => 'webArticle']);
+	
 	# 个人中心
 	Route::group(['prefix' => 'user'], function () {
 		
