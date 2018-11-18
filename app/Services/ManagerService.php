@@ -17,8 +17,8 @@ namespace App\Services;
 class ManagerService extends BaseService {
 	
 	public $managerId = 0;
-	public $manager   = [];
-	public $module    = 'manager';
+	public $manager = [];
+	public $module = 'manager';
 	
 	public function __construct() {
 		
@@ -338,21 +338,23 @@ class ManagerService extends BaseService {
 	
 	/**
 	 * 获取管理员列表
+	 * @param array $filter
 	 * @author 李小同
 	 * @date   2018-7-3 15:26:26
 	 * @return array
 	 */
-	public function getList() {
+	public function getList(array $filter = []) {
 		
 		$fields   = ['a.id', 'a.name', 'a.create_at', 'a.last_login_at', 'a.last_login_ip', 'a.status', 'phone'];
 		$fields[] = \DB::raw('GROUP_CONCAT(t_c.name) AS role');
 		$list     = \DB::table('manager AS a')
 		               ->leftJoin('manager_role AS b', 'b.manager_id', '=', 'a.id')
 		               ->leftJoin('role AS c', 'c.id', '=', 'b.role_id')
-		               ->where('a.status', '!=', '-1')
-		               ->groupBy('a.id')
-		               ->get($fields)
-		               ->toArray();
+		               ->where('a.status', '!=', '-1');
+		if (!empty($filter['filter_manager'])) {
+			$list = $list->where('a.name', 'like', '%'.$filter['filter_manager'].'%');
+		}
+		$list = $list->groupBy('a.id')->get($fields)->toArray();
 		$this->addStatusText($list);
 		
 		return $list;

@@ -1,7 +1,8 @@
 @extends('admin.public_list')
 @section('body')
 	<div class="text-c">
-		<input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称" id="" name="">
+		<input type="text" class="input-text" style="width:250px" value="{{$filter_manager}}"
+		       placeholder="输入管理员名称" name="filter_manager" />
 		<button type="submit" class="btn btn-success radius J_filter">
 			<i class="Hui-iconfont">&#xe665;</i> {{trans('common.filter')}}
 		</button>
@@ -73,4 +74,20 @@
 		@endforeach
 		</tbody>
 	</table>
+@endsection
+@section('js')
+	<script>
+		
+		// 筛选
+		$('.J_filter').click(function () {
+			var filter_manager = $('input[name="filter_manager"]').val();
+			if (filter_manager) {
+				var query_string = [];
+				if (filter_manager) query_string.push('filter_manager='+filter_manager);
+				location.href = '{{route('managerList')}}?'+query_string.join('&');
+			} else {
+				location.href = '{{route('managerList')}}';
+			}
+		});
+	</script>
 @endsection

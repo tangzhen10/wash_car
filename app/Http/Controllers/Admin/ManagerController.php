@@ -33,7 +33,11 @@ class ManagerController extends BaseController {
 	 */
 	public function managerList() {
 		
-		$this->data['managers'] = $this->service->getList();
+		$filter                 = [
+			'filter_manager' => trim(\Request::input('filter_manager')),
+		];
+		$this->data['managers'] = $this->service->getList($filter);
+		$this->data += $filter;
 		
 		return view('admin/manager/list', $this->data);
 	}
