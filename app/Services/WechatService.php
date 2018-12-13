@@ -216,13 +216,13 @@ class WechatService {
 	
 	# region 微信支付
 	/**
-	 * 微信统一下单接口
+	 * 微信统一下单接口 - 洗车订单
 	 * @param $openid
 	 * @param $orderId
 	 * @author 李小同
 	 * @date   2018-11-04 21:44:35
 	 */
-	public function unifiedOrder($openid, $orderId) {
+	public function unifiedOrderForOrder($openid, $orderId) {
 		
 		$orderInfo = \OrderService::getWashOrder($orderId);
 		$detail    = [
@@ -233,21 +233,16 @@ class WechatService {
 			'price'          => $orderInfo['total'],
 		];
 		
-		$param                     = [];
-		$param['appid']            = env('MP_APP_ID');
-		$param['attach']           = ''; # 非必填
-		$param['body']             = $detail['goods_name'];
-		$param['mch_id']           = env('MCH_ID');
-		$param['detail']           = json_encode($detail);
-		$param['nonce_str']        = md5(uniqid());
-		$param['notify_url']       = route('apiPayWechatNotify');
-		$param['openid']           = $openid;
-		$param['out_trade_no']     = $orderId;
-		$param['spbill_create_ip'] = getClientIp();
-		$param['time_start']       = date('YmdHis', $orderInfo['create_at']); # 交易起始时间，非必填
-		$param['time_expire']      = date('YmdHis', $orderInfo['create_at'] + 3570); # 交易结束时间，非必填
-		$param['total_fee']        = $orderInfo['total'] * 100; # 订单总金额，单位为分
-		$param['trade_type']       = 'JSAPI';
+		$param = [
+			'body'         => $detail['goods_name'],
+			'detail'       => json_encode($detail),
+			'notify_url'   => route('apiPayWechatNotify'),
+			'openid'       => $openid,
+			'out_trade_no' => $orderId,
+			'time_start'   => date('YmdHis', $orderInfo['create_at']), # 交易起始时间，非必填
+			'time_expire'  => date('YmdHis', $orderInfo['create_at'] + 3570), # 交易结束时间，非必填
+			'total_fee'    => $orderInfo['total'] * 100, # 订单总金额，单位为分
+		];
 		
 		# 若存在组合支付，扣除余额支付金额后作为当前的应付金额
 		if (in_array('balance', explode(',', $orderInfo['payment_method']))) {
@@ -256,47 +251,7 @@ class WechatService {
 			if ($param['total_fee'] <= 0) json_msg(trans('error.illegal_param'), 40003);
 		}
 		
-		$sign = $this->getSign($param);
-		
-		$xmlPost = '<xml>
-					   <appid>%s</appid>
-					   <attach>%s</attach>
-					   <body>%s</body>
-					   <mch_id>%s</mch_id>
-					   <detail>%s</detail>
-					   <nonce_str>%s</nonce_str>
-					   <notify_url>%s</notify_url>
-					   <openid>%s</openid>
-					   <out_trade_no>%s</out_trade_no>
-					   <spbill_create_ip>%s</spbill_create_ip>
-					   <time_start>%s</time_start>
-					   <time_expire>%s</time_expire>
-					   <total_fee>%s</total_fee>
-					   <trade_type>%s</trade_type>
-					   <sign>%s</sign>
-					</xml>';
-		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
-		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-		$xml     = request_post($url, $postStr);
-		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-		
-		# 出错则返回错误消息
-		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
-		
-		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
-		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
-		
-		$resp['timestamp'] = strval(time());
-		$data              = [
-			'appId'     => $resp['appid'],
-			'nonceStr'  => $resp['nonce_str'],
-			'package'   => 'prepay_id='.$resp['prepay_id'],
-			'signType'  => 'MD5',
-			'timeStamp' => $resp['timestamp'],
-		];
-		$resp['paySign']   = $this->getSign($data);
-		
-		json_msg($resp);
+		$this->_unifiedOrder($param);
 	}
 	
 	/**
@@ -376,7 +331,7 @@ class WechatService {
 	}
 	
 	/**
-	 * 购卡，微信统一下单
+	 * 微信统一下单 - 购卡
 	 * @param array $post
 	 * @author 李小同
 	 * @date   2018-11-08 13:45:04
@@ -406,76 +361,32 @@ class WechatService {
 			'price'          => $detail['price'],
 		];
 		if (in_array('balance', $paymentMethod)) {
-			$totalFee = $goodDetail['price'] * 100 - $balance * 100;
+			$totalFee = $goodDetail['price'] - $balance;
 		} else {
-			$totalFee = $goodDetail['price'] * 100;
+			$totalFee = $goodDetail['price'];
 		}
 		if ($totalFee <= 0) json_msg(trans('error.illegal_param'), 40003);
 		
 		$post['total'] = $goodDetail['price'];
 		$cardOrderId   = \CardService::createCardOrder($post);
 		
-		$param                     = [];
-		$param['appid']            = env('MP_APP_ID');
-		$param['attach']           = ''; # 非必填
-		$param['body']             = $goodDetail['goods_name'];
-		$param['mch_id']           = env('MCH_ID');
-		$param['detail']           = json_encode($goodDetail);
-		$param['nonce_str']        = md5(uniqid());
-		$param['notify_url']       = route('apiPayWechatNotifyForCard');
-		$param['openid']           = $post['openid'];
-		$param['out_trade_no']     = $cardOrderId;
-		$param['spbill_create_ip'] = getClientIp();
-		$param['total_fee']        = $totalFee; # 订单总金额，单位为分
-		$param['trade_type']       = 'JSAPI';
-		
-		$sign = $this->getSign($param);
-		
-		$xmlPost = '<xml>
-					   <appid>%s</appid>
-					   <attach>%s</attach>
-					   <body>%s</body>
-					   <mch_id>%s</mch_id>
-					   <detail>%s</detail>
-					   <nonce_str>%s</nonce_str>
-					   <notify_url>%s</notify_url>
-					   <openid>%s</openid>
-					   <out_trade_no>%s</out_trade_no>
-					   <spbill_create_ip>%s</spbill_create_ip>
-					   <total_fee>%s</total_fee>
-					   <trade_type>%s</trade_type>
-					   <sign>%s</sign>
-					</xml>';
-		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['total_fee'], $param['trade_type'], $sign);
-		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
-		$xml     = request_post($url, $postStr);
-		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-		
-		# 出错则返回错误消息
-		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
-		if (!isset($resp['prepay_id']) && !empty($resp['return_msg'])) json_msg($resp['return_msg'], 20001);
-		
-		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
-		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
-		
-		$resp['timestamp'] = strval(time());
-		$data              = [
-			'appId'     => $resp['appid'],
-			'nonceStr'  => $resp['nonce_str'],
-			'package'   => 'prepay_id='.$resp['prepay_id'],
-			'signType'  => 'MD5',
-			'timeStamp' => $resp['timestamp'],
+		$param = [
+			'body'         => $goodDetail['goods_name'],
+			'detail'       => json_encode($goodDetail),
+			'notify_url'   => route('apiPayWechatNotifyForCard'),
+			'openid'       => $post['openid'],
+			'out_trade_no' => $cardOrderId,
+			'total_fee'    => $totalFee * 100, # 订单总金额，单位为分
 		];
-		$resp['paySign']   = $this->getSign($data);
 		
-		json_msg($resp);
+		$this->_unifiedOrder($param);
 	}
 	
 	/**
-	 * 购卡，微信统一下单
+	 * 微信统一下单 - 充值
 	 * @param array $post
 	 * @author 李小同
-	 * @date   2018-11-08 13:45:04
+	 * @date   2018-11-08 22:01:04
 	 */
 	public function unifiedOrderForRecharge(array $post) {
 		
@@ -493,19 +404,50 @@ class WechatService {
 		$post['key_id'] = 0; # card_order表 card_id=0表示充值订单
 		$cardOrderId    = \CardService::createCardOrder($post);
 		
-		$param                     = [];
-		$param['appid']            = env('MP_APP_ID');
-		$param['attach']           = ''; # 非必填
-		$param['body']             = $goodDetail['goods_name'];
-		$param['mch_id']           = env('MCH_ID');
-		$param['detail']           = json_encode($goodDetail);
-		$param['nonce_str']        = md5(uniqid());
-		$param['notify_url']       = route('apiPayWechatNotifyForRecharge');
-		$param['openid']           = $post['openid'];
-		$param['out_trade_no']     = $cardOrderId;
-		$param['spbill_create_ip'] = getClientIp();
-		$param['total_fee']        = $amount * 100; # 充值金额，单位为分
-		$param['trade_type']       = 'JSAPI';
+		$param = [
+			'body'         => $goodDetail['goods_name'],
+			'detail'       => json_encode($goodDetail),
+			'notify_url'   => route('apiPayWechatNotifyForRecharge'),
+			'openid'       => $post['openid'],
+			'out_trade_no' => $cardOrderId,
+			'total_fee'    => $amount * 100, # 充值金额，单位为分
+		];
+		
+		$this->_unifiedOrder($param);
+	}
+	
+	/**
+	 * 微信统一下单接口
+	 * @param array $param
+	 * @author 李小同
+	 * @date   2018-12-13 23:07:39
+	 */
+	private function _unifiedOrder(array $param) {
+		
+		# detail示例
+		/*$detail    = [
+			'good_id'        => $orderInfo['wash_product'],
+			'wxpay_goods_id' => $orderInfo['wash_product_id'],
+			'goods_name'     => '【洗车服务】'.$orderInfo['wash_product'],
+			'quantity'       => 1,
+			'price'          => $orderInfo['total'],
+		];*/
+		
+		# 以下注释掉的是必填项 李小同 2018-12-13 23:26:18
+		if (!isset($param['appid'])) $param['appid'] = env('MP_APP_ID');
+		if (!isset($param['attach'])) $param['attach'] = ''; # 非必填
+//		if (!isset($param['body'])) $param['body'] = $detail['goods_name'];
+		if (!isset($param['mch_id'])) $param['mch_id'] = env('MCH_ID');
+//		if (!isset($param['detail'])) $param['detail'] = json_encode($detail);
+		if (!isset($param['nonce_str'])) $param['nonce_str'] = md5(uniqid());
+//		if (!isset($param['notify_url'])) $param['notify_url'] = route('apiPayWechatNotify');
+//		if (!isset($param['openid'])) $param['openid'] = $openid;
+//		if (!isset($param['out_trade_no'])) $param['out_trade_no'] = $orderId;
+		if (!isset($param['spbill_create_ip'])) $param['spbill_create_ip'] = getClientIp();
+		if (!isset($param['time_start'])) $param['time_start'] = date('YmdHis'); # 交易起始时间，非必填
+		if (!isset($param['time_expire'])) $param['time_expire'] = date('YmdHis', time() + 3570); # 交易结束时间，非必填
+//		if (!isset($param['total_fee'])) $param['total_fee'] = $orderInfo['total'] * 100; # 订单总金额，单位为分
+		if (!isset($param['trade_type'])) $param['trade_type'] = 'JSAPI';
 		
 		$sign = $this->getSign($param);
 		
@@ -520,11 +462,13 @@ class WechatService {
 					   <openid>%s</openid>
 					   <out_trade_no>%s</out_trade_no>
 					   <spbill_create_ip>%s</spbill_create_ip>
+					   <time_start>%s</time_start>
+					   <time_expire>%s</time_expire>
 					   <total_fee>%s</total_fee>
 					   <trade_type>%s</trade_type>
 					   <sign>%s</sign>
 					</xml>';
-		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['total_fee'], $param['trade_type'], $sign);
+		$postStr = sprintf($xmlPost, $param['appid'], $param['attach'], $param['body'], $param['mch_id'], $param['detail'], $param['nonce_str'], $param['notify_url'], $param['openid'], $param['out_trade_no'], $param['spbill_create_ip'], $param['time_start'], $param['time_expire'], $param['total_fee'], $param['trade_type'], $sign);
 		$url     = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
 		$xml     = request_post($url, $postStr);
 		$resp    = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
@@ -533,7 +477,7 @@ class WechatService {
 		if (!isset($resp['prepay_id']) && !empty($resp['err_code_des'])) json_msg($resp['err_code_des'], 20001);
 		if (!isset($resp['prepay_id']) && !empty($resp['return_msg'])) json_msg($resp['return_msg'], 20001);
 		
-		# todo lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
+		# remind lxt 将prepay_id存起来，用于发送之后的模板消息，prepay_id可以用三次，有效期7天
 		\Redis::lpush(config('cache.WECHAT_MP.FROM_ID_LIST'), $resp['prepay_id'], $resp['prepay_id'], $resp['prepay_id']);
 		
 		$resp['timestamp'] = strval(time());

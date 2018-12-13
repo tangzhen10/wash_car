@@ -1172,7 +1172,7 @@ class OrderService extends BaseService {
 		# 微信支付，拉起支付界面
 		if (in_array('wechat', explode(',', $paymentMethod))) {
 			
-			\WechatService::unifiedOrder($post['openid'], $orderId);
+			\WechatService::unifiedOrderForOrder($post['openid'], $orderId);
 			
 		} elseif ('balance' == $paymentMethod) {
 			
