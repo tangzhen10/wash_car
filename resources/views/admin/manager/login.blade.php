@@ -1,3 +1,4 @@
+<?php define('NO_JS_UEDITOR',true) ?>
 @extends('admin.public_form')
 @section('css')
 	<style>

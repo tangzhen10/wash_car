@@ -1,9 +1,11 @@
 @extends('admin.base')
 @section('js_ueditor')
-	<!-- 配置文件 remind lxt 必须放在编辑器源码文件之前 -->
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.config.js')}}"></script>
-	<!-- 编辑器源码文件 -->
-	<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.all.js')}}"></script>
+	@if (!defined('NO_JS_UEDITOR') || !NO_JS_UEDITOR)
+		<!-- 配置文件 remind lxt 必须放在编辑器源码文件之前 -->
+		<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.config.js')}}"></script>
+		<!-- 编辑器源码文件 -->
+		<script type="text/javascript" src="{{URL::asset('H-ui.admin.page/lib/ueditor/1.4.3/ueditor.all.min.js')}}"></script>
+	@endif
 @endsection
 @section('common_body')
 	@yield('body')
