@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel {
 	protected $commands = [
 		\App\Console\Commands\CancelOrder::class, # 超时自动取消未支付的订单
 		\App\Console\Commands\SendMail::class, # 发送邮件
+		\App\Console\Commands\SocketServer::class, # socket服务器
 	];
 	
 	/**
