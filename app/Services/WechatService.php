@@ -535,7 +535,7 @@ class WechatService {
 			$error = curl_errno($ch);
 			curl_close($ch);
 			
-			json_msg(trans('error.action_failed'), $error);
+			json_msg(trans('common.action_failed'), $error);
 		}
 	}
 	# endregion

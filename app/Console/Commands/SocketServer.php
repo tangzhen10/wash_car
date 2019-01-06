@@ -18,7 +18,7 @@ class SocketServer extends Command {
 	 */
 	protected $description = 'socket服务器';
 	
-	public $address = 'www.washcar.com';
+	public $address = '127.0.0.1';
 	public $port = 12346;
 	public $master;
 	public $sockets = [];
