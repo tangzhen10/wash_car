@@ -31,6 +31,7 @@ class SocketServer extends Command {
 	public function __construct() {
 		
 		parent::__construct();
+		$this->address = env('SERVER_INNER_IP');
 	}
 	
 	/**

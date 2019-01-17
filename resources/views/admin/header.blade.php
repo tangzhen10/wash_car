@@ -34,7 +34,7 @@
 <script>
 	
 	try {
-		var ws = new WebSocket("ws://127.0.0.1:12346");//连接服务器
+		var ws = new WebSocket("ws://" + document.domain + ":12346");//连接服务器
 
 		ws.onopen = function (event) {
 			console.log("已经与服务器建立了连接\r\n当前连接状态："+this.readyState);
