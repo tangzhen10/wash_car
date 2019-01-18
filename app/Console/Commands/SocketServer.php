@@ -66,18 +66,18 @@ class SocketServer extends Command {
 			
 			$arr   = $this->sockets;
 			$write = $except = null;
-			//接收套接字数字 监听他们的状态
-			@socket_select($arr, $write, $except, null); # 有阻塞或有timeout
+			//接收套接字数字 监听他们的状态 todo lxt 这里有问题，只返回可读的socket，始终读上一个连接上的socket
+			@socket_select($arr, $write, $except, null); # 有阻塞 没有新的客户端接入，即没有可以可读的socket，一直阻塞
 			
 			//遍历套接字数组
 			foreach ($arr as $k => $v) {
-				//如果是新建立的套接字返回一个有效的 套接字资源
+				//如果是新建立的套接字返回一个有效的套接字资源
 				if ($this->master == $v) {
 					$client = socket_accept($this->master); # 有阻塞或有timeout
 					if ($client < 0) {
 						continue;
 					} else {
-						//将有效的套接字资源放到套接字数组
+						//将有效的套接字资源放到套接字数组 客户端连接成功
 						$this->sockets[] = $client;
 					}
 				} else {
@@ -96,15 +96,15 @@ class SocketServer extends Command {
 						
 						//进行握手操作
 						$this->hands($v, $buff);
-						$lastCount[$k] = 0;
+						$lastCount[(int)$v] = 0;
 					}
 					
 					//处理数据操作
-					$mess['count'] = redisGet('notice_count');
-					if ($lastCount[$k] != $mess['count']) {
-						$lastCount[$k] = $mess['count'];
+					$msg['count'] = redisGet('notice_count');
+					if ($lastCount[(int)$v] != $msg['count']) {
+						$lastCount[(int)$v] = $msg['count'];
 						//发送数据
-						$this->send($mess, $v);
+						$this->sendToAll($msg, $v);
 					}
 				}
 			}
@@ -137,48 +137,27 @@ class SocketServer extends Command {
 		$this->hand[(int)$client] = true;
 	}
 	
-	//解析数据
-	public function decodeData($buff) {
+	//发送数据单发，适用于私聊场景
+	public function send($msg, $client) {
 		
-		//$buff  解析数据帧
-		$mask = array();
-		$data = '';
-		$msg  = unpack('H*', $buff);  //用unpack函数从二进制将数据解码
-		$head = substr($msg[1], 0, 2);
-		if (hexdec($head{1}) === 8) {
-			$data = false;
-		} else if (hexdec($head{1}) === 1) {
-			$mask[] = hexdec(substr($msg[1], 4, 2));
-			$mask[] = hexdec(substr($msg[1], 6, 2));
-			$mask[] = hexdec(substr($msg[1], 8, 2));
-			$mask[] = hexdec(substr($msg[1], 10, 2));
-			//遇到的问题  刚连接的时候就发送数据  显示 state connecting
-			$s = 12;
-			$e = strlen($msg[1]) - 2;
-			$n = 0;
-			for ($i = $s; $i <= $e; $i += 2) {
-				$data .= chr($mask[$n % 4] ^ hexdec(substr($msg[1], $i, 2)));
-				$n++;
-			}
-			//发送数据到客户端
-			//如果长度大于125 将数据分块
-			$block = str_split($data, 125);
-			$mess  = array(
-				'mess' => $block[0],
-			);
-			return $mess;
+		# 成功握手则进行数据发送
+		if (!empty($this->hand[(int)$client])) {
+			$msg['name'] = "{$client}";
+			$str         = json_encode($msg);
+			$writes      = "\x81".chr(strlen($str)).$str;
+			@socket_write($client, $writes, strlen($writes));
 		}
 	}
 	
-	//发送数据
-	public function send($mess, $v) {
+	# todo lxt 群发消息，适合聊天室场景，需结合上下文来改写
+	public function sendToAll($msg, $client) {
 		
 		//遍历套接字数组 成功握手的  进行数据群发
 		foreach ($this->sockets as $keys => $values) {
 			//用系统分配的套接字资源id作为用户昵称
-			$mess['name'] = "{$v}";
-			$str          = json_encode($mess);
-			$writes       = "\x81".chr(strlen($str)).$str;
+			$msg['name'] = "{$client}";
+			$str         = json_encode($msg);
+			$writes      = "\x81".chr(strlen($str)).$str;
 			if (!empty($this->hand[(int)$values])) {
 				@socket_write($values, $writes, strlen($writes));
 			}
